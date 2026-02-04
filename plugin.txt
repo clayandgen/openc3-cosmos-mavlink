@@ -1,0 +1,48 @@
+# ============================================================================
+# OpenC3 COSMOS MAVLink Plugin Configuration
+# ============================================================================
+
+# Target name variable - allows multiple instances with different names
+VARIABLE drone_target_name DRONE
+VARIABLE_DESCRIPTION drone_target_name "Name for this MAVLink target"
+
+# Connection variables - MAVLink typically uses UDP
+VARIABLE mavlink_host 127.0.0.1
+VARIABLE_DESCRIPTION mavlink_host "MAVLink vehicle IP address or hostname"
+VARIABLE_STATE mavlink_host 127.0.0.1 "Localhost (SITL simulation)"
+VARIABLE_STATE mavlink_host host.docker.internal "Docker host"
+
+VARIABLE mavlink_port 14550
+VARIABLE_DESCRIPTION mavlink_port "UDP port for MAVLink communication"
+VARIABLE_STATE mavlink_port 14550 "Standard GCS port"
+VARIABLE_STATE mavlink_port 14551 "Secondary port"
+
+# MAVLink system IDs
+VARIABLE gcs_sysid 255
+VARIABLE_DESCRIPTION gcs_sysid "Ground Control Station System ID (typically 255)"
+
+VARIABLE gcs_compid 0
+VARIABLE_DESCRIPTION gcs_compid "Ground Control Station Component ID (typically 0)"
+
+VARIABLE target_sysid 1
+VARIABLE_DESCRIPTION target_sysid "Target vehicle System ID (typically 1)"
+
+# ============================================================================
+# Target Definition
+# ============================================================================
+TARGET DRONE <%= drone_target_name %>
+
+# ============================================================================
+# Interface Definition - UDP for MAVLink
+# ============================================================================
+# UDP Interface: host, write_dest_port, read_port, write_src_port, interface_address, ttl, write_timeout, read_timeout
+INTERFACE <%= drone_target_name %>_INT udp_interface.rb <%= mavlink_host %> <%= mavlink_port %> <%= mavlink_port %> nil nil 1 nil nil
+  MAP_TARGET <%= drone_target_name %>
+  # MAVLink protocol handles:
+  #   - Sync byte detection (0xFD for MAVLink v2)
+  #   - Length-based packet framing
+  #   - CRC-16/MCRF4XX validation
+  #   - Header field filling for outgoing packets (seq, sysid, compid)
+  PROTOCOL READ_WRITE mavlink_protocol.rb <%= gcs_sysid %> <%= gcs_compid %> <%= target_sysid %>
+  # Uncomment to log raw MAVLink data for debugging
+  # LOG_STREAM 600
