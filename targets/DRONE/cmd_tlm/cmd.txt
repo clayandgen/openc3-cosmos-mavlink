@@ -11,7 +11,7 @@
 # Use this for commands not explicitly defined below
 # ============================================================================
 COMMAND <%= target_name %> COMMAND_LONG LITTLE_ENDIAN "Send a MAVLink command with parameters"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
   APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
   APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
   APPEND_PARAMETER COMMAND 16 UINT 0 65535 0 "MAV_CMD command ID"
@@ -38,8 +38,11 @@ COMMAND <%= target_name %> COMMAND_LONG LITTLE_ENDIAN "Send a MAVLink command wi
 # commands outside of missions use MAV_CMD_DO_REPOSITION).
 # ============================================================================
 COMMAND <%= target_name %> NAV_WAYPOINT LITTLE_ENDIAN "Navigate to waypoint. This is intended for use in missions (for guided commands outside of missio..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 16, command_name: "MAV_CMD_NAV_WAYPOINT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 16 16 16 "MAV_CMD_NAV_WAYPOINT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER HOLD 32 FLOAT MIN MAX 0.0 "Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)"
     UNITS "Seconds" s
   APPEND_PARAMETER ACCEPT_RADIUS 32 FLOAT MIN MAX 0.0 "Acceptance radius (if the sphere with this radius is hit, the waypoint counts..."
@@ -59,8 +62,11 @@ COMMAND <%= target_name %> NAV_WAYPOINT LITTLE_ENDIAN "Navigate to waypoint. Thi
 # Loiter around this waypoint an unlimited amount of time
 # ============================================================================
 COMMAND <%= target_name %> NAV_LOITER_UNLIM LITTLE_ENDIAN "Loiter around this waypoint an unlimited amount of time"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 17, command_name: "MAV_CMD_NAV_LOITER_UNLIM"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 17 17 17 "MAV_CMD_NAV_LOITER_UNLIM"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER RADIUS 32 FLOAT MIN MAX 0.0 "Loiter radius around waypoint for forward-only moving vehicles (not multicopt..."
@@ -78,8 +84,11 @@ COMMAND <%= target_name %> NAV_LOITER_UNLIM LITTLE_ENDIAN "Loiter around this wa
 # Loiter around this waypoint for X turns
 # ============================================================================
 COMMAND <%= target_name %> NAV_LOITER_TURNS LITTLE_ENDIAN "Loiter around this waypoint for X turns"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 18, command_name: "MAV_CMD_NAV_LOITER_TURNS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 18 18 18 "MAV_CMD_NAV_LOITER_TURNS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TURNS 32 FLOAT MIN MAX 0.0 "Number of turns."
   APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT MIN MAX 0.0 "Leave loiter circle only when track heads towards the next waypoint (MAV_BOOL..."
   APPEND_PARAMETER RADIUS 32 FLOAT MIN MAX 0.0 "Loiter radius around waypoint for forward-only moving vehicles (not multicopt..."
@@ -101,8 +110,11 @@ COMMAND <%= target_name %> NAV_LOITER_TURNS LITTLE_ENDIAN "Loiter around this wa
 # only leave the loiter circle once heading towards the next waypoint.
 # ============================================================================
 COMMAND <%= target_name %> NAV_LOITER_TIME LITTLE_ENDIAN "Loiter at the specified latitude, longitude and altitude for a certain amount of time. Multicopte..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 19, command_name: "MAV_CMD_NAV_LOITER_TIME"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 19 19 19 "MAV_CMD_NAV_LOITER_TIME"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TIME 32 FLOAT MIN MAX 0.0 "Loiter time (only starts once Lat, Lon and Alt is reached)."
     UNITS "Seconds" s
   APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT MIN MAX 0.0 "Leave loiter circle only when track heading towards the next waypoint (MAV_BO..."
@@ -120,8 +132,11 @@ COMMAND <%= target_name %> NAV_LOITER_TIME LITTLE_ENDIAN "Loiter at the specifie
 # Return to launch location
 # ============================================================================
 COMMAND <%= target_name %> NAV_RETURN_TO_LAUNCH LITTLE_ENDIAN "Return to launch location"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 20, command_name: "MAV_CMD_NAV_RETURN_TO_LAUNCH"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 20 20 20 "MAV_CMD_NAV_RETURN_TO_LAUNCH"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -137,8 +152,11 @@ COMMAND <%= target_name %> NAV_RETURN_TO_LAUNCH LITTLE_ENDIAN "Return to launch 
 # Land at location.
 # ============================================================================
 COMMAND <%= target_name %> NAV_LAND LITTLE_ENDIAN "Land at location."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 21, command_name: "MAV_CMD_NAV_LAND"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 21 21 21 "MAV_CMD_NAV_LAND"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ABORT_ALT 32 FLOAT MIN MAX 0.0 "Minimum target altitude if landing is aborted (0 = undefined/use system defau..."
     UNITS "Meters" m
   APPEND_PARAMETER LAND_MODE 32 FLOAT MIN MAX 0.0 "Precision land mode."
@@ -161,8 +179,11 @@ COMMAND <%= target_name %> NAV_LAND LITTLE_ENDIAN "Land at location."
 # (e.g. VTOL quadplane) should take off using the currently configured mode.
 # ============================================================================
 COMMAND <%= target_name %> NAV_TAKEOFF LITTLE_ENDIAN "Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) sh..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 22, command_name: "MAV_CMD_NAV_TAKEOFF"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 22 22 22 "MAV_CMD_NAV_TAKEOFF"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PITCH 32 FLOAT MIN MAX 0.0 "Minimum pitch (if airspeed sensor present), desired pitch without sensor"
     UNITS "Degrees" deg
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
@@ -181,8 +202,11 @@ COMMAND <%= target_name %> NAV_TAKEOFF LITTLE_ENDIAN "Takeoff from ground / hand
 # Land at local position (local frame only)
 # ============================================================================
 COMMAND <%= target_name %> NAV_LAND_LOCAL LITTLE_ENDIAN "Land at local position (local frame only)"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 23, command_name: "MAV_CMD_NAV_LAND_LOCAL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 23 23 23 "MAV_CMD_NAV_LAND_LOCAL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TARGET 32 FLOAT MIN MAX 0.0 "Landing target number (if available)"
   APPEND_PARAMETER OFFSET 32 FLOAT MIN MAX 0.0 "Maximum accepted offset from desired landing position - computed magnitude fr..."
     UNITS "Meters" m
@@ -204,8 +228,11 @@ COMMAND <%= target_name %> NAV_LAND_LOCAL LITTLE_ENDIAN "Land at local position 
 # Takeoff from local position (local frame only)
 # ============================================================================
 COMMAND <%= target_name %> NAV_TAKEOFF_LOCAL LITTLE_ENDIAN "Takeoff from local position (local frame only)"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 24, command_name: "MAV_CMD_NAV_TAKEOFF_LOCAL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 24 24 24 "MAV_CMD_NAV_TAKEOFF_LOCAL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PITCH 32 FLOAT MIN MAX 0.0 "Minimum pitch (if airspeed sensor present), desired pitch without sensor"
     UNITS "Radians" rad
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
@@ -228,8 +255,11 @@ COMMAND <%= target_name %> NAV_TAKEOFF_LOCAL LITTLE_ENDIAN "Takeoff from local p
 # vehicle
 # ============================================================================
 COMMAND <%= target_name %> NAV_FOLLOW LITTLE_ENDIAN "Vehicle following, i.e. this waypoint represents the position of a moving vehicle"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 25, command_name: "MAV_CMD_NAV_FOLLOW"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 25 25 25 "MAV_CMD_NAV_FOLLOW"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER FOLLOWING 32 FLOAT MIN MAX 0.0 "Following logic to use (e.g. loitering or sinusoidal following) - depends on ..."
   APPEND_PARAMETER GROUND_SPEED 32 FLOAT MIN MAX 0.0 "Ground speed of vehicle to be followed"
     UNITS "Meters_per_second" m/s
@@ -250,8 +280,11 @@ COMMAND <%= target_name %> NAV_FOLLOW LITTLE_ENDIAN "Vehicle following, i.e. thi
 # proceed to the next command until the desired altitude is reached.
 # ============================================================================
 COMMAND <%= target_name %> NAV_CONTINUE_AND_CHANGE_ALT LITTLE_ENDIAN "Continue on the current course and climb/descend to specified altitude. When the altitude is reac..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 30, command_name: "MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 30 30 30 "MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ACTION 32 FLOAT MIN MAX 0.0 "Climb or Descend (0 = Neutral, command completes when within 5m of this comma..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -271,8 +304,11 @@ COMMAND <%= target_name %> NAV_CONTINUE_AND_CHANGE_ALT LITTLE_ENDIAN "Continue o
 # will not leave the loiter until heading toward the next waypoint.
 # ============================================================================
 COMMAND <%= target_name %> NAV_LOITER_TO_ALT LITTLE_ENDIAN "Begin loiter at the specified Latitude and Longitude. If Lat=Lon=0, then loiter at the current po..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31, command_name: "MAV_CMD_NAV_LOITER_TO_ALT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31 31 31 "MAV_CMD_NAV_LOITER_TO_ALT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT MIN MAX 0.0 "Leave loiter circle only when track heading towards the next waypoint (MAV_BO..."
   APPEND_PARAMETER RADIUS 32 FLOAT MIN MAX 0.0 "Loiter radius around waypoint for forward-only moving vehicles (not multicopt..."
     UNITS "Meters" m
@@ -289,8 +325,11 @@ COMMAND <%= target_name %> NAV_LOITER_TO_ALT LITTLE_ENDIAN "Begin loiter at the 
 # Begin following a target
 # ============================================================================
 COMMAND <%= target_name %> DO_FOLLOW LITTLE_ENDIAN "Begin following a target"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 32, command_name: "MAV_CMD_DO_FOLLOW"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 32 32 32 "MAV_CMD_DO_FOLLOW"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SYSTEM_ID 32 FLOAT MIN MAX 0.0 "System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and retu..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -307,8 +346,11 @@ COMMAND <%= target_name %> DO_FOLLOW LITTLE_ENDIAN "Begin following a target"
 # Reposition the MAV after a follow target command has been sent
 # ============================================================================
 COMMAND <%= target_name %> DO_FOLLOW_REPOSITION LITTLE_ENDIAN "Reposition the MAV after a follow target command has been sent"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 33, command_name: "MAV_CMD_DO_FOLLOW_REPOSITION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 33 33 33 "MAV_CMD_DO_FOLLOW_REPOSITION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER CAMERA_Q1 32 FLOAT MIN MAX 0.0 "Camera q1 (where 0 is on the ray from the camera to the tracking device)"
   APPEND_PARAMETER CAMERA_Q2 32 FLOAT MIN MAX 0.0 "Camera q2"
   APPEND_PARAMETER CAMERA_Q3 32 FLOAT MIN MAX 0.0 "Camera q3"
@@ -328,8 +370,11 @@ COMMAND <%= target_name %> DO_FOLLOW_REPOSITION LITTLE_ENDIAN "Reposition the MA
 # defaults.
 # ============================================================================
 COMMAND <%= target_name %> DO_ORBIT LITTLE_ENDIAN "Start orbiting on the circumference of a circle defined by the parameters. Setting values to NaN/..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 34, command_name: "MAV_CMD_DO_ORBIT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 34 34 34 "MAV_CMD_DO_ORBIT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER RADIUS 32 FLOAT MIN MAX 0.0 "Radius of the circle. Positive: orbit clockwise. Negative: orbit counter-cloc..."
     UNITS "Meters" m
   APPEND_PARAMETER VELOCITY 32 FLOAT MIN MAX 0.0 "Tangential Velocity. NaN: Use vehicle default velocity, or current velocity i..."
@@ -363,8 +408,11 @@ COMMAND <%= target_name %> DO_ORBIT LITTLE_ENDIAN "Start orbiting on the circumf
 # independent of the heading).
 # ============================================================================
 COMMAND <%= target_name %> DO_FIGURE_EIGHT LITTLE_ENDIAN "Fly a figure eight path as defined by the parameters. Set parameters to NaN/INT32_MAX (as appropr..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 35, command_name: "MAV_CMD_DO_FIGURE_EIGHT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 35 35 35 "MAV_CMD_DO_FIGURE_EIGHT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MAJOR_RADIUS 32 FLOAT MIN MAX 0.0 "Major axis radius of the figure eight. Positive: orbit the north circle clock..."
     UNITS "Meters" m
   APPEND_PARAMETER MINOR_RADIUS 32 FLOAT MIN MAX 0.0 "Minor axis radius of the figure eight. Defines the radius of the two circles ..."
@@ -385,8 +433,11 @@ COMMAND <%= target_name %> DO_FIGURE_EIGHT LITTLE_ENDIAN "Fly a figure eight pat
 # vehicle attitude and the attitude of various sensors such as cameras.
 # ============================================================================
 COMMAND <%= target_name %> NAV_ROI LITTLE_ENDIAN "Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used b..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 80, command_name: "MAV_CMD_NAV_ROI"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 80 80 80 "MAV_CMD_NAV_ROI"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ROI_MODE 32 FLOAT MIN MAX 0.0 "Region of interest mode."
     STATE MAV_ROI_NONE 0
     STATE MAV_ROI_WPNEXT 1
@@ -406,8 +457,11 @@ COMMAND <%= target_name %> NAV_ROI LITTLE_ENDIAN "Sets the region of interest (R
 # Control autonomous path planning on the MAV.
 # ============================================================================
 COMMAND <%= target_name %> NAV_PATHPLANNING LITTLE_ENDIAN "Control autonomous path planning on the MAV."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 81, command_name: "MAV_CMD_NAV_PATHPLANNING"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 81 81 81 "MAV_CMD_NAV_PATHPLANNING"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER LOCAL_CTRL 32 FLOAT MIN MAX 0.0 "0: Disable local obstacle avoidance / local path planning (without resetting ..."
   APPEND_PARAMETER GLOBAL_CTRL 32 FLOAT MIN MAX 0.0 "0: Disable full path planning (without resetting map), 1: Enable, 2: Enable a..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -423,8 +477,11 @@ COMMAND <%= target_name %> NAV_PATHPLANNING LITTLE_ENDIAN "Control autonomous pa
 # Navigate to waypoint using a spline path.
 # ============================================================================
 COMMAND <%= target_name %> NAV_SPLINE_WAYPOINT LITTLE_ENDIAN "Navigate to waypoint using a spline path."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 82, command_name: "MAV_CMD_NAV_SPLINE_WAYPOINT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 82 82 82 "MAV_CMD_NAV_SPLINE_WAYPOINT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER HOLD 32 FLOAT MIN MAX 0.0 "Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)"
     UNITS "Seconds" s
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
@@ -442,8 +499,11 @@ COMMAND <%= target_name %> NAV_SPLINE_WAYPOINT LITTLE_ENDIAN "Navigate to waypoi
 # support both VTOL and fixed-wing flight (multicopters, boats,etc.).
 # ============================================================================
 COMMAND <%= target_name %> NAV_VTOL_TAKEOFF LITTLE_ENDIAN "Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. The..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 84, command_name: "MAV_CMD_NAV_VTOL_TAKEOFF"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 84 84 84 "MAV_CMD_NAV_VTOL_TAKEOFF"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER TRANSITION_HEADING 32 FLOAT MIN MAX 0.0 "Front transition heading."
     STATE VTOL_TRANSITION_HEADING_VEHICLE_DEFAULT 0
@@ -465,8 +525,11 @@ COMMAND <%= target_name %> NAV_VTOL_TAKEOFF LITTLE_ENDIAN "Takeoff from ground u
 # Land using VTOL mode
 # ============================================================================
 COMMAND <%= target_name %> NAV_VTOL_LAND LITTLE_ENDIAN "Land using VTOL mode"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 85, command_name: "MAV_CMD_NAV_VTOL_LAND"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 85 85 85 "MAV_CMD_NAV_VTOL_LAND"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER LAND_OPTIONS 32 FLOAT MIN MAX 0.0 "Landing behaviour."
     STATE NAV_VTOL_LAND_OPTIONS_DEFAULT 0
     STATE NAV_VTOL_LAND_OPTIONS_FW_DESCENT 1
@@ -487,8 +550,11 @@ COMMAND <%= target_name %> NAV_VTOL_LAND LITTLE_ENDIAN "Land using VTOL mode"
 # Hand control over to an external controller
 # ============================================================================
 COMMAND <%= target_name %> NAV_GUIDED_ENABLE LITTLE_ENDIAN "Hand control over to an external controller"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 92, command_name: "MAV_CMD_NAV_GUIDED_ENABLE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 92 92 92 "MAV_CMD_NAV_GUIDED_ENABLE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ENABLE 32 FLOAT MIN MAX 0.0 "Guided mode on (MAV_BOOL_FALSE: Off). Values not equal to 0 or 1 are invalid."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -504,8 +570,11 @@ COMMAND <%= target_name %> NAV_GUIDED_ENABLE LITTLE_ENDIAN "Hand control over to
 # time
 # ============================================================================
 COMMAND <%= target_name %> NAV_DELAY LITTLE_ENDIAN "Delay the next navigation command a number of seconds or until a specified time"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 93, command_name: "MAV_CMD_NAV_DELAY"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 93 93 93 "MAV_CMD_NAV_DELAY"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER DELAY 32 FLOAT MIN MAX 0.0 "Delay (-1 to enable time-of-day fields)"
     UNITS "Seconds" s
   APPEND_PARAMETER HOUR 32 FLOAT MIN MAX 0.0 "hour (24h format, UTC, -1 to ignore)"
@@ -525,8 +594,11 @@ COMMAND <%= target_name %> NAV_DELAY LITTLE_ENDIAN "Delay the next navigation co
 # releasing the payload.
 # ============================================================================
 COMMAND <%= target_name %> NAV_PAYLOAD_PLACE LITTLE_ENDIAN "Descend and place payload. Vehicle moves to specified location, descends until it detects a hangi..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 94, command_name: "MAV_CMD_NAV_PAYLOAD_PLACE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 94 94 94 "MAV_CMD_NAV_PAYLOAD_PLACE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MAX_DESCENT 32 FLOAT MIN MAX 0.0 "Maximum distance to descend."
     UNITS "Meters" m
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
@@ -544,8 +616,11 @@ COMMAND <%= target_name %> NAV_PAYLOAD_PLACE LITTLE_ENDIAN "Descend and place pa
 # commands in the enumeration
 # ============================================================================
 COMMAND <%= target_name %> NAV_LAST LITTLE_ENDIAN "NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumera..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 95, command_name: "MAV_CMD_NAV_LAST"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 95 95 95 "MAV_CMD_NAV_LAST"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -560,8 +635,11 @@ COMMAND <%= target_name %> NAV_LAST LITTLE_ENDIAN "NOP - This command is only us
 # Delay mission state machine.
 # ============================================================================
 COMMAND <%= target_name %> CONDITION_DELAY LITTLE_ENDIAN "Delay mission state machine."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 112, command_name: "MAV_CMD_CONDITION_DELAY"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 112 112 112 "MAV_CMD_CONDITION_DELAY"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER DELAY 32 FLOAT MIN MAX 0.0 "Delay"
     UNITS "Seconds" s
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
@@ -578,8 +656,11 @@ COMMAND <%= target_name %> CONDITION_DELAY LITTLE_ENDIAN "Delay mission state ma
 # machine until desired altitude reached.
 # ============================================================================
 COMMAND <%= target_name %> CONDITION_CHANGE_ALT LITTLE_ENDIAN "Ascend/descend to target altitude at specified rate. Delay mission state machine until desired al..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 113, command_name: "MAV_CMD_CONDITION_CHANGE_ALT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 113 113 113 "MAV_CMD_CONDITION_CHANGE_ALT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER RATE 32 FLOAT MIN MAX 0.0 "Descent / Ascend rate."
     UNITS "Meters_per_second" m/s
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
@@ -597,8 +678,11 @@ COMMAND <%= target_name %> CONDITION_CHANGE_ALT LITTLE_ENDIAN "Ascend/descend to
 # point.
 # ============================================================================
 COMMAND <%= target_name %> CONDITION_DISTANCE LITTLE_ENDIAN "Delay mission state machine until within desired distance of next NAV point."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 114, command_name: "MAV_CMD_CONDITION_DISTANCE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 114 114 114 "MAV_CMD_CONDITION_DISTANCE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER DISTANCE 32 FLOAT MIN MAX 0.0 "Distance."
     UNITS "Meters" m
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
@@ -614,8 +698,11 @@ COMMAND <%= target_name %> CONDITION_DISTANCE LITTLE_ENDIAN "Delay mission state
 # Reach a certain target angle.
 # ============================================================================
 COMMAND <%= target_name %> CONDITION_YAW LITTLE_ENDIAN "Reach a certain target angle."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 115, command_name: "MAV_CMD_CONDITION_YAW"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 115 115 115 "MAV_CMD_CONDITION_YAW"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ANGLE 32 FLOAT MIN MAX 0.0 "target angle [0-360]. Absolute angles: 0 is north. Relative angle: 0 is initi..."
     UNITS "Degrees" deg
   APPEND_PARAMETER ANGULAR_SPEED 32 FLOAT MIN MAX 0.0 "angular speed"
@@ -633,8 +720,11 @@ COMMAND <%= target_name %> CONDITION_YAW LITTLE_ENDIAN "Reach a certain target a
 # commands in the enumeration
 # ============================================================================
 COMMAND <%= target_name %> CONDITION_LAST LITTLE_ENDIAN "NOP - This command is only used to mark the upper limit of the CONDITION commands in the enumeration"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 159, command_name: "MAV_CMD_CONDITION_LAST"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 159 159 159 "MAV_CMD_CONDITION_LAST"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -649,8 +739,11 @@ COMMAND <%= target_name %> CONDITION_LAST LITTLE_ENDIAN "NOP - This command is o
 # Set system mode.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_MODE LITTLE_ENDIAN "Set system mode."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 176, command_name: "MAV_CMD_DO_SET_MODE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 176 176 176 "MAV_CMD_DO_SET_MODE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MODE 32 FLOAT MIN MAX 0.0 "Mode flags. MAV_MODE values can be used to set some mode flag combinations."
   APPEND_PARAMETER CUSTOM_MODE 32 FLOAT MIN MAX 0.0 "Custom system-specific mode (see target autopilot specifications for mode inf..."
   APPEND_PARAMETER CUSTOM_SUBMODE 32 FLOAT MIN MAX 0.0 "Custom sub mode - this is system specific, please refer to the individual aut..."
@@ -666,8 +759,11 @@ COMMAND <%= target_name %> DO_SET_MODE LITTLE_ENDIAN "Set system mode."
 # the specified number of times
 # ============================================================================
 COMMAND <%= target_name %> DO_JUMP LITTLE_ENDIAN "Jump to the desired command in the mission list. Repeat this action only the specified number of ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 177, command_name: "MAV_CMD_DO_JUMP"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 177 177 177 "MAV_CMD_DO_JUMP"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER NUMBER 32 FLOAT MIN MAX 0.0 "Sequence number"
   APPEND_PARAMETER REPEAT 32 FLOAT MIN MAX 0.0 "Repeat count"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -683,8 +779,11 @@ COMMAND <%= target_name %> DO_JUMP LITTLE_ENDIAN "Jump to the desired command in
 # overridden or there is a mode change
 # ============================================================================
 COMMAND <%= target_name %> DO_CHANGE_SPEED LITTLE_ENDIAN "Change speed and/or throttle set points. The value persists until it is overridden or there is a ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 178, command_name: "MAV_CMD_DO_CHANGE_SPEED"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 178 178 178 "MAV_CMD_DO_CHANGE_SPEED"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SPEED_TYPE 32 FLOAT MIN MAX 0.0 "Speed type of value set in param2 (such as airspeed, ground speed, and so on)"
     STATE SPEED_TYPE_AIRSPEED 0
     STATE SPEED_TYPE_GROUNDSPEED 1
@@ -716,8 +815,11 @@ COMMAND <%= target_name %> DO_CHANGE_SPEED LITTLE_ENDIAN "Change speed and/or th
 # on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_HOME LITTLE_ENDIAN "Sets the home position to either to the current position or a specified position. The home positi..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 179, command_name: "MAV_CMD_DO_SET_HOME"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 179 179 179 "MAV_CMD_DO_SET_HOME"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER USE_CURRENT 32 FLOAT MIN MAX 0.0 "Use current location (MAV_BOOL_FALSE: use specified location). Values not equ..."
   APPEND_PARAMETER ROLL 32 FLOAT MIN MAX 0.0 "Roll angle (of surface). Range: -180..180 degrees. NAN or 0 means value not s..."
     UNITS "Degrees" deg
@@ -737,8 +839,11 @@ COMMAND <%= target_name %> DO_SET_HOME LITTLE_ENDIAN "Sets the home position to 
 # of the numeric enumeration value of the parameter.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_PARAMETER LITTLE_ENDIAN "Set a system parameter. Caution! Use of this command requires knowledge of the numeric enumeratio..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 180, command_name: "MAV_CMD_DO_SET_PARAMETER"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 180 180 180 "MAV_CMD_DO_SET_PARAMETER"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER NUMBER 32 FLOAT MIN MAX 0.0 "Parameter number"
   APPEND_PARAMETER VALUE 32 FLOAT MIN MAX 0.0 "Parameter value"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -753,8 +858,11 @@ COMMAND <%= target_name %> DO_SET_PARAMETER LITTLE_ENDIAN "Set a system paramete
 # Set a relay to a condition.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_RELAY LITTLE_ENDIAN "Set a relay to a condition."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 181, command_name: "MAV_CMD_DO_SET_RELAY"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 181 181 181 "MAV_CMD_DO_SET_RELAY"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER INSTANCE 32 FLOAT MIN MAX 0.0 "Relay instance number."
   APPEND_PARAMETER SETTING 32 FLOAT MIN MAX 0.0 "Setting. (1=on, 0=off, others possible depending on system hardware)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -770,8 +878,11 @@ COMMAND <%= target_name %> DO_SET_RELAY LITTLE_ENDIAN "Set a relay to a conditio
 # period.
 # ============================================================================
 COMMAND <%= target_name %> DO_REPEAT_RELAY LITTLE_ENDIAN "Cycle a relay on and off for a desired number of cycles with a desired period."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 182, command_name: "MAV_CMD_DO_REPEAT_RELAY"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 182 182 182 "MAV_CMD_DO_REPEAT_RELAY"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER INSTANCE 32 FLOAT MIN MAX 0.0 "Relay instance number."
   APPEND_PARAMETER COUNT 32 FLOAT MIN MAX 0.0 "Cycle count."
   APPEND_PARAMETER TIME 32 FLOAT MIN MAX 0.0 "Cycle time."
@@ -787,8 +898,11 @@ COMMAND <%= target_name %> DO_REPEAT_RELAY LITTLE_ENDIAN "Cycle a relay on and o
 # Set a servo to a desired PWM value.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_SERVO LITTLE_ENDIAN "Set a servo to a desired PWM value."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 183, command_name: "MAV_CMD_DO_SET_SERVO"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 183 183 183 "MAV_CMD_DO_SET_SERVO"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER INSTANCE 32 FLOAT MIN MAX 0.0 "Servo instance number."
   APPEND_PARAMETER PWM 32 FLOAT MIN MAX 0.0 "Pulse Width Modulation."
     UNITS "Microseconds" us
@@ -805,8 +919,11 @@ COMMAND <%= target_name %> DO_SET_SERVO LITTLE_ENDIAN "Set a servo to a desired 
 # of cycles with a desired period.
 # ============================================================================
 COMMAND <%= target_name %> DO_REPEAT_SERVO LITTLE_ENDIAN "Cycle a between its nominal setting and a desired PWM for a desired number of cycles with a desir..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 184, command_name: "MAV_CMD_DO_REPEAT_SERVO"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 184 184 184 "MAV_CMD_DO_REPEAT_SERVO"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER INSTANCE 32 FLOAT MIN MAX 0.0 "Servo instance number."
   APPEND_PARAMETER PWM 32 FLOAT MIN MAX 0.0 "Pulse Width Modulation."
     UNITS "Microseconds" us
@@ -835,8 +952,11 @@ COMMAND <%= target_name %> DO_REPEAT_SERVO LITTLE_ENDIAN "Cycle a between its no
 # MAV_RESULT_UNSUPPORTED.
 # ============================================================================
 COMMAND <%= target_name %> DO_FLIGHTTERMINATION LITTLE_ENDIAN "Terminate flight immediately. Flight termination immediately and irreversibly terminates the curr..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 185, command_name: "MAV_CMD_DO_FLIGHTTERMINATION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 185 185 185 "MAV_CMD_DO_FLIGHTTERMINATION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TERMINATE 32 FLOAT MIN MAX 0.0 "Flight termination activated if > 0.5. Otherwise not activated and ACK with M..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -852,8 +972,11 @@ COMMAND <%= target_name %> DO_FLIGHTTERMINATION LITTLE_ENDIAN "Terminate flight 
 # Change altitude set point.
 # ============================================================================
 COMMAND <%= target_name %> DO_CHANGE_ALTITUDE LITTLE_ENDIAN "Change altitude set point."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 186, command_name: "MAV_CMD_DO_CHANGE_ALTITUDE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 186 186 186 "MAV_CMD_DO_CHANGE_ALTITUDE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ALTITUDE 32 FLOAT MIN MAX 0.0 "Altitude."
     UNITS "Meters" m
   APPEND_PARAMETER FRAME 32 FLOAT MIN MAX 0.0 "Frame of new altitude."
@@ -871,8 +994,11 @@ COMMAND <%= target_name %> DO_CHANGE_ALTITUDE LITTLE_ENDIAN "Change altitude set
 # flight-stack specific mechanism (i.e. a parameter).
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_ACTUATOR LITTLE_ENDIAN "Sets actuators (e.g. servos) to a desired value. The actuator numbers are mapped to specific outp..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 187, command_name: "MAV_CMD_DO_SET_ACTUATOR"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 187 187 187 "MAV_CMD_DO_SET_ACTUATOR"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ACTUATOR_1 32 FLOAT MIN MAX 0.0 "Actuator 1 value, scaled from [-1 to 1]. NaN to ignore."
   APPEND_PARAMETER ACTUATOR_2 32 FLOAT MIN MAX 0.0 "Actuator 2 value, scaled from [-1 to 1]. NaN to ignore."
   APPEND_PARAMETER ACTUATOR_3 32 FLOAT MIN MAX 0.0 "Actuator 3 value, scaled from [-1 to 1]. NaN to ignore."
@@ -911,8 +1037,11 @@ COMMAND <%= target_name %> DO_SET_ACTUATOR LITTLE_ENDIAN "Sets actuators (e.g. s
 # a command any position information in the command is ignored.
 # ============================================================================
 COMMAND <%= target_name %> DO_RETURN_PATH_START LITTLE_ENDIAN "Mission item to specify the start of a failsafe/landing return-path segment (the end of the segme..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 188, command_name: "MAV_CMD_DO_RETURN_PATH_START"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 188 188 188 "MAV_CMD_DO_RETURN_PATH_START"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -943,8 +1072,11 @@ COMMAND <%= target_name %> DO_RETURN_PATH_START LITTLE_ENDIAN "Mission item to s
 # The location parameters are not used in this case, and should be set to 0.
 # ============================================================================
 COMMAND <%= target_name %> DO_LAND_START LITTLE_ENDIAN "Mission item to mark the start of a mission landing pattern, or a command to land with a mission ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 189, command_name: "MAV_CMD_DO_LAND_START"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 189 189 189 "MAV_CMD_DO_LAND_START"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -960,8 +1092,11 @@ COMMAND <%= target_name %> DO_LAND_START LITTLE_ENDIAN "Mission item to mark the
 # Mission command to perform a landing from a rally point.
 # ============================================================================
 COMMAND <%= target_name %> DO_RALLY_LAND LITTLE_ENDIAN "Mission command to perform a landing from a rally point."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 190, command_name: "MAV_CMD_DO_RALLY_LAND"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 190 190 190 "MAV_CMD_DO_RALLY_LAND"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ALTITUDE 32 FLOAT MIN MAX 0.0 "Break altitude"
     UNITS "Meters" m
   APPEND_PARAMETER SPEED 32 FLOAT MIN MAX 0.0 "Landing speed"
@@ -978,8 +1113,11 @@ COMMAND <%= target_name %> DO_RALLY_LAND LITTLE_ENDIAN "Mission command to perfo
 # Mission command to safely abort an autonomous landing.
 # ============================================================================
 COMMAND <%= target_name %> DO_GO_AROUND LITTLE_ENDIAN "Mission command to safely abort an autonomous landing."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 191, command_name: "MAV_CMD_DO_GO_AROUND"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 191 191 191 "MAV_CMD_DO_GO_AROUND"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ALTITUDE 32 FLOAT MIN MAX 0.0 "Altitude"
     UNITS "Meters" m
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
@@ -997,8 +1135,11 @@ COMMAND <%= target_name %> DO_GO_AROUND LITTLE_ENDIAN "Mission command to safely
 # instead).
 # ============================================================================
 COMMAND <%= target_name %> DO_REPOSITION LITTLE_ENDIAN "Reposition the vehicle to a specific WGS84 global position. This command is intended for guided c..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 192, command_name: "MAV_CMD_DO_REPOSITION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 192 192 192 "MAV_CMD_DO_REPOSITION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SPEED 32 FLOAT MIN MAX 0.0 "Ground speed, less than 0 (-1) for default"
     UNITS "Meters_per_second" m/s
   APPEND_PARAMETER BITMASK 32 FLOAT MIN MAX 0.0 "Bitmask of option flags."
@@ -1018,8 +1159,11 @@ COMMAND <%= target_name %> DO_REPOSITION LITTLE_ENDIAN "Reposition the vehicle t
 # continue.
 # ============================================================================
 COMMAND <%= target_name %> DO_PAUSE_CONTINUE LITTLE_ENDIAN "If in a GPS controlled position mode, hold the current position or continue."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 193, command_name: "MAV_CMD_DO_PAUSE_CONTINUE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 193 193 193 "MAV_CMD_DO_PAUSE_CONTINUE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER CONTINUE 32 FLOAT MIN MAX 0.0 "Continue mission (MAV_BOOL_TRUE), Pause current mission or reposition command..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -1034,8 +1178,11 @@ COMMAND <%= target_name %> DO_PAUSE_CONTINUE LITTLE_ENDIAN "If in a GPS controll
 # Set moving direction to forward or reverse.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_REVERSE LITTLE_ENDIAN "Set moving direction to forward or reverse."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 194, command_name: "MAV_CMD_DO_SET_REVERSE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 194 194 194 "MAV_CMD_DO_SET_REVERSE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER REVERSE 32 FLOAT MIN MAX 0.0 "Reverse direction (MAV_BOOL_FALSE: Forward direction). Values not equal to 0 ..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1054,8 +1201,11 @@ COMMAND <%= target_name %> DO_SET_REVERSE LITTLE_ENDIAN "Set moving direction to
 # this message.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_ROI_LOCATION LITTLE_ENDIAN "Sets the region of interest (ROI) to a location. This can then be used by the vehicle's control s..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 195, command_name: "MAV_CMD_DO_SET_ROI_LOCATION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 195 195 195 "MAV_CMD_DO_SET_ROI_LOCATION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT MIN MAX 0.0 "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1077,8 +1227,11 @@ COMMAND <%= target_name %> DO_SET_ROI_LOCATION LITTLE_ENDIAN "Sets the region of
 # not to a gimbal device. A gimbal device is not to react to this message.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_ROI_WPNEXT_OFFSET LITTLE_ENDIAN "Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 196, command_name: "MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 196 196 196 "MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT MIN MAX 0.0 "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1102,8 +1255,11 @@ COMMAND <%= target_name %> DO_SET_ROI_WPNEXT_OFFSET LITTLE_ENDIAN "Sets the regi
 # and otherwise assume a neutral position.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_ROI_NONE LITTLE_ENDIAN "Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics...."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 197, command_name: "MAV_CMD_DO_SET_ROI_NONE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 197 197 197 "MAV_CMD_DO_SET_ROI_NONE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT MIN MAX 0.0 "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1121,8 +1277,11 @@ COMMAND <%= target_name %> DO_SET_ROI_NONE LITTLE_ENDIAN "Cancels any previous R
 # gimbal device is not to react to this message.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_ROI_SYSID LITTLE_ENDIAN "Mount tracks system with specified system ID. Determination of target vehicle position may be don..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 198, command_name: "MAV_CMD_DO_SET_ROI_SYSID"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 198 198 198 "MAV_CMD_DO_SET_ROI_SYSID"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SYSTEM_ID 32 FLOAT MIN MAX 0.0 "System ID"
   APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT MIN MAX 0.0 "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -1142,8 +1301,11 @@ COMMAND <%= target_name %> DO_SET_ROI_SYSID LITTLE_ENDIAN "Mount tracks system w
 # Control onboard camera system.
 # ============================================================================
 COMMAND <%= target_name %> DO_CONTROL_VIDEO LITTLE_ENDIAN "Control onboard camera system."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 200, command_name: "MAV_CMD_DO_CONTROL_VIDEO"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 200 200 200 "MAV_CMD_DO_CONTROL_VIDEO"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ID 32 FLOAT MIN MAX 0.0 "Camera ID (-1 for all)"
   APPEND_PARAMETER TRANSMISSION 32 FLOAT MIN MAX 0.0 "Transmission: 0: disabled, 1: enabled compressed, 2: enabled raw"
   APPEND_PARAMETER INTERVAL 32 FLOAT MIN MAX 0.0 "Transmission mode: 0: video stream, >0: single images every n seconds"
@@ -1161,8 +1323,11 @@ COMMAND <%= target_name %> DO_CONTROL_VIDEO LITTLE_ENDIAN "Control onboard camer
 # vehicle attitude and the attitude of various sensors such as cameras.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_ROI LITTLE_ENDIAN "Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used b..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 201, command_name: "MAV_CMD_DO_SET_ROI"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 201 201 201 "MAV_CMD_DO_SET_ROI"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ROI_MODE 32 FLOAT MIN MAX 0.0 "Region of interest mode."
     STATE MAV_ROI_NONE 0
     STATE MAV_ROI_WPNEXT 1
@@ -1184,8 +1349,11 @@ COMMAND <%= target_name %> DO_SET_ROI LITTLE_ENDIAN "Sets the region of interest
 # (see https://mavlink.io/en/services/camera_def.html ).
 # ============================================================================
 COMMAND <%= target_name %> DO_DIGICAM_CONFIGURE LITTLE_ENDIAN "Configure digital camera. This is a fallback message for systems that have not yet implemented PA..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 202, command_name: "MAV_CMD_DO_DIGICAM_CONFIGURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 202 202 202 "MAV_CMD_DO_DIGICAM_CONFIGURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MODE 32 FLOAT MIN MAX 0.0 "Modes: P, TV, AV, M, Etc."
   APPEND_PARAMETER SHUTTER_SPEED 32 FLOAT MIN MAX 0.0 "Shutter speed: Divisor number for one second."
   APPEND_PARAMETER APERTURE 32 FLOAT MIN MAX 0.0 "Aperture: F stop number."
@@ -1203,8 +1371,11 @@ COMMAND <%= target_name %> DO_DIGICAM_CONFIGURE LITTLE_ENDIAN "Configure digital
 # (see https://mavlink.io/en/services/camera_def.html ).
 # ============================================================================
 COMMAND <%= target_name %> DO_DIGICAM_CONTROL LITTLE_ENDIAN "Control digital camera. This is a fallback message for systems that have not yet implemented PARA..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 203, command_name: "MAV_CMD_DO_DIGICAM_CONTROL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 203 203 203 "MAV_CMD_DO_DIGICAM_CONTROL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SESSION_CONTROL 32 FLOAT MIN MAX 0.0 "Session control e.g. show/hide lens"
   APPEND_PARAMETER ZOOM_ABSOLUTE 32 FLOAT MIN MAX 0.0 "Zoom's absolute position"
   APPEND_PARAMETER ZOOM_RELATIVE 32 FLOAT MIN MAX 0.0 "Zooming step value to offset zoom from the current position"
@@ -1219,8 +1390,11 @@ COMMAND <%= target_name %> DO_DIGICAM_CONTROL LITTLE_ENDIAN "Control digital cam
 # Mission command to configure a camera or antenna mount
 # ============================================================================
 COMMAND <%= target_name %> DO_MOUNT_CONFIGURE LITTLE_ENDIAN "Mission command to configure a camera or antenna mount"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 204, command_name: "MAV_CMD_DO_MOUNT_CONFIGURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 204 204 204 "MAV_CMD_DO_MOUNT_CONFIGURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MODE 32 FLOAT MIN MAX 0.0 "Mount operation mode"
     STATE MAV_MOUNT_MODE_RETRACT 0
     STATE MAV_MOUNT_MODE_NEUTRAL 1
@@ -1242,8 +1416,11 @@ COMMAND <%= target_name %> DO_MOUNT_CONFIGURE LITTLE_ENDIAN "Mission command to 
 # Mission command to control a camera or antenna mount
 # ============================================================================
 COMMAND <%= target_name %> DO_MOUNT_CONTROL LITTLE_ENDIAN "Mission command to control a camera or antenna mount"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 205, command_name: "MAV_CMD_DO_MOUNT_CONTROL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 205 205 205 "MAV_CMD_DO_MOUNT_CONTROL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PITCH 32 FLOAT MIN MAX 0.0 "pitch depending on mount mode (degrees or degrees/second depending on pitch i..."
   APPEND_PARAMETER ROLL 32 FLOAT MIN MAX 0.0 "roll depending on mount mode (degrees or degrees/second depending on roll inp..."
   APPEND_PARAMETER YAW 32 FLOAT MIN MAX 0.0 "yaw depending on mount mode (degrees or degrees/second depending on yaw input)."
@@ -1268,8 +1445,11 @@ COMMAND <%= target_name %> DO_MOUNT_CONTROL LITTLE_ENDIAN "Mission command to co
 # used to set the shutter integration time for the camera.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_CAM_TRIGG_DIST LITTLE_ENDIAN "Mission command to set camera trigger distance for this flight. The camera is triggered each time..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 206, command_name: "MAV_CMD_DO_SET_CAM_TRIGG_DIST"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 206 206 206 "MAV_CMD_DO_SET_CAM_TRIGG_DIST"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER DISTANCE 32 FLOAT MIN MAX 0.0 "Camera trigger distance. 0 to stop triggering."
     UNITS "Meters" m
   APPEND_PARAMETER SHUTTER 32 FLOAT MIN MAX 0.0 "Camera shutter integration time. -1 or 0 to ignore"
@@ -1291,8 +1471,11 @@ COMMAND <%= target_name %> DO_SET_CAM_TRIGG_DIST LITTLE_ENDIAN "Mission command 
 # Flight stacks typically reset the setting to system defaults on reboot.
 # ============================================================================
 COMMAND <%= target_name %> DO_FENCE_ENABLE LITTLE_ENDIAN "Enable the geofence. This can be used in a mission or via the command protocol. The persistence/l..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 207, command_name: "MAV_CMD_DO_FENCE_ENABLE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 207 207 207 "MAV_CMD_DO_FENCE_ENABLE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ENABLE 32 FLOAT MIN MAX 0.0 "enable? (0=disable, 1=enable, 2=disable_floor_only)"
   APPEND_PARAMETER TYPES 32 FLOAT MIN MAX 0.0 "Fence types to enable or disable as a bitmask. 0: field is unused/all fences ..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1308,8 +1491,11 @@ COMMAND <%= target_name %> DO_FENCE_ENABLE LITTLE_ENDIAN "Enable the geofence. T
 # release.
 # ============================================================================
 COMMAND <%= target_name %> DO_PARACHUTE LITTLE_ENDIAN "Mission item/command to release a parachute or enable/disable auto release."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 208, command_name: "MAV_CMD_DO_PARACHUTE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 208 208 208 "MAV_CMD_DO_PARACHUTE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ACTION 32 FLOAT MIN MAX 0.0 "Action"
     STATE PARACHUTE_DISABLE 0
     STATE PARACHUTE_ENABLE 1
@@ -1328,8 +1514,11 @@ COMMAND <%= target_name %> DO_PARACHUTE LITTLE_ENDIAN "Mission item/command to r
 # Command to perform motor test.
 # ============================================================================
 COMMAND <%= target_name %> DO_MOTOR_TEST LITTLE_ENDIAN "Command to perform motor test."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 209, command_name: "MAV_CMD_DO_MOTOR_TEST"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 209 209 209 "MAV_CMD_DO_MOTOR_TEST"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER INSTANCE 32 FLOAT MIN MAX 0.0 "Motor instance number (from 1 to max number of motors on the vehicle)."
   APPEND_PARAMETER THROTTLE_TYPE 32 FLOAT MIN MAX 0.0 "Throttle type (whether the Throttle Value in param3 is a percentage, PWM valu..."
     STATE MOTOR_TEST_THROTTLE_PERCENT 0
@@ -1352,8 +1541,11 @@ COMMAND <%= target_name %> DO_MOTOR_TEST LITTLE_ENDIAN "Command to perform motor
 # Change to/from inverted flight.
 # ============================================================================
 COMMAND <%= target_name %> DO_INVERTED_FLIGHT LITTLE_ENDIAN "Change to/from inverted flight."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 210, command_name: "MAV_CMD_DO_INVERTED_FLIGHT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 210 210 210 "MAV_CMD_DO_INVERTED_FLIGHT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER INVERTED 32 FLOAT MIN MAX 0.0 "Inverted flight (MAV_BOOL_False: normal flight). Values not equal to 0 or 1 a..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1368,8 +1560,11 @@ COMMAND <%= target_name %> DO_INVERTED_FLIGHT LITTLE_ENDIAN "Change to/from inve
 # Mission command to operate a gripper.
 # ============================================================================
 COMMAND <%= target_name %> DO_GRIPPER LITTLE_ENDIAN "Mission command to operate a gripper."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 211, command_name: "MAV_CMD_DO_GRIPPER"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 211 211 211 "MAV_CMD_DO_GRIPPER"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER GRIPPER_ID 32 FLOAT MIN MAX 0.0 "Gripper ID. 1-6 for an autopilot connected gripper. In missions this may be s..."
   APPEND_PARAMETER ACTION 32 FLOAT MIN MAX 0.0 "Gripper action to perform."
     STATE GRIPPER_ACTION_RELEASE 0
@@ -1387,8 +1582,11 @@ COMMAND <%= target_name %> DO_GRIPPER LITTLE_ENDIAN "Mission command to operate 
 # Enable/disable autotune.
 # ============================================================================
 COMMAND <%= target_name %> DO_AUTOTUNE_ENABLE LITTLE_ENDIAN "Enable/disable autotune."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 212, command_name: "MAV_CMD_DO_AUTOTUNE_ENABLE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 212 212 212 "MAV_CMD_DO_AUTOTUNE_ENABLE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ENABLE 32 FLOAT MIN MAX 0.0 "Enable autotune (MAV_BOOL_FALSE: disable autotune). Values not equal to 0 or ..."
   APPEND_PARAMETER AXIS 32 FLOAT MIN MAX 0.0 "Specify axes for which autotuning is enabled/disabled. 0 indicates the field ..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty."
@@ -1403,8 +1601,11 @@ COMMAND <%= target_name %> DO_AUTOTUNE_ENABLE LITTLE_ENDIAN "Enable/disable auto
 # Sets a desired vehicle turn angle and speed change.
 # ============================================================================
 COMMAND <%= target_name %> NAV_SET_YAW_SPEED LITTLE_ENDIAN "Sets a desired vehicle turn angle and speed change."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 213, command_name: "MAV_CMD_NAV_SET_YAW_SPEED"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 213 213 213 "MAV_CMD_NAV_SET_YAW_SPEED"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER YAW 32 FLOAT MIN MAX 0.0 "Yaw angle to adjust steering by."
     UNITS "Degrees" deg
   APPEND_PARAMETER SPEED 32 FLOAT MIN MAX 0.0 "Speed."
@@ -1424,8 +1625,11 @@ COMMAND <%= target_name %> NAV_SET_YAW_SPEED LITTLE_ENDIAN "Sets a desired vehic
 # for the camera.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_CAM_TRIGG_INTERVAL LITTLE_ENDIAN "Mission command to set camera trigger interval for this flight. If triggering is enabled, the cam..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 214, command_name: "MAV_CMD_DO_SET_CAM_TRIGG_INTERVAL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 214 214 214 "MAV_CMD_DO_SET_CAM_TRIGG_INTERVAL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TRIGGER_CYCLE 32 FLOAT MIN MAX 0.0 "Camera trigger cycle time. -1 or 0 to ignore."
     UNITS "Milliseconds" ms
   APPEND_PARAMETER SHUTTER_INTEGRATION 32 FLOAT MIN MAX 0.0 "Camera shutter integration time. Should be less than trigger cycle time. -1 o..."
@@ -1443,8 +1647,11 @@ COMMAND <%= target_name %> DO_SET_CAM_TRIGG_INTERVAL LITTLE_ENDIAN "Mission comm
 # as reference.
 # ============================================================================
 COMMAND <%= target_name %> DO_MOUNT_CONTROL_QUAT LITTLE_ENDIAN "Mission command to control a camera or antenna mount, using a quaternion as reference."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 220, command_name: "MAV_CMD_DO_MOUNT_CONTROL_QUAT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 220 220 220 "MAV_CMD_DO_MOUNT_CONTROL_QUAT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER Q1 32 FLOAT MIN MAX 0.0 "quaternion param q1, w (1 in null-rotation)"
   APPEND_PARAMETER Q2 32 FLOAT MIN MAX 0.0 "quaternion param q2, x (0 in null-rotation)"
   APPEND_PARAMETER Q3 32 FLOAT MIN MAX 0.0 "quaternion param q3, y (0 in null-rotation)"
@@ -1459,8 +1666,11 @@ COMMAND <%= target_name %> DO_MOUNT_CONTROL_QUAT LITTLE_ENDIAN "Mission command 
 # set id of master controller
 # ============================================================================
 COMMAND <%= target_name %> DO_GUIDED_MASTER LITTLE_ENDIAN "set id of master controller"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 221, command_name: "MAV_CMD_DO_GUIDED_MASTER"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 221 221 221 "MAV_CMD_DO_GUIDED_MASTER"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SYSTEM_ID 32 FLOAT MIN MAX 0.0 "System ID"
   APPEND_PARAMETER COMPONENT_ID 32 FLOAT MIN MAX 0.0 "Component ID"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1475,8 +1685,11 @@ COMMAND <%= target_name %> DO_GUIDED_MASTER LITTLE_ENDIAN "set id of master cont
 # Set limits for external control
 # ============================================================================
 COMMAND <%= target_name %> DO_GUIDED_LIMITS LITTLE_ENDIAN "Set limits for external control"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 222, command_name: "MAV_CMD_DO_GUIDED_LIMITS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 222 222 222 "MAV_CMD_DO_GUIDED_LIMITS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TIMEOUT 32 FLOAT MIN MAX 0.0 "Timeout - maximum time that external controller will be allowed to control ve..."
     UNITS "Seconds" s
   APPEND_PARAMETER MIN_ALTITUDE 32 FLOAT MIN MAX 0.0 "Altitude (MSL) min - if vehicle moves below this alt, the command will be abo..."
@@ -1497,8 +1710,11 @@ COMMAND <%= target_name %> DO_GUIDED_LIMITS LITTLE_ENDIAN "Set limits for extern
 # with internal combustion engines
 # ============================================================================
 COMMAND <%= target_name %> DO_ENGINE_CONTROL LITTLE_ENDIAN "Control vehicle engine. This is interpreted by the vehicles engine controller to change the targe..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 223, command_name: "MAV_CMD_DO_ENGINE_CONTROL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 223 223 223 "MAV_CMD_DO_ENGINE_CONTROL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER START_ENGINE 32 FLOAT MIN MAX 0.0 "Start engine (MAV_BOOL_False: Stop engine). Values not equal to 0 or 1 are in..."
   APPEND_PARAMETER COLD_START 32 FLOAT MIN MAX 0.0 "Cold start engine (MAV_BOOL_FALSE: Warm start). Values not equal to 0 or 1 ar..."
   APPEND_PARAMETER HEIGHT_DELAY 32 FLOAT MIN MAX 0.0 "Height delay. This is for commanding engine start only after the vehicle has ..."
@@ -1535,8 +1751,11 @@ COMMAND <%= target_name %> DO_ENGINE_CONTROL LITTLE_ENDIAN "Control vehicle engi
 # of range (including if there is no mission item).
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_MISSION_CURRENT LITTLE_ENDIAN "Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (wheth..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 224, command_name: "MAV_CMD_DO_SET_MISSION_CURRENT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 224 224 224 "MAV_CMD_DO_SET_MISSION_CURRENT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER NUMBER 32 FLOAT MIN MAX 0.0 "Mission sequence value to set. -1 for the current mission item (use to reset ..."
   APPEND_PARAMETER RESET_MISSION 32 FLOAT MIN MAX 0.0 "Reset mission (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid. Resets..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1552,8 +1771,11 @@ COMMAND <%= target_name %> DO_SET_MISSION_CURRENT LITTLE_ENDIAN "Set the mission
 # in the enumeration
 # ============================================================================
 COMMAND <%= target_name %> DO_LAST LITTLE_ENDIAN "NOP - This command is only used to mark the upper limit of the DO commands in the enumeration"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 240, command_name: "MAV_CMD_DO_LAST"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 240 240 240 "MAV_CMD_DO_LAST"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -1570,8 +1792,11 @@ COMMAND <%= target_name %> DO_LAST LITTLE_ENDIAN "NOP - This command is only use
 # a single message and all others should be zero.
 # ============================================================================
 COMMAND <%= target_name %> PREFLIGHT_CALIBRATION LITTLE_ENDIAN "Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Tempera..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 241, command_name: "MAV_CMD_PREFLIGHT_CALIBRATION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 241 241 241 "MAV_CMD_PREFLIGHT_CALIBRATION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER GYRO_TEMPERATURE 32 FLOAT MIN MAX 0.0 "1: gyro calibration, 3: gyro temperature calibration"
   APPEND_PARAMETER MAGNETOMETER 32 FLOAT MIN MAX 0.0 "Magnetometer calibration. Values not equal to 0 or 1 are invalid."
   APPEND_PARAMETER GROUND_PRESSURE 32 FLOAT MIN MAX 0.0 "Ground pressure calibration. Values not equal to 0 or 1 are invalid."
@@ -1587,8 +1812,11 @@ COMMAND <%= target_name %> PREFLIGHT_CALIBRATION LITTLE_ENDIAN "Trigger calibrat
 # mode.
 # ============================================================================
 COMMAND <%= target_name %> PREFLIGHT_SET_SENSOR_OFFSETS LITTLE_ENDIAN "Set sensor offsets. This command will be only accepted if in pre-flight mode."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 242, command_name: "MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 242 242 242 "MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SENSOR_TYPE 32 FLOAT MIN MAX 0.0 "Sensor to adjust the offsets for: 0: gyros, 1: accelerometer, 2: magnetometer..."
   APPEND_PARAMETER X_OFFSET 32 FLOAT MIN MAX 0.0 "X axis offset (or generic dimension 1), in the sensor's raw units"
   APPEND_PARAMETER Y_OFFSET 32 FLOAT MIN MAX 0.0 "Y axis offset (or generic dimension 2), in the sensor's raw units"
@@ -1607,8 +1835,11 @@ COMMAND <%= target_name %> PREFLIGHT_SET_SENSOR_OFFSETS LITTLE_ENDIAN "Set senso
 # has been poorly named).
 # ============================================================================
 COMMAND <%= target_name %> PREFLIGHT_UAVCAN LITTLE_ENDIAN "Trigger UAVCAN configuration (actuator ID assignment and direction mapping). Note that this maps ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 243, command_name: "MAV_CMD_PREFLIGHT_UAVCAN"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 243 243 243 "MAV_CMD_PREFLIGHT_UAVCAN"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ACTUATOR_ID 32 FLOAT MIN MAX 0.0 "1: Trigger actuator ID assignment and direction mapping. 0: Cancel command."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -1624,8 +1855,11 @@ COMMAND <%= target_name %> PREFLIGHT_UAVCAN LITTLE_ENDIAN "Trigger UAVCAN config
 # be only accepted if in pre-flight mode.
 # ============================================================================
 COMMAND <%= target_name %> PREFLIGHT_STORAGE LITTLE_ENDIAN "Request storage of different parameter values and logs. This command will be only accepted if in ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 245, command_name: "MAV_CMD_PREFLIGHT_STORAGE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 245 245 245 "MAV_CMD_PREFLIGHT_STORAGE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAMETER_STORAGE 32 FLOAT MIN MAX 0.0 "Action to perform on the persistent parameter storage"
     STATE PARAM_READ_PERSISTENT 0
     STATE PARAM_WRITE_PERSISTENT 1
@@ -1649,8 +1883,11 @@ COMMAND <%= target_name %> PREFLIGHT_STORAGE LITTLE_ENDIAN "Request storage of d
 # Request the reboot or shutdown of system components.
 # ============================================================================
 COMMAND <%= target_name %> PREFLIGHT_REBOOT_SHUTDOWN LITTLE_ENDIAN "Request the reboot or shutdown of system components."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 246, command_name: "MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 246 246 246 "MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER AUTOPILOT 32 FLOAT MIN MAX 0.0 "Action to take for autopilot."
     STATE REBOOT_SHUTDOWN_ACTION_NONE 0
     STATE REBOOT_SHUTDOWN_ACTION_REBOOT 1
@@ -1686,8 +1923,11 @@ COMMAND <%= target_name %> PREFLIGHT_REBOOT_SHUTDOWN LITTLE_ENDIAN "Request the 
 # place or moves to another position.
 # ============================================================================
 COMMAND <%= target_name %> OVERRIDE_GOTO LITTLE_ENDIAN "Override current mission with command to pause mission, pause mission and move to position, conti..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 252, command_name: "MAV_CMD_OVERRIDE_GOTO"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 252 252 252 "MAV_CMD_OVERRIDE_GOTO"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER CONTINUE 32 FLOAT MIN MAX 0.0 "MAV_GOTO_DO_HOLD: pause mission and either hold or move to specified position..."
     STATE MAV_GOTO_DO_HOLD 0
     STATE MAV_GOTO_DO_CONTINUE 1
@@ -1719,8 +1959,11 @@ COMMAND <%= target_name %> OVERRIDE_GOTO LITTLE_ENDIAN "Override current mission
 # camera.
 # ============================================================================
 COMMAND <%= target_name %> OBLIQUE_SURVEY LITTLE_ENDIAN "Mission command to set a Camera Auto Mount Pivoting Oblique Survey (Replaces CAM_TRIGG_DIST for t..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 260, command_name: "MAV_CMD_OBLIQUE_SURVEY"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 260 260 260 "MAV_CMD_OBLIQUE_SURVEY"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER DISTANCE 32 FLOAT MIN MAX 0.0 "Camera trigger distance. 0 to stop triggering."
     UNITS "Meters" m
   APPEND_PARAMETER SHUTTER 32 FLOAT MIN MAX 0 "Camera shutter integration time. 0 to ignore"
@@ -1743,8 +1986,11 @@ COMMAND <%= target_name %> OBLIQUE_SURVEY LITTLE_ENDIAN "Mission command to set 
 # See https://mavlink.io/en/services/standard_modes.html
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_STANDARD_MODE LITTLE_ENDIAN "Enable the specified standard MAVLink mode. If the specified mode is not supported, the vehicle s..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 262, command_name: "MAV_CMD_DO_SET_STANDARD_MODE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 262 262 262 "MAV_CMD_DO_SET_STANDARD_MODE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STANDARD_MODE 32 FLOAT MIN MAX 0.0 "The mode to set."
     STATE MAV_STANDARD_MODE_NON_STANDARD 0
     STATE MAV_STANDARD_MODE_POSITION_HOLD 1
@@ -1774,8 +2020,11 @@ COMMAND <%= target_name %> DO_SET_STANDARD_MODE LITTLE_ENDIAN "Enable the specif
 # start running a mission
 # ============================================================================
 COMMAND <%= target_name %> MISSION_START LITTLE_ENDIAN "start running a mission"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 300, command_name: "MAV_CMD_MISSION_START"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 300 300 300 "MAV_CMD_MISSION_START"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER FIRST_ITEM 32 FLOAT MIN MAX 0.0 "first_item: the first mission item to run"
   APPEND_PARAMETER LAST_ITEM 32 FLOAT MIN MAX 0.0 "last_item: the last mission item to run (after this item is run, the mission ..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -1799,8 +2048,11 @@ COMMAND <%= target_name %> MISSION_START LITTLE_ENDIAN "start running a mission"
 # NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.
 # ============================================================================
 COMMAND <%= target_name %> ACTUATOR_TEST LITTLE_ENDIAN "Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of o..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 310, command_name: "MAV_CMD_ACTUATOR_TEST"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 310 310 310 "MAV_CMD_ACTUATOR_TEST"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER VALUE 32 FLOAT MIN MAX 0.0 "Output value: 1 means maximum positive output, 0 to center servos or minimum ..."
   APPEND_PARAMETER TIMEOUT 32 FLOAT MIN MAX 0.0 "Timeout after which the test command expires and the output is restored to th..."
     UNITS "Seconds" s
@@ -1820,8 +2072,11 @@ COMMAND <%= target_name %> ACTUATOR_TEST LITTLE_ENDIAN "Actuator testing command
 # Actuator configuration command.
 # ============================================================================
 COMMAND <%= target_name %> CONFIGURE_ACTUATOR LITTLE_ENDIAN "Actuator configuration command."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 311, command_name: "MAV_CMD_CONFIGURE_ACTUATOR"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 311 311 311 "MAV_CMD_CONFIGURE_ACTUATOR"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER CONFIGURATION 32 FLOAT MIN MAX 0.0 "Actuator configuration action"
     STATE ACTUATOR_CONFIGURATION_NONE 0
     STATE ACTUATOR_CONFIGURATION_BEEP 1
@@ -1847,8 +2102,11 @@ COMMAND <%= target_name %> CONFIGURE_ACTUATOR LITTLE_ENDIAN "Actuator configurat
 # Arms / Disarms a component
 # ============================================================================
 COMMAND <%= target_name %> COMPONENT_ARM_DISARM LITTLE_ENDIAN "Arms / Disarms a component"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 400, command_name: "MAV_CMD_COMPONENT_ARM_DISARM"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 400 400 400 "MAV_CMD_COMPONENT_ARM_DISARM"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ARM 32 FLOAT MIN MAX 0.0 "Arm (MAV_BOOL_FALSE: disarm). Values not equal to 0 or 1 are invalid."
   APPEND_PARAMETER FORCE 32 FLOAT MIN MAX 0.0 "0: arm-disarm unless prevented by safety checks (i.e. when landed), 21196: fo..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -1877,8 +2135,11 @@ COMMAND <%= target_name %> COMPONENT_ARM_DISARM LITTLE_ENDIAN "Arms / Disarms a 
 # already armed.
 # ============================================================================
 COMMAND <%= target_name %> RUN_PREARM_CHECKS LITTLE_ENDIAN "Instructs a target system to run pre-arm checks. This allows preflight checks to be run on demand..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 401, command_name: "MAV_CMD_RUN_PREARM_CHECKS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 401 401 401 "MAV_CMD_RUN_PREARM_CHECKS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -1903,8 +2164,11 @@ COMMAND <%= target_name %> RUN_PREARM_CHECKS LITTLE_ENDIAN "Instructs a target s
 # itself, e.g. an indicator light).
 # ============================================================================
 COMMAND <%= target_name %> ILLUMINATOR_ON_OFF LITTLE_ENDIAN "Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting up dark are..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 405, command_name: "MAV_CMD_ILLUMINATOR_ON_OFF"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 405 405 405 "MAV_CMD_ILLUMINATOR_ON_OFF"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ENABLE 32 FLOAT MIN MAX 0.0 "Illuminators on/off (MAV_BOOL_TRUE: illuminators on). Values not equal to 0 o..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -1928,8 +2192,11 @@ COMMAND <%= target_name %> ILLUMINATOR_ON_OFF LITTLE_ENDIAN "Turns illuminators 
 # itself, e.g. an indicator light).
 # ============================================================================
 COMMAND <%= target_name %> DO_ILLUMINATOR_CONFIGURE LITTLE_ENDIAN "Configures illuminator settings. An illuminator is a light source that is used for lighting up da..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 406, command_name: "MAV_CMD_DO_ILLUMINATOR_CONFIGURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 406 406 406 "MAV_CMD_DO_ILLUMINATOR_CONFIGURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MODE 32 FLOAT MIN MAX 0.0 "Mode"
     STATE ILLUMINATOR_MODE_UNKNOWN 0
     STATE ILLUMINATOR_MODE_INTERNAL_CONTROL 1
@@ -1954,8 +2221,11 @@ COMMAND <%= target_name %> DO_ILLUMINATOR_CONFIGURE LITTLE_ENDIAN "Configures il
 # The vehicle will ACK the command and then emit the HOME_POSITION message.
 # ============================================================================
 COMMAND <%= target_name %> GET_HOME_POSITION LITTLE_ENDIAN "Request the home position from the vehicle. The vehicle will ACK the command and then emit the HO..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 410, command_name: "MAV_CMD_GET_HOME_POSITION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 410 410 410 "MAV_CMD_GET_HOME_POSITION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -1972,8 +2242,11 @@ COMMAND <%= target_name %> GET_HOME_POSITION LITTLE_ENDIAN "Request the home pos
 # such as a specific param setting.
 # ============================================================================
 COMMAND <%= target_name %> INJECT_FAILURE LITTLE_ENDIAN "Inject artificial failure for testing purposes. Note that autopilots should implement an addition..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 420, command_name: "MAV_CMD_INJECT_FAILURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 420 420 420 "MAV_CMD_INJECT_FAILURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER FAILURE_UNIT 32 FLOAT MIN MAX 0.0 "The unit which is affected by the failure."
     STATE FAILURE_UNIT_SENSOR_GYRO 0
     STATE FAILURE_UNIT_SENSOR_ACCEL 1
@@ -2015,8 +2288,11 @@ COMMAND <%= target_name %> INJECT_FAILURE LITTLE_ENDIAN "Inject artificial failu
 # Starts receiver pairing.
 # ============================================================================
 COMMAND <%= target_name %> START_RX_PAIR LITTLE_ENDIAN "Starts receiver pairing."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 500, command_name: "MAV_CMD_START_RX_PAIR"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 500 500 500 "MAV_CMD_START_RX_PAIR"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER RC_TYPE 32 FLOAT MIN MAX 0.0 "RC type."
     STATE RC_TYPE_SPEKTRUM 0
     STATE RC_TYPE_CRSF 1
@@ -2043,8 +2319,11 @@ COMMAND <%= target_name %> START_RX_PAIR LITTLE_ENDIAN "Starts receiver pairing.
 # MESSAGE_INTERVAL message.
 # ============================================================================
 COMMAND <%= target_name %> GET_MESSAGE_INTERVAL LITTLE_ENDIAN "Request the interval between messages for a particular MAVLink message ID. The receiver should AC..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 510, command_name: "MAV_CMD_GET_MESSAGE_INTERVAL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 510 510 510 "MAV_CMD_GET_MESSAGE_INTERVAL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MESSAGE_ID 32 FLOAT MIN MAX 0.0 "The MAVLink message ID"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -2066,8 +2345,11 @@ COMMAND <%= target_name %> GET_MESSAGE_INTERVAL LITTLE_ENDIAN "Request the inter
 # This interface replaces REQUEST_DATA_STREAM.
 # ============================================================================
 COMMAND <%= target_name %> SET_MESSAGE_INTERVAL LITTLE_ENDIAN "Set the interval between messages for a particular MAVLink message ID. This interface replaces RE..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 511, command_name: "MAV_CMD_SET_MESSAGE_INTERVAL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 511 511 511 "MAV_CMD_SET_MESSAGE_INTERVAL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MESSAGE_ID 32 FLOAT MIN MAX 0.0 "The MAVLink message ID"
   APPEND_PARAMETER INTERVAL 32 FLOAT MIN MAX 0.0 "The interval between two messages. -1: disable. 0: request default rate (whic..."
     UNITS "Microseconds" us
@@ -2084,8 +2366,11 @@ COMMAND <%= target_name %> SET_MESSAGE_INTERVAL LITTLE_ENDIAN "Set the interval 
 # (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_MESSAGE LITTLE_ENDIAN "Request the target system(s) emit a single instance of a specified message (i.e. a 'one-shot' ver..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 512, command_name: "MAV_CMD_REQUEST_MESSAGE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 512 512 512 "MAV_CMD_REQUEST_MESSAGE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER MESSAGE_ID 32 FLOAT MIN MAX 0.0 "The MAVLink message ID of the requested message."
   APPEND_PARAMETER REQ_PARAM_1 32 FLOAT MIN MAX 0.0 "Use for index ID, if required. Otherwise, the use of this parameter (if any) ..."
   APPEND_PARAMETER REQ_PARAM_2 32 FLOAT MIN MAX 0.0 "The use of this parameter (if any), must be defined in the requested message...."
@@ -2102,8 +2387,11 @@ COMMAND <%= target_name %> REQUEST_MESSAGE LITTLE_ENDIAN "Request the target sys
 # message
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_PROTOCOL_VERSION LITTLE_ENDIAN "Request MAVLink protocol version compatibility. All receivers should ACK the command and then emi..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 519, command_name: "MAV_CMD_REQUEST_PROTOCOL_VERSION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 519 519 519 "MAV_CMD_REQUEST_PROTOCOL_VERSION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PROTOCOL 32 FLOAT MIN MAX 0.0 "Request supported protocol versions by all nodes on the network (MAV_BOOL_TRU..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (all remaining params)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2124,8 +2412,11 @@ COMMAND <%= target_name %> REQUEST_PROTOCOL_VERSION LITTLE_ENDIAN "Request MAVLi
 # then emit its capabilities in an AUTOPILOT_VERSION message
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_AUTOPILOT_CAPABILITIES LITTLE_ENDIAN "Request autopilot capabilities. The receiver should ACK the command and then emit its capabilitie..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 520, command_name: "MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 520 520 520 "MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER VERSION 32 FLOAT MIN MAX 0.0 "Request autopilot version (MAV_BOOL_TRUE). Values not equal to 0 or 1 are inv..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (all remaining params)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2145,8 +2436,11 @@ COMMAND <%= target_name %> REQUEST_AUTOPILOT_CAPABILITIES LITTLE_ENDIAN "Request
 # Request camera information (CAMERA_INFORMATION).
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_CAMERA_INFORMATION LITTLE_ENDIAN "Request camera information (CAMERA_INFORMATION)."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 521, command_name: "MAV_CMD_REQUEST_CAMERA_INFORMATION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 521 521 521 "MAV_CMD_REQUEST_CAMERA_INFORMATION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER CAPABILITIES 32 FLOAT MIN MAX 0.0 "Request camera capabilities (MAV_BOOL_TRUE). Values not equal to 0 or 1 are i..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (all remaining params)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2166,8 +2460,11 @@ COMMAND <%= target_name %> REQUEST_CAMERA_INFORMATION LITTLE_ENDIAN "Request cam
 # Request camera settings (CAMERA_SETTINGS).
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_CAMERA_SETTINGS LITTLE_ENDIAN "Request camera settings (CAMERA_SETTINGS)."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 522, command_name: "MAV_CMD_REQUEST_CAMERA_SETTINGS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 522 522 522 "MAV_CMD_REQUEST_CAMERA_SETTINGS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SETTINGS 32 FLOAT MIN MAX 0.0 "Request camera settings (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (all remaining params)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2188,8 +2485,11 @@ COMMAND <%= target_name %> REQUEST_CAMERA_SETTINGS LITTLE_ENDIAN "Request camera
 # target_component to target a specific component's storage.
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_STORAGE_INFORMATION LITTLE_ENDIAN "Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 525, command_name: "MAV_CMD_REQUEST_STORAGE_INFORMATION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 525 525 525 "MAV_CMD_REQUEST_STORAGE_INFORMATION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STORAGE_ID 32 FLOAT MIN MAX 0.0 "Storage ID (0 for all, 1 for first, 2 for second, etc.)"
   APPEND_PARAMETER INFORMATION 32 FLOAT MIN MAX 0.0 "Request storage information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are i..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (all remaining params)"
@@ -2210,8 +2510,11 @@ COMMAND <%= target_name %> REQUEST_STORAGE_INFORMATION LITTLE_ENDIAN "Request st
 # component's storage.
 # ============================================================================
 COMMAND <%= target_name %> STORAGE_FORMAT LITTLE_ENDIAN "Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 526, command_name: "MAV_CMD_STORAGE_FORMAT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 526 526 526 "MAV_CMD_STORAGE_FORMAT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STORAGE_ID 32 FLOAT MIN MAX 0.0 "Storage ID (1 for first, 2 for second, etc.)"
   APPEND_PARAMETER FORMAT 32 FLOAT MIN MAX 0.0 "Format storage (and reset image log). Values not equal to 0 or 1 are invalid."
   APPEND_PARAMETER RESET_IMAGE_LOG 32 FLOAT MIN MAX 0.0 "Reset Image Log (without formatting storage medium). This will reset CAMERA_C..."
@@ -2229,8 +2532,11 @@ COMMAND <%= target_name %> STORAGE_FORMAT LITTLE_ENDIAN "Format a storage medium
 # Request camera capture status (CAMERA_CAPTURE_STATUS)
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_CAMERA_CAPTURE_STATUS LITTLE_ENDIAN "Request camera capture status (CAMERA_CAPTURE_STATUS)"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 527, command_name: "MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 527 527 527 "MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER CAPTURE_STATUS 32 FLOAT MIN MAX 0.0 "Request camera capture status (MAV_BOOL_TRUE). Values not equal to 0 or 1 are..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (all remaining params)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2250,8 +2556,11 @@ COMMAND <%= target_name %> REQUEST_CAMERA_CAPTURE_STATUS LITTLE_ENDIAN "Request 
 # Request flight information (FLIGHT_INFORMATION)
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_FLIGHT_INFORMATION LITTLE_ENDIAN "Request flight information (FLIGHT_INFORMATION)"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 528, command_name: "MAV_CMD_REQUEST_FLIGHT_INFORMATION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 528 528 528 "MAV_CMD_REQUEST_FLIGHT_INFORMATION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER FLIGHT_INFORMATION 32 FLOAT MIN MAX 0.0 "Request flight information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are in..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (all remaining params)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2271,8 +2580,11 @@ COMMAND <%= target_name %> REQUEST_FLIGHT_INFORMATION LITTLE_ENDIAN "Request fli
 # Reset all camera settings to Factory Default
 # ============================================================================
 COMMAND <%= target_name %> RESET_CAMERA_SETTINGS LITTLE_ENDIAN "Reset all camera settings to Factory Default"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 529, command_name: "MAV_CMD_RESET_CAMERA_SETTINGS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 529 529 529 "MAV_CMD_RESET_CAMERA_SETTINGS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER RESET 32 FLOAT MIN MAX 0.0 "Reset all settings (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
   APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT MIN MAX 0.0 "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2294,8 +2606,11 @@ COMMAND <%= target_name %> RESET_CAMERA_SETTINGS LITTLE_ENDIAN "Reset all camera
 # camera supports video streaming.
 # ============================================================================
 COMMAND <%= target_name %> SET_CAMERA_MODE LITTLE_ENDIAN "Set camera running mode. Use NaN for reserved values. GCS will send a MAV_CMD_REQUEST_VIDEO_STREA..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 530, command_name: "MAV_CMD_SET_CAMERA_MODE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 530 530 530 "MAV_CMD_SET_CAMERA_MODE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ID 32 FLOAT MIN MAX 0.0 "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
   APPEND_PARAMETER CAMERA_MODE 32 FLOAT MIN MAX 0.0 "Camera mode"
     STATE CAMERA_MODE_IMAGE 0
@@ -2319,8 +2634,11 @@ COMMAND <%= target_name %> SET_CAMERA_MODE LITTLE_ENDIAN "Set camera running mod
 # success).
 # ============================================================================
 COMMAND <%= target_name %> SET_CAMERA_ZOOM LITTLE_ENDIAN "Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success)."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 531, command_name: "MAV_CMD_SET_CAMERA_ZOOM"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 531 531 531 "MAV_CMD_SET_CAMERA_ZOOM"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ZOOM_TYPE 32 FLOAT MIN MAX 0.0 "Zoom type"
     STATE ZOOM_TYPE_STEP 0
     STATE ZOOM_TYPE_CONTINUOUS 1
@@ -2345,8 +2663,11 @@ COMMAND <%= target_name %> SET_CAMERA_ZOOM LITTLE_ENDIAN "Set camera zoom. Camer
 # success).
 # ============================================================================
 COMMAND <%= target_name %> SET_CAMERA_FOCUS LITTLE_ENDIAN "Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success)."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 532, command_name: "MAV_CMD_SET_CAMERA_FOCUS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 532 532 532 "MAV_CMD_SET_CAMERA_FOCUS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER FOCUS_TYPE 32 FLOAT MIN MAX 0.0 "Focus type"
     STATE FOCUS_TYPE_STEP 0
     STATE FOCUS_TYPE_CONTINUOUS 1
@@ -2383,8 +2704,11 @@ COMMAND <%= target_name %> SET_CAMERA_FOCUS LITTLE_ENDIAN "Set camera focus. Cam
 # MAV_RESULT_DENIED.
 # ============================================================================
 COMMAND <%= target_name %> SET_STORAGE_USAGE LITTLE_ENDIAN "Set that a particular storage is the preferred location for saving photos, videos, and/or other m..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 533, command_name: "MAV_CMD_SET_STORAGE_USAGE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 533 533 533 "MAV_CMD_SET_STORAGE_USAGE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STORAGE_ID 32 FLOAT MIN MAX 0.0 "Storage ID (1 for first, 2 for second, etc.)"
   APPEND_PARAMETER USAGE 32 FLOAT MIN MAX 0.0 "Usage flags"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2405,8 +2729,11 @@ COMMAND <%= target_name %> SET_STORAGE_USAGE LITTLE_ENDIAN "Set that a particula
 # multiple image sensors.
 # ============================================================================
 COMMAND <%= target_name %> SET_CAMERA_SOURCE LITTLE_ENDIAN "Set camera source. Changes the camera's active sources on cameras with multiple image sensors."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 534, command_name: "MAV_CMD_SET_CAMERA_SOURCE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 534 534 534 "MAV_CMD_SET_CAMERA_SOURCE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER DEVICE_ID 32 FLOAT MIN MAX 0.0 "Component Id of camera to address or 1-6 for non-MAVLink cameras, 0 for all c..."
   APPEND_PARAMETER PRIMARY_SOURCE 32 FLOAT MIN MAX 0.0 "Primary Source"
     STATE CAMERA_SOURCE_DEFAULT 0
@@ -2433,8 +2760,11 @@ COMMAND <%= target_name %> SET_CAMERA_SOURCE LITTLE_ENDIAN "Set camera source. C
 # Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.
 # ============================================================================
 COMMAND <%= target_name %> JUMP_TAG LITTLE_ENDIAN "Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 600, command_name: "MAV_CMD_JUMP_TAG"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 600 600 600 "MAV_CMD_JUMP_TAG"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TAG 32 FLOAT MIN MAX 0.0 "Tag."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -2459,8 +2789,11 @@ COMMAND <%= target_name %> JUMP_TAG LITTLE_ENDIAN "Tagged jump target. Can be ju
 # should always select the one with the lowest mission sequence number.
 # ============================================================================
 COMMAND <%= target_name %> DO_JUMP_TAG LITTLE_ENDIAN "Jump to the matching tag in the mission list. Repeat this action for the specified number of time..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 601, command_name: "MAV_CMD_DO_JUMP_TAG"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 601 601 601 "MAV_CMD_DO_JUMP_TAG"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TAG 32 FLOAT MIN MAX 0.0 "Target tag to jump to."
   APPEND_PARAMETER REPEAT 32 FLOAT MIN MAX 0.0 "Repeat count."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2487,8 +2820,11 @@ COMMAND <%= target_name %> DO_JUMP_TAG LITTLE_ENDIAN "Jump to the matching tag i
 # higher rate.
 # ============================================================================
 COMMAND <%= target_name %> DO_GIMBAL_MANAGER_PITCHYAW LITTLE_ENDIAN "Set gimbal manager pitch/yaw setpoints (low rate command). It is possible to set combinations of ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 1000, command_name: "MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 1000 1000 1000 "MAV_CMD_DO_GIMBAL_MANAGER_PITCHYAW"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PITCH_ANGLE 32 FLOAT MIN MAX 0.0 "Pitch angle (positive to pitch up, relative to vehicle for FOLLOW mode, relat..."
     UNITS "Degrees" deg
   APPEND_PARAMETER YAW_ANGLE 32 FLOAT MIN MAX 0.0 "Yaw angle (positive to yaw to the right, relative to vehicle for FOLLOW mode,..."
@@ -2509,8 +2845,11 @@ COMMAND <%= target_name %> DO_GIMBAL_MANAGER_PITCHYAW LITTLE_ENDIAN "Set gimbal 
 # control.
 # ============================================================================
 COMMAND <%= target_name %> DO_GIMBAL_MANAGER_CONFIGURE LITTLE_ENDIAN "Gimbal configuration to set which sysid/compid is in primary and secondary control."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 1001, command_name: "MAV_CMD_DO_GIMBAL_MANAGER_CONFIGURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 1001 1001 1001 "MAV_CMD_DO_GIMBAL_MANAGER_CONFIGURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SYSID_PRIMARY_CONTROL 32 FLOAT MIN MAX 0.0 "Sysid for primary control (0: no one in control, -1: leave unchanged, -2: set..."
   APPEND_PARAMETER COMPID_PRIMARY_CONTROL 32 FLOAT MIN MAX 0.0 "Compid for primary control (0: no one in control, -1: leave unchanged, -2: se..."
   APPEND_PARAMETER SYSID_SECONDARY_CONTROL 32 FLOAT MIN MAX 0.0 "Sysid for secondary control (0: no one in control, -1: leave unchanged, -2: s..."
@@ -2552,8 +2891,11 @@ COMMAND <%= target_name %> DO_GIMBAL_MANAGER_CONFIGURE LITTLE_ENDIAN "Gimbal con
 # channels.
 # ============================================================================
 COMMAND <%= target_name %> IMAGE_START_CAPTURE LITTLE_ENDIAN "Start image capture sequence. CAMERA_IMAGE_CAPTURED must be emitted after each capture. Param1 (i..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2000, command_name: "MAV_CMD_IMAGE_START_CAPTURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2000 2000 2000 "MAV_CMD_IMAGE_START_CAPTURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT MIN MAX 0.0 "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
   APPEND_PARAMETER INTERVAL 32 FLOAT MIN MAX 0.0 "Desired elapsed time between two consecutive pictures (in seconds). Minimum v..."
     UNITS "Seconds" s
@@ -2596,8 +2938,11 @@ COMMAND <%= target_name %> IMAGE_START_CAPTURE LITTLE_ENDIAN "Start image captur
 # channels.
 # ============================================================================
 COMMAND <%= target_name %> IMAGE_STOP_CAPTURE LITTLE_ENDIAN "Stop image capture sequence. Param1 (id) may be used to specify the target camera: 0: all cameras..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2001, command_name: "MAV_CMD_IMAGE_STOP_CAPTURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2001 2001 2001 "MAV_CMD_IMAGE_STOP_CAPTURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT MIN MAX 0.0 "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -2618,8 +2963,11 @@ COMMAND <%= target_name %> IMAGE_STOP_CAPTURE LITTLE_ENDIAN "Stop image capture 
 # Re-request a CAMERA_IMAGE_CAPTURED message.
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_CAMERA_IMAGE_CAPTURE LITTLE_ENDIAN "Re-request a CAMERA_IMAGE_CAPTURED message."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2002, command_name: "MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2002 2002 2002 "MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER NUMBER 32 FLOAT MIN MAX 0.0 "Sequence number for missing CAMERA_IMAGE_CAPTURED message"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -2640,8 +2988,11 @@ COMMAND <%= target_name %> REQUEST_CAMERA_IMAGE_CAPTURE LITTLE_ENDIAN "Re-reques
 # Enable or disable on-board camera triggering system.
 # ============================================================================
 COMMAND <%= target_name %> DO_TRIGGER_CONTROL LITTLE_ENDIAN "Enable or disable on-board camera triggering system."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2003, command_name: "MAV_CMD_DO_TRIGGER_CONTROL"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2003 2003 2003 "MAV_CMD_DO_TRIGGER_CONTROL"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ENABLE 32 FLOAT MIN MAX 0.0 "Trigger enable/disable (0 for disable, 1 for start), -1 to ignore"
   APPEND_PARAMETER RESET 32 FLOAT MIN MAX 0.0 "1 to reset the trigger sequence, -1 or 0 to ignore"
   APPEND_PARAMETER PAUSE 32 FLOAT MIN MAX 0.0 "1 to pause triggering, but without switching the camera off or retracting it...."
@@ -2661,8 +3012,11 @@ COMMAND <%= target_name %> DO_TRIGGER_CONTROL LITTLE_ENDIAN "Enable or disable o
 # initiate the tracking.
 # ============================================================================
 COMMAND <%= target_name %> CAMERA_TRACK_POINT LITTLE_ENDIAN "If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this c..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2004, command_name: "MAV_CMD_CAMERA_TRACK_POINT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2004 2004 2004 "MAV_CMD_CAMERA_TRACK_POINT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER POINT_X 32 FLOAT MIN MAX 0.0 "Point to track x value (normalized 0..1, 0 is left, 1 is right)."
   APPEND_PARAMETER POINT_Y 32 FLOAT MIN MAX 0.0 "Point to track y value (normalized 0..1, 0 is top, 1 is bottom)."
   APPEND_PARAMETER RADIUS 32 FLOAT MIN MAX 0.0 "Point radius (normalized 0..1, 0 is one pixel, 1 is full image width)."
@@ -2682,8 +3036,11 @@ COMMAND <%= target_name %> CAMERA_TRACK_POINT LITTLE_ENDIAN "If the camera suppo
 # initiate the tracking.
 # ============================================================================
 COMMAND <%= target_name %> CAMERA_TRACK_RECTANGLE LITTLE_ENDIAN "If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set)..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2005, command_name: "MAV_CMD_CAMERA_TRACK_RECTANGLE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2005 2005 2005 "MAV_CMD_CAMERA_TRACK_RECTANGLE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TOP_LEFT_CORNER_X 32 FLOAT MIN MAX 0.0 "Top left corner of rectangle x value (normalized 0..1, 0 is left, 1 is right)."
   APPEND_PARAMETER TOP_LEFT_CORNER_Y 32 FLOAT MIN MAX 0.0 "Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom)."
   APPEND_PARAMETER BOTTOM_RIGHT_CORNER_X 32 FLOAT MIN MAX 0.0 "Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is ri..."
@@ -2700,8 +3057,11 @@ COMMAND <%= target_name %> CAMERA_TRACK_RECTANGLE LITTLE_ENDIAN "If the camera s
 # Stops ongoing tracking.
 # ============================================================================
 COMMAND <%= target_name %> CAMERA_STOP_TRACKING LITTLE_ENDIAN "Stops ongoing tracking."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2010, command_name: "MAV_CMD_CAMERA_STOP_TRACKING"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2010 2010 2010 "MAV_CMD_CAMERA_STOP_TRACKING"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT MIN MAX 0.0 "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -2722,8 +3082,11 @@ COMMAND <%= target_name %> CAMERA_STOP_TRACKING LITTLE_ENDIAN "Stops ongoing tra
 # Starts video capture (recording).
 # ============================================================================
 COMMAND <%= target_name %> VIDEO_START_CAPTURE LITTLE_ENDIAN "Starts video capture (recording)."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2500, command_name: "MAV_CMD_VIDEO_START_CAPTURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2500 2500 2500 "MAV_CMD_VIDEO_START_CAPTURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STREAM_ID 32 FLOAT MIN MAX 0.0 "Video Stream ID (0 for all streams)"
   APPEND_PARAMETER STATUS_FREQUENCY 32 FLOAT MIN MAX 0.0 "Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 fo..."
     UNITS "Hertz" Hz
@@ -2743,8 +3106,11 @@ COMMAND <%= target_name %> VIDEO_START_CAPTURE LITTLE_ENDIAN "Starts video captu
 # Stop the current video capture (recording).
 # ============================================================================
 COMMAND <%= target_name %> VIDEO_STOP_CAPTURE LITTLE_ENDIAN "Stop the current video capture (recording)."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2501, command_name: "MAV_CMD_VIDEO_STOP_CAPTURE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2501 2501 2501 "MAV_CMD_VIDEO_STOP_CAPTURE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STREAM_ID 32 FLOAT MIN MAX 0.0 "Video Stream ID (0 for all streams)"
   APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT MIN MAX 0.0 "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2764,8 +3130,11 @@ COMMAND <%= target_name %> VIDEO_STOP_CAPTURE LITTLE_ENDIAN "Stop the current vi
 # Start video streaming
 # ============================================================================
 COMMAND <%= target_name %> VIDEO_START_STREAMING LITTLE_ENDIAN "Start video streaming"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2502, command_name: "MAV_CMD_VIDEO_START_STREAMING"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2502 2502 2502 "MAV_CMD_VIDEO_START_STREAMING"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STREAM_ID 32 FLOAT MIN MAX 0.0 "Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)"
   APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT MIN MAX 0.0 "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2785,8 +3154,11 @@ COMMAND <%= target_name %> VIDEO_START_STREAMING LITTLE_ENDIAN "Start video stre
 # Stop the given video stream
 # ============================================================================
 COMMAND <%= target_name %> VIDEO_STOP_STREAMING LITTLE_ENDIAN "Stop the given video stream"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2503, command_name: "MAV_CMD_VIDEO_STOP_STREAMING"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2503 2503 2503 "MAV_CMD_VIDEO_STOP_STREAMING"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STREAM_ID 32 FLOAT MIN MAX 0.0 "Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)"
   APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT MIN MAX 0.0 "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2806,8 +3178,11 @@ COMMAND <%= target_name %> VIDEO_STOP_STREAMING LITTLE_ENDIAN "Stop the given vi
 # Request video stream information (VIDEO_STREAM_INFORMATION)
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_VIDEO_STREAM_INFORMATION LITTLE_ENDIAN "Request video stream information (VIDEO_STREAM_INFORMATION)"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2504, command_name: "MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2504 2504 2504 "MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STREAM_ID 32 FLOAT MIN MAX 0.0 "Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -2828,8 +3203,11 @@ COMMAND <%= target_name %> REQUEST_VIDEO_STREAM_INFORMATION LITTLE_ENDIAN "Reque
 # Request video stream status (VIDEO_STREAM_STATUS)
 # ============================================================================
 COMMAND <%= target_name %> REQUEST_VIDEO_STREAM_STATUS LITTLE_ENDIAN "Request video stream status (VIDEO_STREAM_STATUS)"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2505, command_name: "MAV_CMD_REQUEST_VIDEO_STREAM_STATUS"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2505 2505 2505 "MAV_CMD_REQUEST_VIDEO_STREAM_STATUS"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STREAM_ID 32 FLOAT MIN MAX 0.0 "Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -2851,8 +3229,11 @@ COMMAND <%= target_name %> REQUEST_VIDEO_STREAM_STATUS LITTLE_ENDIAN "Request vi
 # LOGGING_DATA message)
 # ============================================================================
 COMMAND <%= target_name %> LOGGING_START LITTLE_ENDIAN "Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2510, command_name: "MAV_CMD_LOGGING_START"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2510 2510 2510 "MAV_CMD_LOGGING_START"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER FORMAT 32 FLOAT MIN MAX 0.0 "Format: 0: ULog"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2867,8 +3248,11 @@ COMMAND <%= target_name %> LOGGING_START LITTLE_ENDIAN "Request to start streami
 # Request to stop streaming log data over MAVLink
 # ============================================================================
 COMMAND <%= target_name %> LOGGING_STOP LITTLE_ENDIAN "Request to stop streaming log data over MAVLink"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2511, command_name: "MAV_CMD_LOGGING_STOP"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2511 2511 2511 "MAV_CMD_LOGGING_STOP"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2883,8 +3267,11 @@ COMMAND <%= target_name %> LOGGING_STOP LITTLE_ENDIAN "Request to stop streaming
 # 
 # ============================================================================
 COMMAND <%= target_name %> AIRFRAME_CONFIGURATION LITTLE_ENDIAN ""
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2520, command_name: "MAV_CMD_AIRFRAME_CONFIGURATION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2520 2520 2520 "MAV_CMD_AIRFRAME_CONFIGURATION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER LANDING_GEAR_ID 32 FLOAT MIN MAX 0.0 "Landing gear ID (default: 0, -1 for all)"
   APPEND_PARAMETER LANDING_GEAR_POSITION 32 FLOAT MIN MAX 0.0 "Landing gear position (Down: 0, Up: 1, NaN for no change)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -2904,8 +3291,11 @@ COMMAND <%= target_name %> AIRFRAME_CONFIGURATION LITTLE_ENDIAN ""
 # Request to start/stop transmitting over the high latency telemetry
 # ============================================================================
 COMMAND <%= target_name %> CONTROL_HIGH_LATENCY LITTLE_ENDIAN "Request to start/stop transmitting over the high latency telemetry"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2600, command_name: "MAV_CMD_CONTROL_HIGH_LATENCY"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2600 2600 2600 "MAV_CMD_CONTROL_HIGH_LATENCY"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER ENABLE 32 FLOAT MIN MAX 0.0 "Start transmission over high latency telemetry (MAV_BOOL_FALSE: stop transmis..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -2920,8 +3310,11 @@ COMMAND <%= target_name %> CONTROL_HIGH_LATENCY LITTLE_ENDIAN "Request to start/
 # Create a panorama at the current position
 # ============================================================================
 COMMAND <%= target_name %> PANORAMA_CREATE LITTLE_ENDIAN "Create a panorama at the current position"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 2800, command_name: "MAV_CMD_PANORAMA_CREATE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 2800 2800 2800 "MAV_CMD_PANORAMA_CREATE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER HORIZONTAL_ANGLE 32 FLOAT MIN MAX 0.0 "Viewing angle horizontal of the panorama (+- 0.5 the total angle)"
     UNITS "Degrees" deg
   APPEND_PARAMETER VERTICAL_ANGLE 32 FLOAT MIN MAX 0.0 "Viewing angle vertical of panorama."
@@ -2943,8 +3336,11 @@ COMMAND <%= target_name %> PANORAMA_CREATE LITTLE_ENDIAN "Create a panorama at t
 # Request VTOL transition
 # ============================================================================
 COMMAND <%= target_name %> DO_VTOL_TRANSITION LITTLE_ENDIAN "Request VTOL transition"
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 3000, command_name: "MAV_CMD_DO_VTOL_TRANSITION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 3000 3000 3000 "MAV_CMD_DO_VTOL_TRANSITION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER STATE 32 FLOAT MIN MAX 0.0 "The target VTOL state. For normal transitions, only MAV_VTOL_STATE_MC and MAV..."
     STATE MAV_VTOL_STATE_UNDEFINED 0
     STATE MAV_VTOL_STATE_TRANSITION_TO_FW 1
@@ -2975,8 +3371,11 @@ COMMAND <%= target_name %> DO_VTOL_TRANSITION LITTLE_ENDIAN "Request VTOL transi
 # with one of the reasons in ARM_AUTH_DENIED_REASON.
 # ============================================================================
 COMMAND <%= target_name %> ARM_AUTHORIZATION_REQUEST LITTLE_ENDIAN "Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 3001, command_name: "MAV_CMD_ARM_AUTHORIZATION_REQUEST"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 3001 3001 3001 "MAV_CMD_ARM_AUTHORIZATION_REQUEST"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER SYSTEM_ID 32 FLOAT MIN MAX 0.0 "Vehicle system id, this way ground station can request arm authorization on b..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
@@ -2999,8 +3398,11 @@ COMMAND <%= target_name %> ARM_AUTHORIZATION_REQUEST LITTLE_ENDIAN "Request auth
 # desired velocities along all three axes.
 # ============================================================================
 COMMAND <%= target_name %> SET_GUIDED_SUBMODE_STANDARD LITTLE_ENDIAN "This command sets the submode to standard guided when vehicle is in guided mode. The vehicle hold..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 4000, command_name: "MAV_CMD_SET_GUIDED_SUBMODE_STANDARD"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 4000 4000 4000 "MAV_CMD_SET_GUIDED_SUBMODE_STANDARD"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
     HIDDEN
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -3025,8 +3427,11 @@ COMMAND <%= target_name %> SET_GUIDED_SUBMODE_STANDARD LITTLE_ENDIAN "This comma
 # the vehicle will hold position.
 # ============================================================================
 COMMAND <%= target_name %> SET_GUIDED_SUBMODE_CIRCLE LITTLE_ENDIAN "This command sets submode circle when vehicle is in guided mode. Vehicle flies along a circle fac..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 4001, command_name: "MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 4001 4001 4001 "MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER RADIUS 32 FLOAT MIN MAX 0.0 "Radius of desired circle in CIRCLE_MODE"
     UNITS "Meters" m
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3045,8 +3450,11 @@ COMMAND <%= target_name %> SET_GUIDED_SUBMODE_CIRCLE LITTLE_ENDIAN "This command
 # Delay mission state machine until gate has been reached.
 # ============================================================================
 COMMAND <%= target_name %> CONDITION_GATE LITTLE_ENDIAN "Delay mission state machine until gate has been reached."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 4501, command_name: "MAV_CMD_CONDITION_GATE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 4501 4501 4501 "MAV_CMD_CONDITION_GATE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER GEOMETRY 32 FLOAT MIN MAX 0.0 "Geometry: 0: orthogonal to path between previous and next waypoint."
   APPEND_PARAMETER USEALTITUDE 32 FLOAT MIN MAX 0.0 "Use altitude (MAV_BOOL_FALSE: ignore altitude). Values not equal to 0 or 1 ar..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty"
@@ -3063,8 +3471,11 @@ COMMAND <%= target_name %> CONDITION_GATE LITTLE_ENDIAN "Delay mission state mac
 # definition). If rally points are supported they should be used instead.
 # ============================================================================
 COMMAND <%= target_name %> NAV_FENCE_RETURN_POINT LITTLE_ENDIAN "Fence return point (there can only be one such point in a geofence definition). If rally points a..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 5000, command_name: "MAV_CMD_NAV_FENCE_RETURN_POINT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 5000 5000 5000 "MAV_CMD_NAV_FENCE_RETURN_POINT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -3084,8 +3495,11 @@ COMMAND <%= target_name %> NAV_FENCE_RETURN_POINT LITTLE_ENDIAN "Fence return po
 # to the total number of vertices in the polygon.
 # ============================================================================
 COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_INCLUSION LITTLE_ENDIAN "Fence vertex for an inclusion polygon (the polygon must not be self-intersecting). The vehicle mu..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 5001, command_name: "MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 5001 5001 5001 "MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER VERTEX_COUNT 32 FLOAT MIN MAX 0.0 "Polygon vertex count. This is the number of vertices in the current polygon (..."
   APPEND_PARAMETER INCLUSION_GROUP 32 FLOAT MIN MAX 0.0 "Vehicle must be inside ALL inclusion zones in a single group, vehicle must be..."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -3104,8 +3518,11 @@ COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_INCLUSION LITTLE_ENDIAN "Fen
 # to the total number of vertices in the polygon.
 # ============================================================================
 COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_EXCLUSION LITTLE_ENDIAN "Fence vertex for an exclusion polygon (the polygon must not be self-intersecting). The vehicle mu..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 5002, command_name: "MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 5002 5002 5002 "MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER VERTEX_COUNT 32 FLOAT MIN MAX 0.0 "Polygon vertex count. This is the number of vertices in the current polygon (..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -3120,8 +3537,11 @@ COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_EXCLUSION LITTLE_ENDIAN "Fen
 # Circular fence area. The vehicle must stay inside this area.
 # ============================================================================
 COMMAND <%= target_name %> NAV_FENCE_CIRCLE_INCLUSION LITTLE_ENDIAN "Circular fence area. The vehicle must stay inside this area."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 5003, command_name: "MAV_CMD_NAV_FENCE_CIRCLE_INCLUSION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 5003 5003 5003 "MAV_CMD_NAV_FENCE_CIRCLE_INCLUSION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER RADIUS 32 FLOAT MIN MAX 0.0 "Radius."
     UNITS "Meters" m
   APPEND_PARAMETER INCLUSION_GROUP 32 FLOAT MIN MAX 0.0 "Vehicle must be inside ALL inclusion zones in a single group, vehicle must be..."
@@ -3137,8 +3557,11 @@ COMMAND <%= target_name %> NAV_FENCE_CIRCLE_INCLUSION LITTLE_ENDIAN "Circular fe
 # Circular fence area. The vehicle must stay outside this area.
 # ============================================================================
 COMMAND <%= target_name %> NAV_FENCE_CIRCLE_EXCLUSION LITTLE_ENDIAN "Circular fence area. The vehicle must stay outside this area."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 5004, command_name: "MAV_CMD_NAV_FENCE_CIRCLE_EXCLUSION"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 5004 5004 5004 "MAV_CMD_NAV_FENCE_CIRCLE_EXCLUSION"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER RADIUS 32 FLOAT MIN MAX 0.0 "Radius."
     UNITS "Meters" m
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -3154,8 +3577,11 @@ COMMAND <%= target_name %> NAV_FENCE_CIRCLE_EXCLUSION LITTLE_ENDIAN "Circular fe
 # Rally point. You can have multiple rally points defined.
 # ============================================================================
 COMMAND <%= target_name %> NAV_RALLY_POINT LITTLE_ENDIAN "Rally point. You can have multiple rally points defined."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 5100, command_name: "MAV_CMD_NAV_RALLY_POINT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 5100 5100 5100 "MAV_CMD_NAV_RALLY_POINT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -3177,8 +3603,11 @@ COMMAND <%= target_name %> NAV_RALLY_POINT LITTLE_ENDIAN "Rally point. You can h
 # information messages.
 # ============================================================================
 COMMAND <%= target_name %> UAVCAN_GET_NODE_INFO LITTLE_ENDIAN "Commands the vehicle to respond with a sequence of messages UAVCAN_NODE_INFO, one message per eve..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 5200, command_name: "MAV_CMD_UAVCAN_GET_NODE_INFO"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 5200 5200 5200 "MAV_CMD_UAVCAN_GET_NODE_INFO"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -3193,8 +3622,11 @@ COMMAND <%= target_name %> UAVCAN_GET_NODE_INFO LITTLE_ENDIAN "Commands the vehi
 # Change state of safety switch.
 # ============================================================================
 COMMAND <%= target_name %> DO_SET_SAFETY_SWITCH_STATE LITTLE_ENDIAN "Change state of safety switch."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 5300, command_name: "MAV_CMD_DO_SET_SAFETY_SWITCH_STATE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 5300 5300 5300 "MAV_CMD_DO_SET_SAFETY_SWITCH_STATE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER DESIRED_STATE 32 FLOAT MIN MAX 0.0 "New safety switch state."
     STATE SAFETY_SWITCH_STATE_SAFE 0
     STATE SAFETY_SWITCH_STATE_DANGEROUS 1
@@ -3214,8 +3646,11 @@ COMMAND <%= target_name %> DO_SET_SAFETY_SWITCH_STATE LITTLE_ENDIAN "Change stat
 # hardware per the Mode A, C, and S transponder spec.
 # ============================================================================
 COMMAND <%= target_name %> DO_ADSB_OUT_IDENT LITTLE_ENDIAN "Trigger the start of an ADSB-out IDENT. This should only be used when requested to do so by an Ai..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 10001, command_name: "MAV_CMD_DO_ADSB_OUT_IDENT"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 10001 10001 10001 "MAV_CMD_DO_ADSB_OUT_IDENT"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved (set to 0)"
@@ -3231,8 +3666,11 @@ COMMAND <%= target_name %> DO_ADSB_OUT_IDENT LITTLE_ENDIAN "Trigger the start of
 # to reach the required release position and velocity.
 # ============================================================================
 COMMAND <%= target_name %> PAYLOAD_PREPARE_DEPLOY LITTLE_ENDIAN "Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 30001, command_name: "MAV_CMD_PAYLOAD_PREPARE_DEPLOY"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 30001 30001 30001 "MAV_CMD_PAYLOAD_PREPARE_DEPLOY"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER OPERATION_MODE 32 FLOAT MIN MAX 0.0 "Operation mode. 0: prepare single payload deploy (overwriting previous reques..."
   APPEND_PARAMETER APPROACH_VECTOR 32 FLOAT MIN MAX 0.0 "Desired approach vector in compass heading. A negative value indicates the sy..."
     UNITS "Degrees" deg
@@ -3252,8 +3690,11 @@ COMMAND <%= target_name %> PAYLOAD_PREPARE_DEPLOY LITTLE_ENDIAN "Deploy payload 
 # Control the payload deployment.
 # ============================================================================
 COMMAND <%= target_name %> PAYLOAD_CONTROL_DEPLOY LITTLE_ENDIAN "Control the payload deployment."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 30002, command_name: "MAV_CMD_PAYLOAD_CONTROL_DEPLOY"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 30002 30002 30002 "MAV_CMD_PAYLOAD_CONTROL_DEPLOY"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER OPERATION_MODE 32 FLOAT MIN MAX 0.0 "Operation mode. 0: Abort deployment, continue normal mission. 1: switch to pa..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Reserved"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Reserved"
@@ -3269,8 +3710,11 @@ COMMAND <%= target_name %> PAYLOAD_CONTROL_DEPLOY LITTLE_ENDIAN "Control the pay
 # through this item.
 # ============================================================================
 COMMAND <%= target_name %> WAYPOINT_USER_1 LITTLE_ENDIAN "User defined waypoint item. Ground Station will show the Vehicle as flying through this item."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31000, command_name: "MAV_CMD_WAYPOINT_USER_1"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31000 31000 31000 "MAV_CMD_WAYPOINT_USER_1"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3287,8 +3731,11 @@ COMMAND <%= target_name %> WAYPOINT_USER_1 LITTLE_ENDIAN "User defined waypoint 
 # through this item.
 # ============================================================================
 COMMAND <%= target_name %> WAYPOINT_USER_2 LITTLE_ENDIAN "User defined waypoint item. Ground Station will show the Vehicle as flying through this item."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31001, command_name: "MAV_CMD_WAYPOINT_USER_2"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31001 31001 31001 "MAV_CMD_WAYPOINT_USER_2"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3305,8 +3752,11 @@ COMMAND <%= target_name %> WAYPOINT_USER_2 LITTLE_ENDIAN "User defined waypoint 
 # through this item.
 # ============================================================================
 COMMAND <%= target_name %> WAYPOINT_USER_3 LITTLE_ENDIAN "User defined waypoint item. Ground Station will show the Vehicle as flying through this item."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31002, command_name: "MAV_CMD_WAYPOINT_USER_3"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31002 31002 31002 "MAV_CMD_WAYPOINT_USER_3"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3323,8 +3773,11 @@ COMMAND <%= target_name %> WAYPOINT_USER_3 LITTLE_ENDIAN "User defined waypoint 
 # through this item.
 # ============================================================================
 COMMAND <%= target_name %> WAYPOINT_USER_4 LITTLE_ENDIAN "User defined waypoint item. Ground Station will show the Vehicle as flying through this item."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31003, command_name: "MAV_CMD_WAYPOINT_USER_4"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31003 31003 31003 "MAV_CMD_WAYPOINT_USER_4"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3341,8 +3794,11 @@ COMMAND <%= target_name %> WAYPOINT_USER_4 LITTLE_ENDIAN "User defined waypoint 
 # through this item.
 # ============================================================================
 COMMAND <%= target_name %> WAYPOINT_USER_5 LITTLE_ENDIAN "User defined waypoint item. Ground Station will show the Vehicle as flying through this item."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31004, command_name: "MAV_CMD_WAYPOINT_USER_5"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31004 31004 31004 "MAV_CMD_WAYPOINT_USER_5"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3359,8 +3815,11 @@ COMMAND <%= target_name %> WAYPOINT_USER_5 LITTLE_ENDIAN "User defined waypoint 
 # flying through this item. Example: ROI item.
 # ============================================================================
 COMMAND <%= target_name %> SPATIAL_USER_1 LITTLE_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31005, command_name: "MAV_CMD_SPATIAL_USER_1"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31005 31005 31005 "MAV_CMD_SPATIAL_USER_1"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3377,8 +3836,11 @@ COMMAND <%= target_name %> SPATIAL_USER_1 LITTLE_ENDIAN "User defined spatial it
 # flying through this item. Example: ROI item.
 # ============================================================================
 COMMAND <%= target_name %> SPATIAL_USER_2 LITTLE_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31006, command_name: "MAV_CMD_SPATIAL_USER_2"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31006 31006 31006 "MAV_CMD_SPATIAL_USER_2"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3395,8 +3857,11 @@ COMMAND <%= target_name %> SPATIAL_USER_2 LITTLE_ENDIAN "User defined spatial it
 # flying through this item. Example: ROI item.
 # ============================================================================
 COMMAND <%= target_name %> SPATIAL_USER_3 LITTLE_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31007, command_name: "MAV_CMD_SPATIAL_USER_3"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31007 31007 31007 "MAV_CMD_SPATIAL_USER_3"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3413,8 +3878,11 @@ COMMAND <%= target_name %> SPATIAL_USER_3 LITTLE_ENDIAN "User defined spatial it
 # flying through this item. Example: ROI item.
 # ============================================================================
 COMMAND <%= target_name %> SPATIAL_USER_4 LITTLE_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31008, command_name: "MAV_CMD_SPATIAL_USER_4"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31008 31008 31008 "MAV_CMD_SPATIAL_USER_4"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3431,8 +3899,11 @@ COMMAND <%= target_name %> SPATIAL_USER_4 LITTLE_ENDIAN "User defined spatial it
 # flying through this item. Example: ROI item.
 # ============================================================================
 COMMAND <%= target_name %> SPATIAL_USER_5 LITTLE_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31009, command_name: "MAV_CMD_SPATIAL_USER_5"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31009 31009 31009 "MAV_CMD_SPATIAL_USER_5"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3449,8 +3920,11 @@ COMMAND <%= target_name %> SPATIAL_USER_5 LITTLE_ENDIAN "User defined spatial it
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
 COMMAND <%= target_name %> USER_1 LITTLE_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31010, command_name: "MAV_CMD_USER_1"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31010 31010 31010 "MAV_CMD_USER_1"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3466,8 +3940,11 @@ COMMAND <%= target_name %> USER_1 LITTLE_ENDIAN "User defined command. Ground St
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
 COMMAND <%= target_name %> USER_2 LITTLE_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31011, command_name: "MAV_CMD_USER_2"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31011 31011 31011 "MAV_CMD_USER_2"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3483,8 +3960,11 @@ COMMAND <%= target_name %> USER_2 LITTLE_ENDIAN "User defined command. Ground St
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
 COMMAND <%= target_name %> USER_3 LITTLE_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31012, command_name: "MAV_CMD_USER_3"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31012 31012 31012 "MAV_CMD_USER_3"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3500,8 +3980,11 @@ COMMAND <%= target_name %> USER_3 LITTLE_ENDIAN "User defined command. Ground St
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
 COMMAND <%= target_name %> USER_4 LITTLE_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31013, command_name: "MAV_CMD_USER_4"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31013 31013 31013 "MAV_CMD_USER_4"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3517,8 +4000,11 @@ COMMAND <%= target_name %> USER_4 LITTLE_ENDIAN "User defined command. Ground St
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
 COMMAND <%= target_name %> USER_5 LITTLE_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 31014, command_name: "MAV_CMD_USER_5"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 31014 31014 31014 "MAV_CMD_USER_5"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "User defined"
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "User defined"
@@ -3534,8 +4020,11 @@ COMMAND <%= target_name %> USER_5 LITTLE_ENDIAN "User defined command. Ground St
 # component. CAN Frames are sent using CAN_FRAME and CANFD_FRAME messages
 # ============================================================================
 COMMAND <%= target_name %> CAN_FORWARD LITTLE_ENDIAN "Request forwarding of CAN packets from the given CAN bus to this component. CAN Frames are sent u..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 32000, command_name: "MAV_CMD_CAN_FORWARD"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 32000 32000 32000 "MAV_CMD_CAN_FORWARD"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER BUS 32 FLOAT MIN MAX 0.0 "Bus number (0 to disable forwarding, 1 for first bus, 2 for 2nd bus, 3 for 3r..."
   APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "Empty."
   APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "Empty."
@@ -3553,8 +4042,11 @@ COMMAND <%= target_name %> CAN_FORWARD LITTLE_ENDIAN "Request forwarding of CAN 
 # current vehicle location.
 # ============================================================================
 COMMAND <%= target_name %> FIXED_MAG_CAL_YAW LITTLE_ENDIAN "Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM ..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 42006, command_name: "MAV_CMD_FIXED_MAG_CAL_YAW"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 42006 42006 42006 "MAV_CMD_FIXED_MAG_CAL_YAW"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER YAW 32 FLOAT MIN MAX 0.0 "Yaw of vehicle in earth frame."
     UNITS "Degrees" deg
   APPEND_PARAMETER COMPASSMASK 32 FLOAT MIN MAX 0.0 "CompassMask, 0 for all."
@@ -3572,8 +4064,11 @@ COMMAND <%= target_name %> FIXED_MAG_CAL_YAW LITTLE_ENDIAN "Magnetometer calibra
 # Command to operate winch.
 # ============================================================================
 COMMAND <%= target_name %> DO_WINCH LITTLE_ENDIAN "Command to operate winch."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 42600, command_name: "MAV_CMD_DO_WINCH"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 42600 42600 42600 "MAV_CMD_DO_WINCH"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER INSTANCE 32 FLOAT MIN MAX 0.0 "Winch instance number."
   APPEND_PARAMETER ACTION 32 FLOAT MIN MAX 0.0 "Action to perform."
     STATE WINCH_RELAXED 0
@@ -3602,8 +4097,11 @@ COMMAND <%= target_name %> DO_WINCH LITTLE_ENDIAN "Command to operate winch."
 # external system such as a remote pilot using landmarks over a video link.
 # ============================================================================
 COMMAND <%= target_name %> EXTERNAL_POSITION_ESTIMATE LITTLE_ENDIAN "Provide an external position estimate for use when dead-reckoning. This is meant to be used for o..."
-  <%= render "_mavlink_v2_header_cmd.txt", locals: {msgid: 76, payload_len: 33} %>
-  <%= render "_mavlink_v2_command_long.txt", locals: {command_id: 43003, command_name: "MAV_CMD_EXTERNAL_POSITION_ESTIMATE"} %>
+  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "Target system ID"
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Target component ID"
+  APPEND_PARAMETER COMMAND 16 UINT 43003 43003 43003 "MAV_CMD_EXTERNAL_POSITION_ESTIMATE"
+  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 "0=First transmission, increment for retries"
   APPEND_PARAMETER TRANSMISSION_TIME 32 FLOAT MIN MAX 0.0 "Timestamp that this message was sent as a time in the transmitters time domai..."
     UNITS "Seconds" s
   APPEND_PARAMETER PROCESSING_TIME 32 FLOAT MIN MAX 0.0 "The time spent in processing the sensor data that is the basis for this posit..."

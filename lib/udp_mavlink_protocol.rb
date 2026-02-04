@@ -20,7 +20,7 @@ require_relative 'mavlink_crc_table'
 require_relative 'mavlink_crc_extra'
 
 module OpenC3
-  class MavlinkProtocol < Protocol
+  class UdpMavlinkProtocol < Protocol
     # MAVLink v2 constants
     MAVLINK_STX = 0xFD
     MAVLINK_HEADER_LEN = 10
@@ -50,14 +50,14 @@ module OpenC3
     def crc_calculate(data)
       crc = 0xFFFF
       data.each_byte do |byte|
-        crc = ((crc >> 8) & 0xFF) ^ CRC_TABLE[(crc ^ byte) & 0xFF]
+        crc = ((crc >> 8) & 0xFF) ^ OpenC3::MAVLINK_CRC_TABLE[(crc ^ byte) & 0xFF]
       end
       crc
     end
 
     # Accumulate CRC with a single byte
     def crc_accumulate(byte, crc)
-      ((crc >> 8) & 0xFF) ^ CRC_TABLE[(crc ^ byte) & 0xFF]
+      ((crc >> 8) & 0xFF) ^ OpenC3::MAVLINK_CRC_TABLE[(crc ^ byte) & 0xFF]
     end
 
     # Read data - handle packet framing and CRC validation
@@ -136,8 +136,8 @@ module OpenC3
       crc = crc_calculate(crc_data)
 
       # Add CRC_EXTRA if available
-      if MAVLINK_CRC_EXTRA.key?(msg_id)
-        crc = crc_accumulate(MAVLINK_CRC_EXTRA[msg_id], crc)
+      if OpenC3::MAVLINK_CRC_EXTRA.key?(msg_id)
+        crc = crc_accumulate(OpenC3::MAVLINK_CRC_EXTRA[msg_id], crc)
       end
 
       # Append CRC (little-endian)
@@ -162,8 +162,8 @@ module OpenC3
       calculated_crc = crc_calculate(crc_data)
 
       # Add CRC_EXTRA if available
-      if MAVLINK_CRC_EXTRA.key?(msg_id)
-        calculated_crc = crc_accumulate(MAVLINK_CRC_EXTRA[msg_id], calculated_crc)
+      if OpenC3::MAVLINK_CRC_EXTRA.key?(msg_id)
+        calculated_crc = crc_accumulate(OpenC3::MAVLINK_CRC_EXTRA[msg_id], calculated_crc)
       else
         # Unknown message ID - skip CRC validation
         Logger.debug("MAVLink unknown message ID #{msg_id}, skipping CRC validation")

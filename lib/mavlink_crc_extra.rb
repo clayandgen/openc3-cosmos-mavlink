@@ -6,8 +6,8 @@
 # These are the official values from the MAVLink C library.
 
 module OpenC3
-  class MavlinkProtocol
-    MAVLINK_CRC_EXTRA = {
+  # Constants for UdpMavlinkProtocol
+  MAVLINK_CRC_EXTRA = {
       0 => 50,    # HEARTBEAT
       1 => 124,   # SYS_STATUS
       2 => 137,   # SYSTEM_TIME
@@ -233,7 +233,5 @@ module OpenC3
       12915 => 94,  # OPEN_DRONE_ID_MESSAGE_PACK
       12918 => 139, # OPEN_DRONE_ID_ARM_STATUS
       12919 => 7,   # OPEN_DRONE_ID_SYSTEM_UPDATE
-      12920 => 20,  # HYGROMETER_SENSOR
-    }.freeze
-  end
+  }.freeze
 end

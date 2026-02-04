@@ -41,18 +41,55 @@ class MavlinkToCosmosConverter
   def initialize(xml_file, target_name = nil)
     @xml_file = xml_file
     @target_name = target_name || TARGET_NAME_PLACEHOLDER
-    @doc = Nokogiri::XML(File.read(xml_file))
+    @xml_dir = File.dirname(File.expand_path(xml_file))
+    @processed_files = []
     @enums = {}
     @messages = []
     @mav_commands = []  # MAV_CMD_* entries
 
-    parse_enums
-    parse_messages
+    # Process main file and all includes
+    process_xml_file(File.expand_path(xml_file))
+
     extract_mav_commands
   end
 
+  def process_xml_file(xml_file_path)
+    # Normalize the path - if already absolute, use as-is; otherwise join with xml_dir
+    abs_path = (xml_file_path.start_with?('/') || xml_file_path =~ /^[A-Za-z]:/) ? xml_file_path : File.join(@xml_dir, xml_file_path)
+    return if @processed_files.include?(abs_path)
+    @processed_files << abs_path
+
+    puts "Processing #{File.basename(abs_path)}..."
+    doc = Nokogiri::XML(File.read(abs_path))
+
+    # Process includes first (these are relative paths)
+    doc.xpath('//include').each do |include_node|
+      include_file = include_node.text.strip
+      include_path = File.join(@xml_dir, include_file)
+      if File.exist?(include_path)
+        process_xml_file(include_file)  # Pass relative path
+      else
+        puts "  Warning: Include file not found: #{include_file}"
+      end
+    end
+
+    # Parse enums and messages from this file
+    parse_enums_from_doc(doc)
+    parse_messages_from_doc(doc)
+  end
+
+  # Keep old method names for compatibility (now just wrappers)
   def parse_enums
-    @doc.xpath('//enum').each do |enum_node|
+    # Now handled by process_xml_file
+  end
+
+  def parse_messages
+    @messages.sort_by! { |m| m[:id] }
+    puts "Parsed #{@messages.size} messages total from all files"
+  end
+
+  def parse_enums_from_doc(doc)
+    doc.xpath('//enum').each do |enum_node|
       enum_name = enum_node['name']
       entries = []
 
@@ -88,18 +125,19 @@ class MavlinkToCosmosConverter
         entries << entry_data
       end
 
-      @enums[enum_name] = {
-        name: enum_name,
-        bitmask: enum_node['bitmask'] == 'true',
-        entries: entries
-      }
+      # Only add enum if not already present (prevent duplicates from includes)
+      unless @enums[enum_name]
+        @enums[enum_name] = {
+          name: enum_name,
+          bitmask: enum_node['bitmask'] == 'true',
+          entries: entries
+        }
+      end
     end
-
-    puts "Parsed #{@enums.size} enums"
   end
 
-  def parse_messages
-    @doc.xpath('//message').each do |msg_node|
+  def parse_messages_from_doc(doc)
+    doc.xpath('//message').each do |msg_node|
       msg_id = msg_node['id'].to_i
       msg_name = msg_node['name']
 
@@ -146,16 +184,16 @@ class MavlinkToCosmosConverter
         }
       end
 
-      @messages << {
-        id: msg_id,
-        name: msg_name,
-        description: description,
-        fields: fields
-      }
+      # Only add message if not already present (prevent duplicates from includes)
+      unless @messages.any? { |m| m[:id] == msg_id }
+        @messages << {
+          id: msg_id,
+          name: msg_name,
+          description: description,
+          fields: fields
+        }
+      end
     end
-
-    @messages.sort_by! { |m| m[:id] }
-    puts "Parsed #{@messages.size} messages"
   end
 
   def extract_mav_commands
@@ -166,7 +204,13 @@ class MavlinkToCosmosConverter
     end
 
     @mav_commands.sort_by! { |c| c[:value] }
-    puts "Extracted #{@mav_commands.size} MAV_CMD commands"
+
+    # Final summary
+    @messages.sort_by! { |m| m[:id] }
+    puts "\nParsing complete:"
+    puts "  Enums: #{@enums.size}"
+    puts "  Messages: #{@messages.size}"
+    puts "  Commands: #{@mav_commands.size}"
   end
 
   def calculate_payload_size(fields)
@@ -188,6 +232,36 @@ class MavlinkToCosmosConverter
       type_info = TYPE_MAP[field[:type]]
       return type_info&.dig(:bits) || 8
     end
+  end
+
+  # Get the wire size of a single element (for sorting)
+  def field_element_size(field)
+    if field[:type] == 'char'
+      return 1  # char arrays are byte-aligned
+    else
+      type_info = TYPE_MAP[field[:type]]
+      return (type_info&.dig(:bits) || 8) / 8
+    end
+  end
+
+  # Sort fields according to MAVLink v2 wire format rules:
+  # - Larger types first (8-byte, 4-byte, 2-byte, 1-byte)
+  # - Within same size, maintain original order (stable sort)
+  # - Extension fields are sorted separately after base fields
+  def sort_fields_for_wire_format(fields)
+    base_fields = fields.reject { |f| f[:extension] }
+    extension_fields = fields.select { |f| f[:extension] }
+
+    # Sort by element size (descending), then by original index (stable)
+    sorted_base = base_fields.each_with_index.sort_by do |field, idx|
+      [-field_element_size(field), idx]
+    end.map(&:first)
+
+    sorted_extensions = extension_fields.each_with_index.sort_by do |field, idx|
+      [-field_element_size(field), idx]
+    end.map(&:first)
+
+    sorted_base + sorted_extensions
   end
 
   def cosmos_type(field)
@@ -232,20 +306,26 @@ class MavlinkToCosmosConverter
     short_desc = truncate_description(msg[:description], 100)
     f.puts "TELEMETRY #{TARGET_NAME_PLACEHOLDER} #{msg[:name]} LITTLE_ENDIAN \"#{short_desc}\""
 
-    # Include header partial
-    f.puts "  <%= render \"_mavlink_v2_header_tlm.txt\", locals: {msgid: #{msg[:id]}} %>"
+    # Include MAVLink v2 header with explicit bit offsets
+    f.puts "  <%= render '_mavlink_v2_header_tlm.txt', locals: {msgid: #{msg[:id]}} %>"
 
-    # Write fields
-    has_extensions = msg[:fields].any? { |field| field[:extension] }
+    # Sort fields according to MAVLink v2 wire format (by size)
+    sorted_fields = sort_fields_for_wire_format(msg[:fields])
+
+    # IMPORTANT: LITTLE_ENDIAN requires explicit bit offsets (APPEND doesn't work per COSMOS docs)
+    # Write fields in wire format order with calculated bit offsets
+    has_extensions = sorted_fields.any? { |field| field[:extension] }
     wrote_extension_comment = false
+    current_bit_offset = 80  # Start after 10-byte header
 
-    msg[:fields].each do |field|
+    sorted_fields.each do |field|
       if field[:extension] && !wrote_extension_comment
         f.puts "  # MAVLink 2 Extension Fields"
         wrote_extension_comment = true
       end
 
-      write_telemetry_field(f, field)
+      write_telemetry_field(f, field, current_bit_offset)
+      current_bit_offset += field_bit_size(field)
     end
 
     # Add checksum at the end
@@ -253,11 +333,12 @@ class MavlinkToCosmosConverter
     f.puts "    FORMAT_STRING \"0x%04X\""
   end
 
-  def write_telemetry_field(f, field)
+  def write_telemetry_field(f, field, bit_offset)
     bit_size = field_bit_size(field)
     c_type = cosmos_type(field)
     desc = truncate_description(field[:description], 80)
 
+    # Payload fields use APPEND (only header needs explicit offsets for bitfields)
     if field[:array_size] && field[:type] != 'char'
       item_bits = TYPE_MAP[field[:type]]&.dig(:bits) || 8
       f.puts "  APPEND_ARRAY_ITEM #{field[:name]} #{item_bits} #{c_type} #{bit_size} \"#{desc}\""
@@ -325,7 +406,10 @@ class MavlinkToCosmosConverter
     f.puts "# " + "=" * 76
 
     f.puts "COMMAND #{TARGET_NAME_PLACEHOLDER} COMMAND_LONG LITTLE_ENDIAN \"Send a MAVLink command with parameters\""
-    f.puts "  <%= render \"_mavlink_v2_header_cmd.txt\", locals: {msgid: #{COMMAND_LONG_MSG_ID}, payload_len: #{COMMAND_LONG_PAYLOAD_SIZE}} %>"
+
+    # Include MAVLink v2 header with explicit bit offsets
+    f.puts "  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: #{COMMAND_LONG_MSG_ID}, payload_len: #{COMMAND_LONG_PAYLOAD_SIZE}} %>"
+
     f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 \"Target system ID\""
     f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 \"Target component ID\""
     f.puts "  APPEND_PARAMETER COMMAND 16 UINT 0 65535 0 \"MAV_CMD command ID\""
@@ -364,9 +448,14 @@ class MavlinkToCosmosConverter
     short_desc = truncate_description(description, 100)
     f.puts "COMMAND #{TARGET_NAME_PLACEHOLDER} #{cmd_name} LITTLE_ENDIAN \"#{short_desc}\""
 
-    # Include header and COMMAND_LONG structure via ERB partials
-    f.puts "  <%= render \"_mavlink_v2_header_cmd.txt\", locals: {msgid: #{COMMAND_LONG_MSG_ID}, payload_len: #{COMMAND_LONG_PAYLOAD_SIZE}} %>"
-    f.puts "  <%= render \"_mavlink_v2_command_long.txt\", locals: {command_id: #{cmd_id}, command_name: \"#{cmd[:name]}\"} %>"
+    # Include MAVLink v2 header with explicit bit offsets
+    f.puts "  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: #{COMMAND_LONG_MSG_ID}, payload_len: #{COMMAND_LONG_PAYLOAD_SIZE}} %>"
+
+    # COMMAND_LONG structure - use APPEND_* for automatic positioning
+    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 \"Target system ID\""
+    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 \"Target component ID\""
+    f.puts "  APPEND_PARAMETER COMMAND 16 UINT #{cmd_id} #{cmd_id} #{cmd_id} \"#{cmd[:name]}\""
+    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
 
     # Write param1-7 based on command definition
     params = cmd[:params] || []

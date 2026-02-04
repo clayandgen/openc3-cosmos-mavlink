@@ -1,9 +1,9 @@
-  # MAVLink v2 Header (10 bytes)
-  APPEND_ITEM MAGIC 8 UINT "Protocol magic marker (0xFD for MAVLink 2)"
-  APPEND_ITEM PAYLOAD_LEN 8 UINT "Length of payload"
-  APPEND_ITEM INCOMPAT_FLAGS 8 UINT "Incompatibility flags"
-  APPEND_ITEM COMPAT_FLAGS 8 UINT "Compatibility flags"
-  APPEND_ITEM SEQ 8 UINT "Packet sequence number"
-  APPEND_ITEM SYSID 8 UINT "System ID (sender)"
-  APPEND_ITEM COMPID 8 UINT "Component ID (sender)"
-  APPEND_ID_ITEM MSGID 24 UINT <%= msgid %> "Message ID" LITTLE_ENDIAN
+  # MAVLink v2 Header (10 bytes) - explicit bit offsets (required for LITTLE_ENDIAN)
+  ITEM MAGIC 0 8 UINT "Protocol magic marker (0xFD for MAVLink 2)"
+  ITEM PAYLOAD_LEN 8 8 UINT "Length of payload"
+  ITEM INCOMPAT_FLAGS 16 8 UINT "Incompatibility flags"
+  ITEM COMPAT_FLAGS 24 8 UINT "Compatibility flags"
+  ITEM SEQ 32 8 UINT "Packet sequence number"
+  ITEM SYSID 40 8 UINT "System ID (sender)"
+  ITEM COMPID 48 8 UINT "Component ID (sender)"
+  ID_ITEM MSGID 72 24 UINT <%= msgid %> "Message ID (<%= msgid %>) at MSB (byte 9)"
