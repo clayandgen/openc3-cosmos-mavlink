@@ -1,4 +1,4 @@
-LANGUAGE ruby
+LANGUAGE python
 
 # Ignored Parameters
 #IGNORE_PARAMETER MAGIC

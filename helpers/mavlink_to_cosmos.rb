@@ -11,6 +11,7 @@
 
 require 'nokogiri'
 require 'fileutils'
+require 'json'
 
 # Configuration
 TARGET_NAME_PLACEHOLDER = '<%= target_name %>'
@@ -213,16 +214,16 @@ class MavlinkToCosmosConverter
     puts "  Commands: #{@mav_commands.size}"
   end
 
-  def calculate_payload_size(fields)
-    base_size = 0
-    fields.each do |field|
-      next if field[:extension]
-      base_size += field_bit_size(field) / 8
+  def cosmos_type(field)
+    if field[:type] == 'char'
+      return 'STRING'
+    else
+      type_info = TYPE_MAP[field[:type]]
+      return type_info&.dig(:cosmos_type) || 'UINT'
     end
-    base_size
   end
 
-  def field_bit_size(field)
+  def bit_size(field)
     if field[:type] == 'char'
       return (field[:array_size] || 1) * 8
     elsif field[:array_size]
@@ -234,57 +235,18 @@ class MavlinkToCosmosConverter
     end
   end
 
-  # Get the wire size of a single element (for sorting)
-  def field_element_size(field)
-    if field[:type] == 'char'
-      return 1  # char arrays are byte-aligned
-    else
-      type_info = TYPE_MAP[field[:type]]
-      return (type_info&.dig(:bits) || 8) / 8
-    end
-  end
-
-  # Sort fields according to MAVLink v2 wire format rules:
-  # - Larger types first (8-byte, 4-byte, 2-byte, 1-byte)
-  # - Within same size, maintain original order (stable sort)
-  # - Extension fields are sorted separately after base fields
-  def sort_fields_for_wire_format(fields)
-    base_fields = fields.reject { |f| f[:extension] }
-    extension_fields = fields.select { |f| f[:extension] }
-
-    # Sort by element size (descending), then by original index (stable)
-    sorted_base = base_fields.each_with_index.sort_by do |field, idx|
-      [-field_element_size(field), idx]
-    end.map(&:first)
-
-    sorted_extensions = extension_fields.each_with_index.sort_by do |field, idx|
-      [-field_element_size(field), idx]
-    end.map(&:first)
-
-    sorted_base + sorted_extensions
-  end
-
-  def cosmos_type(field)
-    if field[:type] == 'char'
-      return 'STRING'
-    else
-      type_info = TYPE_MAP[field[:type]]
-      return type_info&.dig(:cosmos_type) || 'UINT'
-    end
-  end
-
   # ============================================================================
-  # TELEMETRY GENERATION - All messages become telemetry
+  # TELEMETRY GENERATION - All messages become telemetry (JSON format)
   # ============================================================================
 
   def generate_telemetry_file(output_path)
     File.open(output_path, 'w') do |f|
-      f.puts "# MAVLink Common Message Set - Telemetry Definitions"
+      f.puts "# MAVLink Common Message Set - Telemetry Definitions (JSON Format)"
       f.puts "# Auto-generated from #{File.basename(@xml_file)}"
       f.puts "# Reference: https://mavlink.io/en/messages/common.html"
-      f.puts "# Note: MAVLink uses LITTLE_ENDIAN byte order"
       f.puts "#"
-      f.puts "# All MAVLink messages are telemetry (received from vehicle)"
+      f.puts "# All MAVLink messages are parsed as JSON by the Python protocol"
+      f.puts "# Fields are accessed using JsonAccessor"
       f.puts ""
 
       @messages.each do |msg|
@@ -304,58 +266,88 @@ class MavlinkToCosmosConverter
     f.puts "# " + "=" * 76
 
     short_desc = truncate_description(msg[:description], 100)
-    f.puts "TELEMETRY #{TARGET_NAME_PLACEHOLDER} #{msg[:name]} LITTLE_ENDIAN \"#{short_desc}\""
+    f.puts "TELEMETRY #{TARGET_NAME_PLACEHOLDER} #{msg[:name]} BIG_ENDIAN \"#{short_desc}\""
+    f.puts "  ACCESSOR JsonAccessor"
 
-    # Include MAVLink v2 header with explicit bit offsets
-    f.puts "  <%= render '_mavlink_v2_header_tlm.txt', locals: {msgid: #{msg[:id]}} %>"
+    # Build template with default values for all fields
+    template = build_telemetry_template(msg)
+    f.puts "  TEMPLATE '#{template}'"
+    f.puts "  # Processed as JSON - fields extracted by JsonAccessor"
+    f.puts ""
 
-    # Sort fields according to MAVLink v2 wire format (by size)
-    sorted_fields = sort_fields_for_wire_format(msg[:fields])
+    # Add metadata fields (injected by protocol)
+    f.puts "  APPEND_ID_ITEM MSGID 16 UINT #{msg[:id]} \"Message ID\""
+    f.puts "    KEY $.MSGID"
+    f.puts ""
+    f.puts "  APPEND_ITEM MSGNAME 0 STRING \"Message name\""
+    f.puts "    KEY $.MSGNAME"
+    f.puts ""
+    f.puts "  APPEND_ITEM SYSTEM_ID 8 UINT \"System ID\""
+    f.puts "    KEY $.SYSTEM_ID"
+    f.puts ""
+    f.puts "  APPEND_ITEM COMPONENT_ID 8 UINT \"Component ID\""
+    f.puts "    KEY $.COMPONENT_ID"
+    f.puts ""
 
-    # IMPORTANT: LITTLE_ENDIAN requires explicit bit offsets (APPEND doesn't work per COSMOS docs)
-    # Write fields in wire format order with calculated bit offsets
-    has_extensions = sorted_fields.any? { |field| field[:extension] }
-    wrote_extension_comment = false
-    current_bit_offset = 80  # Start after 10-byte header
-
-    sorted_fields.each do |field|
-      if field[:extension] && !wrote_extension_comment
-        f.puts "  # MAVLink 2 Extension Fields"
-        wrote_extension_comment = true
+    # Add message-specific fields (in original order, no sorting needed)
+    msg[:fields].each do |field|
+      if field[:extension]
+        f.puts "  # MAVLink 2 Extension Field" if msg[:fields].find { |f| f[:extension] } == field
       end
-
-      # Calculate item placement offset: current + bits - 8
-      item_offset = current_bit_offset + field_bit_size(field) - 8
-      write_telemetry_field(f, field, item_offset)
-
-      # Update current offset: add 8 for next iteration
-      current_bit_offset = item_offset + 8
+      write_telemetry_field(f, field)
     end
-
-    # Add checksum at the end with same offset calculation
-    checksum_offset = current_bit_offset + 16 - 8
-    f.puts "  ITEM CHECKSUM #{checksum_offset} 16 UINT \"CRC-16/MCRF4XX checksum\""
-    f.puts "    FORMAT_STRING \"0x%04X\""
   end
 
-  def write_telemetry_field(f, field, bit_offset)
-    bit_size = field_bit_size(field)
-    c_type = cosmos_type(field)
-    desc = truncate_description(field[:description], 80)
+  def build_telemetry_template(msg)
+    # Build JSON object with metadata and all fields with default values
+    template_obj = {
+      "MSGID" => msg[:id],
+      "MSGNAME" => msg[:name],
+      "SYSTEM_ID" => 0,
+      "COMPONENT_ID" => 0
+    }
 
-    # Use ITEM with explicit bit offset
-    if field[:array_size] && field[:type] != 'char'
-      item_bits = TYPE_MAP[field[:type]]&.dig(:bits) || 8
-      f.puts "  ARRAY_ITEM #{field[:name]} #{bit_offset} #{item_bits} #{c_type} #{bit_size} \"#{desc}\""
+    # Add all message fields with default values based on type
+    msg[:fields].each do |field|
+      json_key = field[:original_name]
+      default_value = get_field_default_value(field)
+      template_obj[json_key] = default_value
+    end
+
+    JSON.generate(template_obj)
+  end
+
+  def get_field_default_value(field)
+    if field[:type] == 'char'
+      return ""
+    elsif field[:array_size]
+      # Return array of zeros for array types
+      return Array.new(field[:array_size], 0)
+    elsif field[:type].include?('float') || field[:type] == 'double'
+      return 0.0
     else
-      f.puts "  ITEM #{field[:name]} #{bit_offset} #{bit_size} #{c_type} \"#{desc}\""
+      return 0
+    end
+  end
+
+  def write_telemetry_field(f, field)
+    desc = truncate_description(field[:description], 80)
+    json_key = field[:original_name]  # Use original case from XML
+
+    # For JSON accessor, arrays and complex types should use 0 bit size
+    # Individual scalar types can specify their size
+    if field[:array_size] && field[:type] != 'char'
+      # Non-char arrays: use 0 bit size, let JsonAccessor handle it
+      bit_size_val = 0
+      c_type = 'STRING'  # Arrays are represented as JSON arrays (string format)
+    else
+      bit_size_val = bit_size(field)
+      c_type = cosmos_type(field)
     end
 
-    # Add format string if specified
-    if field[:print_format]
-      cosmos_format = convert_print_format(field[:print_format])
-      f.puts "    FORMAT_STRING \"#{cosmos_format}\""
-    end
+    # Use APPEND_ITEM with JsonAccessor KEY
+    f.puts "  APPEND_ITEM #{field[:name]} #{bit_size_val} #{c_type} \"#{desc}\""
+    f.puts "    KEY $.#{json_key}"
 
     # Add units if specified
     if field[:units]
@@ -373,21 +365,22 @@ class MavlinkToCosmosConverter
         end
       end
     end
+
+    f.puts ""
   end
 
   # ============================================================================
-  # COMMAND GENERATION - MAV_CMD_* entries become commands via COMMAND_LONG
+  # COMMAND GENERATION - MAV_CMD_* entries become commands (JSON format)
   # ============================================================================
 
   def generate_command_file(output_path)
     File.open(output_path, 'w') do |f|
-      f.puts "# MAVLink Common Message Set - Command Definitions"
+      f.puts "# MAVLink Common Message Set - Command Definitions (JSON Format)"
       f.puts "# Auto-generated from #{File.basename(@xml_file)}"
       f.puts "# Reference: https://mavlink.io/en/messages/common.html"
-      f.puts "# Note: MAVLink uses LITTLE_ENDIAN byte order"
       f.puts "#"
-      f.puts "# Commands are MAV_CMD_* entries sent via COMMAND_LONG (ID 76)"
-      f.puts "# Each command uses the COMMAND_LONG message format with 7 float parameters"
+      f.puts "# Commands are sent as JSON and converted to MAVLink by the Python protocol"
+      f.puts "# MAV_CMD_* entries are sent via COMMAND_LONG (ID 76)"
       f.puts ""
 
       # First, write a generic COMMAND_LONG for advanced users
@@ -410,28 +403,18 @@ class MavlinkToCosmosConverter
     f.puts "# Use this for commands not explicitly defined below"
     f.puts "# " + "=" * 76
 
-    f.puts "COMMAND #{TARGET_NAME_PLACEHOLDER} COMMAND_LONG LITTLE_ENDIAN \"Send a MAVLink command with parameters\""
-
-    # Include MAVLink v2 header with explicit bit offsets
-    f.puts "  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: #{COMMAND_LONG_MSG_ID}, payload_len: #{COMMAND_LONG_PAYLOAD_SIZE}} %>"
-
-    current_bit_offset = 80  # Start after 10-byte header
-
-    # TARGET_SYSTEM (8 bits)
-    param_offset = current_bit_offset + 8 - 8
-    f.puts "  PARAMETER TARGET_SYSTEM #{param_offset} 8 UINT 0 255 1 \"Target system ID\""
-    current_bit_offset = param_offset + 8
-
-    # TARGET_COMPONENT (8 bits)
-    param_offset = current_bit_offset + 8 - 8
-    f.puts "  PARAMETER TARGET_COMPONENT #{param_offset} 8 UINT 0 255 1 \"Target component ID\""
-    current_bit_offset = param_offset + 8
-
-    # COMMAND (16 bits)
-    param_offset = current_bit_offset + 16 - 8
-    f.puts "  PARAMETER COMMAND #{param_offset} 16 UINT 0 65535 0 \"MAV_CMD command ID\""
-
-    # Add states for common commands
+    f.puts "COMMAND #{TARGET_NAME_PLACEHOLDER} COMMAND_LONG BIG_ENDIAN \"Send a MAVLink command with parameters\""
+    f.puts "  ACCESSOR JsonAccessor"
+    f.puts "  TEMPLATE '{\"MSGNAME\":\"COMMAND_LONG\",\"target_system\":1,\"target_component\":1,\"command\":0,\"confirmation\":0,\"param1\":0.0,\"param2\":0.0,\"param3\":0.0,\"param4\":0.0,\"param5\":0.0,\"param6\":0.0,\"param7\":0.0}'"
+    f.puts "  # Sent as JSON - converted to MAVLink by protocol"
+    f.puts ""
+    f.puts "  APPEND_PARAMETER MSGNAME 0 STRING \"COMMAND_LONG\" \"Message type\""
+    f.puts ""
+    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 1 0 255 \"Target system ID\""
+    f.puts ""
+    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 1 0 255 \"Target component ID\""
+    f.puts ""
+    f.puts "  APPEND_PARAMETER COMMAND 16 UINT 0 0 65535 \"MAV_CMD command ID\""
     f.puts "    STATE MAV_CMD_NAV_WAYPOINT 16"
     f.puts "    STATE MAV_CMD_NAV_RETURN_TO_LAUNCH 20"
     f.puts "    STATE MAV_CMD_NAV_LAND 21"
@@ -439,25 +422,20 @@ class MavlinkToCosmosConverter
     f.puts "    STATE MAV_CMD_DO_SET_MODE 176"
     f.puts "    STATE MAV_CMD_COMPONENT_ARM_DISARM 400"
     f.puts "    STATE MAV_CMD_REQUEST_MESSAGE 512"
+    f.puts ""
+    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 \"0=First transmission, increment for retries\""
+    f.puts ""
 
-    current_bit_offset = param_offset + 8
-
-    # CONFIRMATION (8 bits)
-    param_offset = current_bit_offset + 8 - 8
-    f.puts "  PARAMETER CONFIRMATION #{param_offset} 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
-    current_bit_offset = param_offset + 8
-
-    # PARAM1-7 (each 32 bits)
+    # PARAM1-7 (each 32-bit float)
     (1..7).each do |i|
-      param_offset = current_bit_offset + 32 - 8
       label = case i
       when 5 then "Parameter 5 (often Latitude)"
       when 6 then "Parameter 6 (often Longitude)"
       when 7 then "Parameter 7 (often Altitude)"
       else "Parameter #{i}"
       end
-      f.puts "  PARAMETER PARAM#{i} #{param_offset} 32 FLOAT MIN MAX 0.0 \"#{label}\""
-      current_bit_offset = param_offset + 8
+      f.puts "  APPEND_PARAMETER PARAM#{i} 32 FLOAT 0.0 MIN MAX \"#{label}\""
+      f.puts ""
     end
 
     f.puts "  RESPONSE #{TARGET_NAME_PLACEHOLDER} COMMAND_ACK"
@@ -475,41 +453,30 @@ class MavlinkToCosmosConverter
     f.puts "# " + "=" * 76
 
     short_desc = truncate_description(description, 100)
-    f.puts "COMMAND #{TARGET_NAME_PLACEHOLDER} #{cmd_name} LITTLE_ENDIAN \"#{short_desc}\""
+    f.puts "COMMAND #{TARGET_NAME_PLACEHOLDER} #{cmd_name} BIG_ENDIAN \"#{short_desc}\""
+    f.puts "  ACCESSOR JsonAccessor"
 
-    # Include MAVLink v2 header with explicit bit offsets
-    f.puts "  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: #{COMMAND_LONG_MSG_ID}, payload_len: #{COMMAND_LONG_PAYLOAD_SIZE}} %>"
-
-    # COMMAND_LONG structure with explicit bit offsets
-    current_bit_offset = 80  # Start after 10-byte header
-
-    # TARGET_SYSTEM (8 bits)
-    param_offset = current_bit_offset + 8 - 8
-    f.puts "  PARAMETER TARGET_SYSTEM #{param_offset} 8 UINT 0 255 1 \"Target system ID\""
-    current_bit_offset = param_offset + 8
-
-    # TARGET_COMPONENT (8 bits)
-    param_offset = current_bit_offset + 8 - 8
-    f.puts "  PARAMETER TARGET_COMPONENT #{param_offset} 8 UINT 0 255 1 \"Target component ID\""
-    current_bit_offset = param_offset + 8
-
-    # COMMAND (16 bits)
-    param_offset = current_bit_offset + 16 - 8
-    f.puts "  PARAMETER COMMAND #{param_offset} 16 UINT #{cmd_id} #{cmd_id} #{cmd_id} \"#{cmd[:name]}\""
-    current_bit_offset = param_offset + 8
-
-    # CONFIRMATION (8 bits)
-    param_offset = current_bit_offset + 8 - 8
-    f.puts "  PARAMETER CONFIRMATION #{param_offset} 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
-    current_bit_offset = param_offset + 8
+    # Build template with default values for all params
+    template = build_command_template(cmd)
+    f.puts "  TEMPLATE '#{template}'"
+    f.puts "  # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol"
+    f.puts ""
+    f.puts "  APPEND_PARAMETER MSGNAME 0 STRING \"COMMAND_LONG\" \"Message type\""
+    f.puts ""
+    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 1 0 255 \"Target system ID\""
+    f.puts ""
+    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 1 0 255 \"Target component ID\""
+    f.puts ""
+    f.puts "  APPEND_PARAMETER COMMAND 16 UINT #{cmd_id} #{cmd_id} #{cmd_id} \"#{cmd[:name]}\""
+    f.puts ""
+    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 \"0=First transmission, increment for retries\""
+    f.puts ""
 
     # Write param1-7 based on command definition
     params = cmd[:params] || []
     (1..7).each do |i|
-      param_offset = current_bit_offset + 32 - 8
       param = params.find { |p| p[:index] == i } || { reserved: true }
-      write_command_param(f, i, param, param_offset)
-      current_bit_offset = param_offset + 8
+      write_command_param(f, i, param)
     end
 
     f.puts "  RESPONSE #{TARGET_NAME_PLACEHOLDER} COMMAND_ACK"
@@ -520,7 +487,31 @@ class MavlinkToCosmosConverter
     end
   end
 
-  def write_command_param(f, index, param, bit_offset)
+  def build_command_template(cmd)
+    cmd_id = cmd[:value]
+    params = cmd[:params] || []
+
+    # Build JSON object with lowercase keys (matching MAVLink convention)
+    template_obj = {
+      "MSGNAME" => "COMMAND_LONG",
+      "target_system" => 1,
+      "target_component" => 1,
+      "command" => cmd_id,
+      "confirmation" => 0
+    }
+
+    # Add param1-7 with default values
+    (1..7).each do |i|
+      param = params.find { |p| p[:index] == i }
+      default_val = param&.dig(:default) || "0.0"
+      default_val = "0.0" if default_val == "NaN" || default_val.to_s.empty?
+      template_obj["param#{i}"] = default_val.to_f
+    end
+
+    JSON.generate(template_obj)
+  end
+
+  def write_command_param(f, index, param)
     param_name = param[:label]&.upcase&.gsub(/[^A-Z0-9_]/, '_') || "PARAM#{index}"
     param_name = "PARAM#{index}" if param_name.empty?
 
@@ -536,10 +527,10 @@ class MavlinkToCosmosConverter
     default_val = "0.0" if default_val == "NaN" || default_val.to_s.empty?
 
     if param[:reserved]
-      f.puts "  PARAMETER PARAM#{index} #{bit_offset} 32 FLOAT MIN MAX 0.0 \"Reserved (set to 0)\""
+      f.puts "  APPEND_PARAMETER PARAM#{index} 32 FLOAT 0.0 MIN MAX \"Reserved (set to 0)\""
       f.puts "    HIDDEN"
     else
-      f.puts "  PARAMETER #{param_name} #{bit_offset} 32 FLOAT MIN MAX #{default_val} \"#{desc}\""
+      f.puts "  APPEND_PARAMETER #{param_name} 32 FLOAT #{default_val} MIN MAX \"#{desc}\""
 
       # Add units if specified
       if param[:units]
@@ -558,6 +549,8 @@ class MavlinkToCosmosConverter
         end
       end
     end
+
+    f.puts ""
   end
 
   def is_hazardous_command?(cmd_name)
@@ -600,10 +593,6 @@ class MavlinkToCosmosConverter
   # ============================================================================
   # HELPER METHODS
   # ============================================================================
-
-  def convert_print_format(mavlink_format)
-    mavlink_format.gsub('0x%04x', '0x%04X').gsub('0x%08x', '0x%08X')
-  end
 
   def truncate_description(desc, max_len)
     clean = desc.to_s.gsub('"', "'").gsub(/\s+/, ' ').strip
@@ -683,8 +672,8 @@ class MavlinkToCosmosConverter
     puts "  Telemetry: #{tlm_path} (#{@messages.size} messages)"
     puts "  Commands:  #{cmd_path} (#{@mav_commands.size} MAV_CMD entries)"
     puts ""
-    puts "Note: CRC_EXTRA values are in lib/mavlink_crc_extra.rb"
-    puts "      (sourced from MAVLink C library, not generated)"
+    puts "Format: JSON accessor (no binary offsets needed)"
+    puts "Protocol: Python UdpMavlinkProtocol handles MAVLink encoding/decoding"
     puts ""
   end
 end

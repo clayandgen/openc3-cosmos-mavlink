@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
     openc3-cosmos-mavlink plugin for deployment to OpenC3
   EOF
   s.license = 'MIT'
-  s.authors = ['Anonymous']
-  s.email = ['name@domain.com']
+  s.authors = ['Clay Kramp']
+  s.email = ['clay@openc3.com']
   s.homepage = 'https://github.com/OpenC3/cosmos'
   s.platform = Gem::Platform::RUBY
   s.required_ruby_version = '>= 3.0'
@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
     time = Time.now.strftime("%Y%m%d%H%M%S")
     s.version = '0.0.0' + ".#{time}"
   end
-  s.files = Dir.glob("{targets,lib,public,tools,microservices}/**/*") + %w(Rakefile README.md LICENSE.txt plugin.txt)
+  s.files = Dir.glob("{targets,lib,public,tools,microservices}/**/*") + %w(Rakefile README.md LICENSE.txt plugin.txt requirements.txt)
 end
