@@ -324,12 +324,17 @@ class MavlinkToCosmosConverter
         wrote_extension_comment = true
       end
 
-      write_telemetry_field(f, field, current_bit_offset)
-      current_bit_offset += field_bit_size(field)
+      # Calculate item placement offset: current + bits - 8
+      item_offset = current_bit_offset + field_bit_size(field) - 8
+      write_telemetry_field(f, field, item_offset)
+
+      # Update current offset: add 8 for next iteration
+      current_bit_offset = item_offset + 8
     end
 
-    # Add checksum at the end
-    f.puts "  APPEND_ITEM CHECKSUM 16 UINT \"CRC-16/MCRF4XX checksum\""
+    # Add checksum at the end with same offset calculation
+    checksum_offset = current_bit_offset + 16 - 8
+    f.puts "  ITEM CHECKSUM #{checksum_offset} 16 UINT \"CRC-16/MCRF4XX checksum\""
     f.puts "    FORMAT_STRING \"0x%04X\""
   end
 
@@ -338,12 +343,12 @@ class MavlinkToCosmosConverter
     c_type = cosmos_type(field)
     desc = truncate_description(field[:description], 80)
 
-    # Payload fields use APPEND (only header needs explicit offsets for bitfields)
+    # Use ITEM with explicit bit offset
     if field[:array_size] && field[:type] != 'char'
       item_bits = TYPE_MAP[field[:type]]&.dig(:bits) || 8
-      f.puts "  APPEND_ARRAY_ITEM #{field[:name]} #{item_bits} #{c_type} #{bit_size} \"#{desc}\""
+      f.puts "  ARRAY_ITEM #{field[:name]} #{bit_offset} #{item_bits} #{c_type} #{bit_size} \"#{desc}\""
     else
-      f.puts "  APPEND_ITEM #{field[:name]} #{bit_size} #{c_type} \"#{desc}\""
+      f.puts "  ITEM #{field[:name]} #{bit_offset} #{bit_size} #{c_type} \"#{desc}\""
     end
 
     # Add format string if specified
@@ -410,9 +415,21 @@ class MavlinkToCosmosConverter
     # Include MAVLink v2 header with explicit bit offsets
     f.puts "  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: #{COMMAND_LONG_MSG_ID}, payload_len: #{COMMAND_LONG_PAYLOAD_SIZE}} %>"
 
-    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 \"Target system ID\""
-    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 \"Target component ID\""
-    f.puts "  APPEND_PARAMETER COMMAND 16 UINT 0 65535 0 \"MAV_CMD command ID\""
+    current_bit_offset = 80  # Start after 10-byte header
+
+    # TARGET_SYSTEM (8 bits)
+    param_offset = current_bit_offset + 8 - 8
+    f.puts "  PARAMETER TARGET_SYSTEM #{param_offset} 8 UINT 0 255 1 \"Target system ID\""
+    current_bit_offset = param_offset + 8
+
+    # TARGET_COMPONENT (8 bits)
+    param_offset = current_bit_offset + 8 - 8
+    f.puts "  PARAMETER TARGET_COMPONENT #{param_offset} 8 UINT 0 255 1 \"Target component ID\""
+    current_bit_offset = param_offset + 8
+
+    # COMMAND (16 bits)
+    param_offset = current_bit_offset + 16 - 8
+    f.puts "  PARAMETER COMMAND #{param_offset} 16 UINT 0 65535 0 \"MAV_CMD command ID\""
 
     # Add states for common commands
     f.puts "    STATE MAV_CMD_NAV_WAYPOINT 16"
@@ -423,14 +440,26 @@ class MavlinkToCosmosConverter
     f.puts "    STATE MAV_CMD_COMPONENT_ARM_DISARM 400"
     f.puts "    STATE MAV_CMD_REQUEST_MESSAGE 512"
 
-    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
-    f.puts "  APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 \"Parameter 1\""
-    f.puts "  APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 \"Parameter 2\""
-    f.puts "  APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 \"Parameter 3\""
-    f.puts "  APPEND_PARAMETER PARAM4 32 FLOAT MIN MAX 0.0 \"Parameter 4\""
-    f.puts "  APPEND_PARAMETER PARAM5 32 FLOAT MIN MAX 0.0 \"Parameter 5 (often Latitude)\""
-    f.puts "  APPEND_PARAMETER PARAM6 32 FLOAT MIN MAX 0.0 \"Parameter 6 (often Longitude)\""
-    f.puts "  APPEND_PARAMETER PARAM7 32 FLOAT MIN MAX 0.0 \"Parameter 7 (often Altitude)\""
+    current_bit_offset = param_offset + 8
+
+    # CONFIRMATION (8 bits)
+    param_offset = current_bit_offset + 8 - 8
+    f.puts "  PARAMETER CONFIRMATION #{param_offset} 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
+    current_bit_offset = param_offset + 8
+
+    # PARAM1-7 (each 32 bits)
+    (1..7).each do |i|
+      param_offset = current_bit_offset + 32 - 8
+      label = case i
+      when 5 then "Parameter 5 (often Latitude)"
+      when 6 then "Parameter 6 (often Longitude)"
+      when 7 then "Parameter 7 (often Altitude)"
+      else "Parameter #{i}"
+      end
+      f.puts "  PARAMETER PARAM#{i} #{param_offset} 32 FLOAT MIN MAX 0.0 \"#{label}\""
+      current_bit_offset = param_offset + 8
+    end
+
     f.puts "  RESPONSE #{TARGET_NAME_PLACEHOLDER} COMMAND_ACK"
   end
 
@@ -451,17 +480,36 @@ class MavlinkToCosmosConverter
     # Include MAVLink v2 header with explicit bit offsets
     f.puts "  <%= render '_mavlink_v2_header_cmd.txt', locals: {msgid: #{COMMAND_LONG_MSG_ID}, payload_len: #{COMMAND_LONG_PAYLOAD_SIZE}} %>"
 
-    # COMMAND_LONG structure - use APPEND_* for automatic positioning
-    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 \"Target system ID\""
-    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 \"Target component ID\""
-    f.puts "  APPEND_PARAMETER COMMAND 16 UINT #{cmd_id} #{cmd_id} #{cmd_id} \"#{cmd[:name]}\""
-    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
+    # COMMAND_LONG structure with explicit bit offsets
+    current_bit_offset = 80  # Start after 10-byte header
+
+    # TARGET_SYSTEM (8 bits)
+    param_offset = current_bit_offset + 8 - 8
+    f.puts "  PARAMETER TARGET_SYSTEM #{param_offset} 8 UINT 0 255 1 \"Target system ID\""
+    current_bit_offset = param_offset + 8
+
+    # TARGET_COMPONENT (8 bits)
+    param_offset = current_bit_offset + 8 - 8
+    f.puts "  PARAMETER TARGET_COMPONENT #{param_offset} 8 UINT 0 255 1 \"Target component ID\""
+    current_bit_offset = param_offset + 8
+
+    # COMMAND (16 bits)
+    param_offset = current_bit_offset + 16 - 8
+    f.puts "  PARAMETER COMMAND #{param_offset} 16 UINT #{cmd_id} #{cmd_id} #{cmd_id} \"#{cmd[:name]}\""
+    current_bit_offset = param_offset + 8
+
+    # CONFIRMATION (8 bits)
+    param_offset = current_bit_offset + 8 - 8
+    f.puts "  PARAMETER CONFIRMATION #{param_offset} 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
+    current_bit_offset = param_offset + 8
 
     # Write param1-7 based on command definition
     params = cmd[:params] || []
     (1..7).each do |i|
+      param_offset = current_bit_offset + 32 - 8
       param = params.find { |p| p[:index] == i } || { reserved: true }
-      write_command_param(f, i, param)
+      write_command_param(f, i, param, param_offset)
+      current_bit_offset = param_offset + 8
     end
 
     f.puts "  RESPONSE #{TARGET_NAME_PLACEHOLDER} COMMAND_ACK"
@@ -472,7 +520,7 @@ class MavlinkToCosmosConverter
     end
   end
 
-  def write_command_param(f, index, param)
+  def write_command_param(f, index, param, bit_offset)
     param_name = param[:label]&.upcase&.gsub(/[^A-Z0-9_]/, '_') || "PARAM#{index}"
     param_name = "PARAM#{index}" if param_name.empty?
 
@@ -488,10 +536,10 @@ class MavlinkToCosmosConverter
     default_val = "0.0" if default_val == "NaN" || default_val.to_s.empty?
 
     if param[:reserved]
-      f.puts "  APPEND_PARAMETER PARAM#{index} 32 FLOAT MIN MAX 0.0 \"Reserved (set to 0)\""
+      f.puts "  PARAMETER PARAM#{index} #{bit_offset} 32 FLOAT MIN MAX 0.0 \"Reserved (set to 0)\""
       f.puts "    HIDDEN"
     else
-      f.puts "  APPEND_PARAMETER #{param_name} 32 FLOAT MIN MAX #{default_val} \"#{desc}\""
+      f.puts "  PARAMETER #{param_name} #{bit_offset} 32 FLOAT MIN MAX #{default_val} \"#{desc}\""
 
       # Add units if specified
       if param[:units]

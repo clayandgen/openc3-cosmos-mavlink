@@ -84,6 +84,7 @@ module OpenC3
 
         # Calculate total packet length
         total_len = MAVLINK_HEADER_LEN + payload_len + MAVLINK_CRC_LEN
+        Logger.info(total_len)
 
         # Wait for complete packet
         return :STOP, extra if @data_buffer.length < total_len
@@ -91,6 +92,7 @@ module OpenC3
         # Extract the complete packet
         packet_data = @data_buffer[0, total_len]
         @data_buffer = @data_buffer[total_len..-1] || ''
+        Logger.info(packet_data)
 
         # Validate CRC
         if validate_crc(packet_data)
