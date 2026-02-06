@@ -1,0 +1,33 @@
+# MAVLink Error Telemetry
+# Injected by UdpMavlinkProtocol when packet decode failures occur
+
+TELEMETRY <%= target_name %> MAVLINK_ERROR BIG_ENDIAN "MAVLink packet decode error"
+  ACCESSOR JsonAccessor
+  TEMPLATE '{"MSGID":65535,"MSGNAME":"MAVLINK_ERROR","SYSTEM_ID":0,"COMPONENT_ID":0,"timestamp":0,"error_type":"","error_message":"","packet_length":0,"raw_packet":""}'
+
+  APPEND_ID_ITEM MSGID 16 UINT 65535 "Message ID (65535 for errors)"
+    KEY $.MSGID
+
+  APPEND_ITEM MSGNAME 0 STRING "Message name"
+    KEY $.MSGNAME
+
+  APPEND_ITEM SYSTEM_ID 8 UINT "System ID (if available)"
+    KEY $.SYSTEM_ID
+
+  APPEND_ITEM COMPONENT_ID 8 UINT "Component ID (if available)"
+    KEY $.COMPONENT_ID
+
+  APPEND_ITEM TIMESTAMP 64 UINT "Unix timestamp in microseconds"
+    KEY $.timestamp
+
+  APPEND_ITEM ERROR_TYPE 0 STRING "Type of error (CRC_FAILURE, PARSE_ERROR, etc.)"
+    KEY $.error_type
+
+  APPEND_ITEM ERROR_MESSAGE 0 STRING "Detailed error message"
+    KEY $.error_message
+
+  APPEND_ITEM PACKET_LENGTH 16 UINT "Length of failed packet in bytes"
+    KEY $.packet_length
+
+  APPEND_ITEM RAW_PACKET 0 STRING "Hex dump of raw packet data"
+    KEY $.raw_packet

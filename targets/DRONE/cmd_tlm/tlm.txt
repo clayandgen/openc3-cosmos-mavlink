@@ -626,11 +626,13 @@ TELEMETRY <%= target_name %> GPS_RAW_INT BIG_ENDIAN "The global position, as ret
 
   APPEND_ITEM LAT 32 INT "Latitude (WGS84, EGM96 ellipsoid)"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude (WGS84, EGM96 ellipsoid)"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude (MSL). Positive for up. Note that virtually all GPS modules provide ..."
     KEY $.alt
@@ -1128,11 +1130,13 @@ TELEMETRY <%= target_name %> GLOBAL_POSITION_INT BIG_ENDIAN "The filtered global
 
   APPEND_ITEM LAT 32 INT "Latitude, expressed"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude, expressed"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL."
     KEY $.alt
@@ -1916,11 +1920,13 @@ TELEMETRY <%= target_name %> SET_GPS_GLOBAL_ORIGIN BIG_ENDIAN "Sets the GPS coor
 
   APPEND_ITEM LATITUDE 32 INT "Latitude (WGS84)"
     KEY $.latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LONGITUDE 32 INT "Longitude (WGS84)"
     KEY $.longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALTITUDE 32 INT "Altitude (MSL). Positive for up."
     KEY $.altitude
@@ -1957,11 +1963,13 @@ TELEMETRY <%= target_name %> GPS_GLOBAL_ORIGIN BIG_ENDIAN "Publishes the GPS coo
 
   APPEND_ITEM LATITUDE 32 INT "Latitude (WGS84)"
     KEY $.latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LONGITUDE 32 INT "Longitude (WGS84)"
     KEY $.longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALTITUDE 32 INT "Altitude (MSL). Positive for up."
     KEY $.altitude
@@ -2315,11 +2323,13 @@ TELEMETRY <%= target_name %> GLOBAL_POSITION_INT_COV BIG_ENDIAN "The filtered gl
 
   APPEND_ITEM LAT 32 INT "Latitude"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude in meters above MSL"
     KEY $.alt
@@ -3487,11 +3497,13 @@ TELEMETRY <%= target_name %> SET_POSITION_TARGET_GLOBAL_INT BIG_ENDIAN "Sets a d
 
   APPEND_ITEM LAT_INT 32 INT "Latitude in WGS84 frame"
     KEY $.lat_int
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON_INT 32 INT "Longitude in WGS84 frame"
     KEY $.lon_int
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 FLOAT "Altitude (MSL, Relative to home, or AGL - depending on frame)"
     KEY $.alt
@@ -3566,11 +3578,13 @@ TELEMETRY <%= target_name %> POSITION_TARGET_GLOBAL_INT BIG_ENDIAN "Reports the 
 
   APPEND_ITEM LAT_INT 32 INT "Latitude in WGS84 frame"
     KEY $.lat_int
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON_INT 32 INT "Longitude in WGS84 frame"
     KEY $.lon_int
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 FLOAT "Altitude (MSL, AGL or relative to home altitude, depending on frame)"
     KEY $.alt
@@ -3714,11 +3728,13 @@ TELEMETRY <%= target_name %> HIL_STATE BIG_ENDIAN "Sent from simulation to autop
 
   APPEND_ITEM LAT 32 INT "Latitude"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude"
     KEY $.alt
@@ -4546,11 +4562,13 @@ TELEMETRY <%= target_name %> SIM_STATE BIG_ENDIAN "Status of simulation environm
   # MAVLink 2 Extension Field
   APPEND_ITEM LAT_INT 32 INT "Latitude (higher precision). If 0, recipients should use the lat field value ..."
     KEY $.lat_int
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON_INT 32 INT "Longitude (higher precision). If 0, recipients should use the lon field value..."
     KEY $.lon_int
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
 
 # ============================================================================
@@ -4745,11 +4763,13 @@ TELEMETRY <%= target_name %> HIL_GPS BIG_ENDIAN "The global position, as returne
 
   APPEND_ITEM LAT 32 INT "Latitude (WGS84)"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude (WGS84)"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude (MSL). Positive for up."
     KEY $.alt
@@ -4906,11 +4926,13 @@ TELEMETRY <%= target_name %> HIL_STATE_QUATERNION BIG_ENDIAN "Sent from simulati
 
   APPEND_ITEM LAT 32 INT "Latitude"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude"
     KEY $.alt
@@ -5296,11 +5318,13 @@ TELEMETRY <%= target_name %> GPS2_RAW BIG_ENDIAN "Second GPS data."
 
   APPEND_ITEM LAT 32 INT "Latitude (WGS84)"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude (WGS84)"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude (MSL). Positive for up."
     KEY $.alt
@@ -5845,11 +5869,13 @@ TELEMETRY <%= target_name %> TERRAIN_REQUEST BIG_ENDIAN "Request for terrain dat
 
   APPEND_ITEM LAT 32 INT "Latitude of SW corner of first grid"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude of SW corner of first grid"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM GRID_SPACING 16 UINT "Grid spacing"
     KEY $.grid_spacing
@@ -5884,11 +5910,13 @@ TELEMETRY <%= target_name %> TERRAIN_DATA BIG_ENDIAN "Terrain data sent from GCS
 
   APPEND_ITEM LAT 32 INT "Latitude of SW corner of first grid"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude of SW corner of first grid"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM GRID_SPACING 16 UINT "Grid spacing"
     KEY $.grid_spacing
@@ -5927,11 +5955,13 @@ TELEMETRY <%= target_name %> TERRAIN_CHECK BIG_ENDIAN "Request that the vehicle 
 
   APPEND_ITEM LAT 32 INT "Latitude"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
 
 # ============================================================================
@@ -5959,11 +5989,13 @@ TELEMETRY <%= target_name %> TERRAIN_REPORT BIG_ENDIAN "Streamed from drone to r
 
   APPEND_ITEM LAT 32 INT "Latitude"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM SPACING 16 UINT "grid spacing (zero if terrain at this location unavailable)"
     KEY $.spacing
@@ -6301,11 +6333,13 @@ TELEMETRY <%= target_name %> FOLLOW_TARGET BIG_ENDIAN "Current motion informatio
 
   APPEND_ITEM LAT 32 INT "Latitude (WGS84)"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude (WGS84)"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 FLOAT "Altitude (MSL)"
     KEY $.alt
@@ -7053,11 +7087,13 @@ TELEMETRY <%= target_name %> GPS_INPUT BIG_ENDIAN "GPS sensor input message. Thi
 
   APPEND_ITEM LAT 32 INT "Latitude (WGS84)"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude (WGS84)"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 FLOAT "Altitude (MSL). Positive for up."
     KEY $.alt
@@ -7191,11 +7227,13 @@ TELEMETRY <%= target_name %> HIGH_LATENCY BIG_ENDIAN "Message appropriate for hi
 
   APPEND_ITEM LATITUDE 32 INT "Latitude"
     KEY $.latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LONGITUDE 32 INT "Longitude"
     KEY $.longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALTITUDE_AMSL 16 INT "Altitude above mean sea level"
     KEY $.altitude_amsl
@@ -7295,11 +7333,13 @@ TELEMETRY <%= target_name %> HIGH_LATENCY2 BIG_ENDIAN "Message appropriate for h
 
   APPEND_ITEM LATITUDE 32 INT "Latitude"
     KEY $.latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LONGITUDE 32 INT "Longitude"
     KEY $.longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALTITUDE 16 INT "Altitude above mean sea level"
     KEY $.altitude
@@ -7459,11 +7499,13 @@ TELEMETRY <%= target_name %> HOME_POSITION BIG_ENDIAN "Contains the home positio
 
   APPEND_ITEM LATITUDE 32 INT "Latitude (WGS84)"
     KEY $.latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LONGITUDE 32 INT "Longitude (WGS84)"
     KEY $.longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALTITUDE 32 INT "Altitude (MSL). Positive for up."
     KEY $.altitude
@@ -7538,11 +7580,13 @@ TELEMETRY <%= target_name %> SET_HOME_POSITION BIG_ENDIAN "Sets the home positio
 
   APPEND_ITEM LATITUDE 32 INT "Latitude (WGS84)"
     KEY $.latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LONGITUDE 32 INT "Longitude (WGS84)"
     KEY $.longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALTITUDE 32 INT "Altitude (MSL). Positive for up."
     KEY $.altitude
@@ -7678,11 +7722,13 @@ TELEMETRY <%= target_name %> ADSB_VEHICLE BIG_ENDIAN "The location and informati
 
   APPEND_ITEM LAT 32 INT "Latitude"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALTITUDE_TYPE 8 UINT "ADSB altitude type."
     KEY $.altitude_type
@@ -8453,11 +8499,13 @@ TELEMETRY <%= target_name %> CAMERA_IMAGE_CAPTURED BIG_ENDIAN "Information about
 
   APPEND_ITEM LAT 32 INT "Latitude where image was taken"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude where capture was taken"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude (MSL) where image was taken"
     KEY $.alt
@@ -8850,11 +8898,13 @@ TELEMETRY <%= target_name %> CAMERA_FOV_STATUS BIG_ENDIAN "Information about the
 
   APPEND_ITEM LAT_CAMERA 32 INT "Latitude of camera (INT32_MAX if unknown)."
     KEY $.lat_camera
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON_CAMERA 32 INT "Longitude of camera (INT32_MAX if unknown)."
     KEY $.lon_camera
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT_CAMERA 32 INT "Altitude (MSL) of camera (INT32_MAX if unknown)."
     KEY $.alt_camera
@@ -8862,11 +8912,13 @@ TELEMETRY <%= target_name %> CAMERA_FOV_STATUS BIG_ENDIAN "Information about the
 
   APPEND_ITEM LAT_IMAGE 32 INT "Latitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, ..."
     KEY $.lat_image
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON_IMAGE 32 INT "Longitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity,..."
     KEY $.lon_image
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT_IMAGE 32 INT "Altitude (MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infi..."
     KEY $.alt_image
@@ -8975,11 +9027,13 @@ TELEMETRY <%= target_name %> CAMERA_TRACKING_GEO_STATUS BIG_ENDIAN "Camera track
 
   APPEND_ITEM LAT 32 INT "Latitude of tracked object"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude of tracked object"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 FLOAT "Altitude of tracked object(AMSL, WGS84)"
     KEY $.alt
@@ -9908,11 +9962,13 @@ TELEMETRY <%= target_name %> AIS_VESSEL BIG_ENDIAN "The location and information
 
   APPEND_ITEM LAT 32 INT "Latitude"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM COG 16 UINT "Course over ground"
     KEY $.COG
@@ -10824,11 +10880,13 @@ TELEMETRY <%= target_name %> UTM_GLOBAL_POSITION BIG_ENDIAN "The global position
 
   APPEND_ITEM LAT 32 INT "Latitude (WGS84)"
     KEY $.lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LON 32 INT "Longitude (WGS84)"
     KEY $.lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALT 32 INT "Altitude (WGS84)"
     KEY $.alt
@@ -10864,11 +10922,13 @@ TELEMETRY <%= target_name %> UTM_GLOBAL_POSITION BIG_ENDIAN "The global position
 
   APPEND_ITEM NEXT_LAT 32 INT "Next waypoint, latitude (WGS84)"
     KEY $.next_lat
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM NEXT_LON 32 INT "Next waypoint, longitude (WGS84)"
     KEY $.next_lon
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM NEXT_ALT 32 INT "Next waypoint, altitude (WGS84)"
     KEY $.next_alt
@@ -12523,11 +12583,13 @@ TELEMETRY <%= target_name %> OPEN_DRONE_ID_LOCATION BIG_ENDIAN "Data for filling
 
   APPEND_ITEM LATITUDE 32 INT "Current latitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon)."
     KEY $.latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM LONGITUDE 32 INT "Current longitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon)."
     KEY $.longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM ALTITUDE_BAROMETRIC 32 FLOAT "The altitude calculated from the barometric pressure. Reference is against 29..."
     KEY $.altitude_barometric
@@ -12768,11 +12830,13 @@ TELEMETRY <%= target_name %> OPEN_DRONE_ID_SYSTEM BIG_ENDIAN "Data for filling t
 
   APPEND_ITEM OPERATOR_LATITUDE 32 INT "Latitude of the operator. If unknown: 0 (both Lat/Lon)."
     KEY $.operator_latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM OPERATOR_LONGITUDE 32 INT "Longitude of the operator. If unknown: 0 (both Lat/Lon)."
     KEY $.operator_longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM AREA_COUNT 16 UINT "Number of aircraft in the area, group or formation (default 1). Used only for..."
     KEY $.area_count
@@ -12966,11 +13030,13 @@ TELEMETRY <%= target_name %> OPEN_DRONE_ID_SYSTEM_UPDATE BIG_ENDIAN "Update the 
 
   APPEND_ITEM OPERATOR_LATITUDE 32 INT "Latitude of the operator. If unknown: 0 (both Lat/Lon)."
     KEY $.operator_latitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM OPERATOR_LONGITUDE 32 INT "Longitude of the operator. If unknown: 0 (both Lat/Lon)."
     KEY $.operator_longitude
-    UNITS "Degrees_E7" degE7
+    READ_CONVERSION dege7_conversion.py
+    UNITS "Degrees" deg
 
   APPEND_ITEM OPERATOR_ALTITUDE_GEO 32 FLOAT "Geodetic altitude of the operator relative to WGS84. If unknown: -1000 m."
     KEY $.operator_altitude_geo

@@ -16,6 +16,7 @@ from pymavlink import mavutil
 from pymavlink.dialects.v20 import common as mavlink2
 import json
 import struct
+import time
 
 
 class UdpMavlinkProtocol(Protocol):
@@ -38,10 +39,14 @@ class UdpMavlinkProtocol(Protocol):
         # Buffer for incoming data
         self.buffer = b''
 
+        # Error tracking
+        self.error_count = 0
+
     def reset(self):
         """Reset the protocol state"""
         super().reset()
         self.buffer = b''
+        self.error_count = 0
         # Only reinitialize mav if attributes are set (handles parent init calling reset)
         if hasattr(self, 'gcs_sysid') and hasattr(self, 'gcs_compid'):
             self.mav = mavlink2.MAVLink(None, srcSystem=self.gcs_sysid, srcComponent=self.gcs_compid)
@@ -90,10 +95,16 @@ class UdpMavlinkProtocol(Protocol):
 
             # Parse the packet with pymavlink for validation and conversion
             try:
+                # Track errors before parsing
+                errors_before = self.mav.total_receive_errors
+
                 # Feed the complete packet to pymavlink
                 msg = None
                 for byte in packet_data:
                     msg = self.mav.parse_char(bytes([byte]))
+
+                # Check if an error occurred during parsing
+                errors_after = self.mav.total_receive_errors
 
                 if msg is not None:
                     # Filter by system ID if specified
@@ -117,11 +128,101 @@ class UdpMavlinkProtocol(Protocol):
                     # Return JSON as bytes for COSMOS to parse
                     return json_str.encode('utf-8'), extra
                 else:
-                    # Failed to parse, continue looking for next packet
+                    # Failed to parse - check if pymavlink detected an error
+                    if errors_after > errors_before:
+                        # pymavlink detected an error
+                        self.error_count += 1
+
+                        # Try to extract system/component IDs from raw packet (bytes 5-6)
+                        try:
+                            system_id = packet_data[5] if len(packet_data) > 5 else 0
+                            component_id = packet_data[6] if len(packet_data) > 6 else 0
+                        except:
+                            system_id = 0
+                            component_id = 0
+
+                        # Determine error type from pymavlink state
+                        if self.mav.have_prefix_error:
+                            error_type = 'PREFIX_ERROR'
+                            error_message = 'Invalid MAVLink packet prefix/magic byte'
+                        else:
+                            error_type = 'CRC_FAILURE'
+                            error_message = f'CRC validation failed (pymavlink errors: {errors_after})'
+
+                        # Build error packet as JSON
+                        error_packet = {
+                            'MSGID': 65535,
+                            'MSGNAME': 'MAVLINK_ERROR',
+                            'SYSTEM_ID': system_id,
+                            'COMPONENT_ID': component_id,
+                            'timestamp': int(time.time() * 1000000),  # microseconds
+                            'error_type': error_type,
+                            'error_message': error_message,
+                            'packet_length': len(packet_data),
+                            'raw_packet': packet_data.hex()
+                        }
+
+                        # Convert to JSON bytes
+                        error_json = json.dumps(error_packet).encode('utf-8')
+
+                        # Inject error telemetry into COSMOS
+                        try:
+                            target_name = getattr(self, 'target_name', 'DRONE')
+                            self.inject_tlm(target_name, 'MAVLINK_ERROR', error_json, extra)
+                        except Exception as inject_error:
+                            print(f"Failed to inject error telemetry: {inject_error}")
+
+                    # Continue looking for next packet
                     continue
 
             except Exception as e:
-                # Parse/validation error, continue looking for valid packets
+                # Parse/validation error - inject error telemetry and continue
+                self.error_count += 1
+
+                # Try to extract system/component IDs from raw packet (bytes 5-6)
+                try:
+                    system_id = packet_data[5] if len(packet_data) > 5 else 0
+                    component_id = packet_data[6] if len(packet_data) > 6 else 0
+                except:
+                    system_id = 0
+                    component_id = 0
+
+                # Determine error type
+                error_type = type(e).__name__
+                if 'crc' in str(e).lower() or 'checksum' in str(e).lower():
+                    error_type = 'CRC_FAILURE'
+                elif 'parse' in str(e).lower():
+                    error_type = 'PARSE_ERROR'
+
+                # Include pymavlink error stats
+                error_message = f"{str(e)} (pymavlink total errors: {self.mav.total_receive_errors})"
+
+                # Build error packet as JSON
+                error_packet = {
+                    'MSGID': 65535,
+                    'MSGNAME': 'MAVLINK_ERROR',
+                    'SYSTEM_ID': system_id,
+                    'COMPONENT_ID': component_id,
+                    'timestamp': int(time.time() * 1000000),  # microseconds
+                    'error_type': error_type,
+                    'error_message': error_message,
+                    'packet_length': len(packet_data),
+                    'raw_packet': packet_data.hex()
+                }
+
+                # Convert to JSON bytes
+                error_json = json.dumps(error_packet).encode('utf-8')
+
+                # Inject error telemetry into COSMOS
+                try:
+                    # Get target name from interface (if available)
+                    target_name = getattr(self, 'target_name', 'DRONE')
+                    self.inject_tlm(target_name, 'MAVLINK_ERROR', error_json, extra)
+                except Exception as inject_error:
+                    # If inject fails, at least log it
+                    print(f"Failed to inject error telemetry: {inject_error}")
+
+                # Continue looking for valid packets
                 continue
 
     def write_data(self, data, extra=None):

@@ -1,0 +1,33 @@
+SCREEN AUTO AUTO 1.0
+
+VERTICAL
+  TITLE "<%= target_name %> Attitude Quaternion"
+
+  HORIZONTAL
+    VERTICALBOX "Quaternion (w,x,y,z)"
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION Q1 FORMATTED 20
+        SETTING TEXTCOLOR var(--color-data-visualization-1)
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION Q2 FORMATTED 20
+        SETTING TEXTCOLOR var(--color-data-visualization-2)
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION Q3 FORMATTED 20
+        SETTING TEXTCOLOR var(--color-data-visualization-3)
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION Q4 FORMATTED 20
+        SETTING TEXTCOLOR var(--color-data-visualization-4)
+    END
+
+    VERTICALBOX "Angular Rates"
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION ROLLSPEED FORMATTED 20
+        SETTING TEXTCOLOR var(--color-data-visualization-5)
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION PITCHSPEED FORMATTED 20
+        SETTING TEXTCOLOR var(--color-data-visualization-6)
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION YAWSPEED FORMATTED 20
+        SETTING TEXTCOLOR var(--color-data-visualization-1)
+    END
+
+    VERTICALBOX "Status"
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION TIME_BOOT_MS
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION SYSTEM_ID
+      LABELVALUE <%= target_name %> ATTITUDE_QUATERNION COMPONENT_ID
+    END
+  END
+END

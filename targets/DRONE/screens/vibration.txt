@@ -1,0 +1,33 @@
+SCREEN AUTO AUTO 1.0
+
+VERTICAL
+  TITLE "<%= target_name %> Vibration Levels"
+
+  HORIZONTAL
+    VERTICALBOX "Vibration Axes"
+      LABELSPARKLINE <%= target_name %> VIBRATION VIBRATION_X
+      LABELSPARKLINE <%= target_name %> VIBRATION VIBRATION_Y
+      LABELSPARKLINE <%= target_name %> VIBRATION VIBRATION_Z
+    END
+
+    VERTICALBOX "Accelerometer Clipping"
+      LABELSPARKLINE <%= target_name %> VIBRATION CLIPPING_0
+      LABELSPARKLINE <%= target_name %> VIBRATION CLIPPING_1
+      LABELSPARKLINE <%= target_name %> VIBRATION CLIPPING_2
+    END
+
+    VERTICALBOX "Status"
+      LABELVALUE <%= target_name %> VIBRATION TIME_USEC
+      LABELVALUE <%= target_name %> VIBRATION SYSTEM_ID
+      LABELVALUE <%= target_name %> VIBRATION COMPONENT_ID
+    END
+  END
+
+  VERTICAL
+    LINEGRAPH <%= target_name %> VIBRATION VIBRATION_X
+      SETTING SIZE 800 250
+      SETTING HISTORY 1m
+      SETTING ITEM <%= target_name %> VIBRATION VIBRATION_Y
+      SETTING ITEM <%= target_name %> VIBRATION VIBRATION_Z
+  END
+END

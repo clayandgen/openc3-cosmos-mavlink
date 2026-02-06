@@ -1,0 +1,35 @@
+SCREEN AUTO AUTO 1.0
+
+VERTICAL
+  TITLE "<%= target_name %> VFR HUD"
+
+  HORIZONTAL
+    VERTICALBOX "Speed"
+      LABELSPARKLINE <%= target_name %> VFR_HUD AIRSPEED
+      LABELSPARKLINE <%= target_name %> VFR_HUD GROUNDSPEED
+      LABELSPARKLINE <%= target_name %> VFR_HUD HEADING
+    END
+
+    VERTICALBOX "Altitude & Climb"
+      LABELSPARKLINE <%= target_name %> VFR_HUD ALT
+      LABELSPARKLINE <%= target_name %> VFR_HUD CLIMB
+      LABELSPARKLINE <%= target_name %> VFR_HUD THROTTLE
+    END
+
+    VERTICALBOX "Status"
+      LABELVALUE <%= target_name %> VFR_HUD SYSTEM_ID
+      LABELVALUE <%= target_name %> VFR_HUD COMPONENT_ID
+    END
+  END
+
+  VERTICAL
+    LINEGRAPH <%= target_name %> VFR_HUD AIRSPEED
+      SETTING SIZE 800 200
+      SETTING HISTORY 2m
+      SETTING ITEM <%= target_name %> VFR_HUD GROUNDSPEED
+    LINEGRAPH <%= target_name %> VFR_HUD ALT
+      SETTING SIZE 800 200
+      SETTING HISTORY 2m
+      SETTING ITEM <%= target_name %> VFR_HUD CLIMB
+  END
+END

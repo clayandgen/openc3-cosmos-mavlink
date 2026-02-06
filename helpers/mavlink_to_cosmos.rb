@@ -349,10 +349,20 @@ class MavlinkToCosmosConverter
     f.puts "  APPEND_ITEM #{field[:name]} #{bit_size_val} #{c_type} \"#{desc}\""
     f.puts "    KEY $.#{json_key}"
 
-    # Add units if specified
+    # Add conversion for degE7 units (degrees * 1e7 -> degrees)
+    if field[:units] == 'degE7'
+      f.puts "    READ_CONVERSION dege7_conversion.py"
+    end
+
+    # Add units if specified (convert degE7 to degrees for display)
     if field[:units]
-      units_full, units_abbr = parse_units(field[:units])
-      f.puts "    UNITS \"#{units_full}\" #{units_abbr}"
+      if field[:units] == 'degE7'
+        # After conversion, units are degrees not degE7
+        f.puts "    UNITS \"Degrees\" deg"
+      else
+        units_full, units_abbr = parse_units(field[:units])
+        f.puts "    UNITS \"#{units_full}\" #{units_abbr}"
+      end
     end
 
     # Add states for enums (limit to non-bitmask enums with reasonable number of entries)

@@ -1,0 +1,29 @@
+SCREEN AUTO AUTO 1.0
+
+VERTICAL
+  TITLE "<%= target_name %> MAVLink Decode Errors"
+
+  HORIZONTAL
+    VERTICALBOX "Error Details"
+      LABELVALUE <%= target_name %> MAVLINK_ERROR TIMESTAMP
+      LABELVALUE <%= target_name %> MAVLINK_ERROR ERROR_TYPE
+        SETTING TEXTCOLOR var(--color-data-visualization-1)
+      LABELVALUE <%= target_name %> MAVLINK_ERROR ERROR_MESSAGE
+        SETTING TEXTCOLOR var(--color-data-visualization-2)
+      LABELVALUE <%= target_name %> MAVLINK_ERROR PACKET_LENGTH
+    END
+
+    VERTICALBOX "Source"
+      LABELVALUE <%= target_name %> MAVLINK_ERROR SYSTEM_ID
+      LABELVALUE <%= target_name %> MAVLINK_ERROR COMPONENT_ID
+    END
+
+    VERTICALBOX "Raw Data"
+      LABELVALUE <%= target_name %> MAVLINK_ERROR RAW_PACKET
+    END
+  END
+
+  LABEL "Error packets are injected when MAVLink decode failures occur (bad CRC, parse errors, etc.)"
+    SETTING PADDING 10
+    SETTING TEXTALIGN CENTER
+END

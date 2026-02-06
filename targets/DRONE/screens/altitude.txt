@@ -1,0 +1,30 @@
+SCREEN AUTO AUTO 1.0
+
+VERTICAL
+  TITLE "<%= target_name %> Altitude Information"
+
+  HORIZONTAL
+    VERTICALBOX "Altitude Measurements"
+      LABELSPARKLINE <%= target_name %> ALTITUDE ALTITUDE_MONOTONIC
+      LABELSPARKLINE <%= target_name %> ALTITUDE ALTITUDE_AMSL
+      LABELSPARKLINE <%= target_name %> ALTITUDE ALTITUDE_LOCAL
+      LABELSPARKLINE <%= target_name %> ALTITUDE ALTITUDE_RELATIVE
+      LABELSPARKLINE <%= target_name %> ALTITUDE ALTITUDE_TERRAIN
+      LABELSPARKLINE <%= target_name %> ALTITUDE BOTTOM_CLEARANCE
+    END
+
+    VERTICALBOX "Status"
+      LABELVALUE <%= target_name %> ALTITUDE TIME_USEC
+      LABELVALUE <%= target_name %> ALTITUDE SYSTEM_ID
+      LABELVALUE <%= target_name %> ALTITUDE COMPONENT_ID
+    END
+  END
+
+  VERTICAL
+    LINEGRAPH <%= target_name %> ALTITUDE ALTITUDE_RELATIVE
+      SETTING SIZE 800 300
+      SETTING HISTORY 2m
+      SETTING ITEM <%= target_name %> ALTITUDE ALTITUDE_AMSL
+      SETTING ITEM <%= target_name %> ALTITUDE ALTITUDE_TERRAIN
+  END
+END

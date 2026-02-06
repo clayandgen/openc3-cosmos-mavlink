@@ -1,0 +1,52 @@
+SCREEN AUTO AUTO 1.0
+
+VERTICAL
+  TITLE "<%= target_name %> Servo Outputs"
+
+  HORIZONTAL
+    VERTICALBOX "Servos 1-8"
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO1_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-1)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO2_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-2)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO3_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-3)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO4_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-4)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO5_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-5)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO6_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-6)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO7_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-1)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO8_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-2)
+    END
+
+    VERTICALBOX "Servos 9-16"
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO9_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-3)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO10_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-4)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO11_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-5)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO12_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-6)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO13_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-1)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO14_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-2)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO15_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-3)
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SERVO16_RAW FORMATTED 15
+        SETTING TEXTCOLOR var(--color-data-visualization-4)
+    END
+
+    VERTICALBOX "Status"
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW PORT
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW TIME_USEC
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW SYSTEM_ID
+      LABELVALUE <%= target_name %> SERVO_OUTPUT_RAW COMPONENT_ID
+    END
+  END
+END

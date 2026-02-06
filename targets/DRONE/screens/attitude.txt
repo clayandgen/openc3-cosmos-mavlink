@@ -1,0 +1,38 @@
+SCREEN AUTO AUTO 1.0
+
+VERTICAL
+  TITLE "<%= target_name %> Attitude Information"
+
+  HORIZONTAL
+    VERTICALBOX "Euler Angles"
+      LABELSPARKLINE <%= target_name %> ATTITUDE ROLL
+      LABELSPARKLINE <%= target_name %> ATTITUDE PITCH
+      LABELSPARKLINE <%= target_name %> ATTITUDE YAW
+    END
+
+    VERTICALBOX "Angular Rates"
+      LABELSPARKLINE <%= target_name %> ATTITUDE ROLLSPEED
+      LABELSPARKLINE <%= target_name %> ATTITUDE PITCHSPEED
+      LABELSPARKLINE <%= target_name %> ATTITUDE YAWSPEED
+    END
+
+    VERTICALBOX "Status"
+      LABELVALUE <%= target_name %> ATTITUDE TIME_BOOT_MS
+      LABELVALUE <%= target_name %> ATTITUDE SYSTEM_ID
+      LABELVALUE <%= target_name %> ATTITUDE COMPONENT_ID
+    END
+  END
+
+  VERTICAL
+    LINEGRAPH <%= target_name %> ATTITUDE ROLL
+      SETTING SIZE 800 250
+      SETTING HISTORY 1m
+      SETTING ITEM <%= target_name %> ATTITUDE PITCH
+      SETTING ITEM <%= target_name %> ATTITUDE YAW
+    LINEGRAPH <%= target_name %> ATTITUDE ROLLSPEED
+      SETTING SIZE 800 250
+      SETTING HISTORY 1m
+      SETTING ITEM <%= target_name %> ATTITUDE PITCHSPEED
+      SETTING ITEM <%= target_name %> ATTITUDE YAWSPEED
+  END
+END

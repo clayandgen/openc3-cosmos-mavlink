@@ -24,8 +24,8 @@ VARIABLE_DESCRIPTION "Ground Control Station System ID"
 VARIABLE gcs_compid 0
 VARIABLE_DESCRIPTION "Ground Control Station Component ID"
 
-VARIABLE target_sysid 1
-VARIABLE_DESCRIPTION "Target vehicle System ID"
+VARIABLE target_sysid 0
+VARIABLE_DESCRIPTION "Target vehicle System ID (0 = accept all)"
 
 # ============================================================================
 # Target Definition
