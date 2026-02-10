@@ -27,6 +27,9 @@ class UdpMavlinkProtocol(Protocol):
     MAVLINK_HEADER_LEN = 10
     MAVLINK_CRC_LEN = 2
 
+    # Metadata keys added by this protocol (not MAVLink fields)
+    METADATA_KEYS = {'MSGID', 'MSGNAME', 'SYSTEM_ID', 'COMPONENT_ID', 'mavlink_type'}
+
     def __init__(self, gcs_sysid=255, gcs_compid=0, target_sysid=0, allow_empty_data=None):
         super().__init__(allow_empty_data)
         self.gcs_sysid = int(gcs_sysid)
@@ -35,6 +38,11 @@ class UdpMavlinkProtocol(Protocol):
 
         # MAVLink parser
         self.mav = mavlink2.MAVLink(None, srcSystem=self.gcs_sysid, srcComponent=self.gcs_compid)
+
+        # Build message class lookup: "HEARTBEAT" -> MAVLink_heartbeat_message, etc.
+        self._msg_classes = {}
+        for msg_id, cls in mavlink2.mavlink_map.items():
+            self._msg_classes[cls.msgname] = cls
 
         # Buffer for incoming data
         self.buffer = b''
@@ -227,17 +235,22 @@ class UdpMavlinkProtocol(Protocol):
 
     def write_data(self, data, extra=None):
         """
-        Write MAVLink packets
+        Convert a JSON MAVLink message to a packed MAVLink v2 binary packet.
+
+        Supports any message type defined in the pymavlink common dialect.
+        The JSON must contain a "MSGNAME" field matching a MAVLink message name
+        (e.g. "HEARTBEAT", "COMMAND_LONG") and field values keyed by the
+        pymavlink field names.
 
         Args:
-            data: Command data (JSON or dict)
-            extra: Extra data (unused)
+            data: Command data as JSON bytes, JSON string, or dict
+            extra: Extra data (passed through)
 
         Returns:
             Tuple of (packet_bytes, extra)
         """
         try:
-            # Parse command data (could be JSON string or dict)
+            # Parse command data
             if isinstance(data, bytes):
                 cmd = json.loads(data.decode('utf-8'))
             elif isinstance(data, str):
@@ -245,43 +258,31 @@ class UdpMavlinkProtocol(Protocol):
             else:
                 cmd = data
 
-            cmd_type = cmd.get('MSGNAME', '').upper()
+            msg_name = cmd.get('MSGNAME', '').upper()
 
-            # Handle different message types
-            if cmd_type == 'COMMAND_LONG':
-                msg = self.mav.command_long_encode(
-                    target_system=cmd.get('target_system', 1),
-                    target_component=cmd.get('target_component', 1),
-                    command=cmd.get('command', 0),
-                    confirmation=cmd.get('confirmation', 0),
-                    param1=cmd.get('param1', 0.0),
-                    param2=cmd.get('param2', 0.0),
-                    param3=cmd.get('param3', 0.0),
-                    param4=cmd.get('param4', 0.0),
-                    param5=cmd.get('param5', 0.0),
-                    param6=cmd.get('param6', 0.0),
-                    param7=cmd.get('param7', 0.0)
-                )
-            elif cmd_type == 'HEARTBEAT':
-                msg = self.mav.heartbeat_encode(
-                    type=cmd.get('type', mavlink2.MAV_TYPE_GCS),
-                    autopilot=cmd.get('autopilot', mavlink2.MAV_AUTOPILOT_INVALID),
-                    base_mode=cmd.get('base_mode', 0),
-                    custom_mode=cmd.get('custom_mode', 0),
-                    system_status=cmd.get('system_status', mavlink2.MAV_STATE_ACTIVE)
-                )
-            else:
-                # Unknown command type, pass through if already binary
-                if isinstance(data, bytes):
-                    return data, extra
+            # Look up the message class
+            msg_class = self._msg_classes.get(msg_name)
+            if msg_class is None:
+                raise ValueError(f"Unknown MAVLink message type: {msg_name}")
+
+            # Build field values in the order the message class expects
+            field_values = []
+            for i, field in enumerate(msg_class.fieldnames):
+                if field in cmd:
+                    field_values.append(cmd[field])
                 else:
-                    raise ValueError(f"Unknown command type: {cmd_type}")
+                    # Use a zero-value default appropriate for the field type
+                    ftype = msg_class.fieldtypes[i]
+                    if 'char' in ftype:
+                        field_values.append('')
+                    else:
+                        field_values.append(0)
 
-            # Pack message and return
+            # Construct the message and pack it into a full MAVLink v2 packet
+            msg = msg_class(*field_values)
             packet = msg.pack(self.mav)
             return packet, extra
 
         except Exception as e:
-            print(f"Error encoding command: {e}")
-            # Return original data if encoding fails
+            print(f"Error encoding MAVLink message: {e}")
             return data, extra

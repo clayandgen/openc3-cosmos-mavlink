@@ -52,7 +52,7 @@ COMMAND <%= target_name %> COMMAND_LONG BIG_ENDIAN "Send a MAVLink command with 
 # Navigate to waypoint. This is intended for use in missions (for guided
 # commands outside of missions use MAV_CMD_DO_REPOSITION).
 # ============================================================================
-COMMAND <%= target_name %> NAV_WAYPOINT BIG_ENDIAN "Navigate to waypoint. This is intended for use in missions (for guided commands outside of missio..."
+COMMAND <%= target_name %> NAV_WAYPOINT BIG_ENDIAN "Navigate to waypoint. This is intended for use in missions (for guided commands outside of missions use MAV_CMD_DO_REPOSITION)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":16,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -70,13 +70,13 @@ COMMAND <%= target_name %> NAV_WAYPOINT BIG_ENDIAN "Navigate to waypoint. This i
   APPEND_PARAMETER HOLD 32 FLOAT 0.0 MIN MAX "Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)"
     UNITS "Seconds" s
 
-  APPEND_PARAMETER ACCEPT_RADIUS 32 FLOAT 0.0 MIN MAX "Acceptance radius (if the sphere with this radius is hit, the waypoint counts..."
+  APPEND_PARAMETER ACCEPT_RADIUS 32 FLOAT 0.0 MIN MAX "Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)"
     UNITS "Meters" m
 
-  APPEND_PARAMETER PASS_RADIUS 32 FLOAT 0.0 MIN MAX "0 to pass through the WP, if > 0 radius to pass by WP. Positive value for clo..."
+  APPEND_PARAMETER PASS_RADIUS 32 FLOAT 0.0 MIN MAX "0 to pass through the WP, if > 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control."
     UNITS "Meters" m
 
-  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Desired yaw angle at waypoint (rotary wing). NaN to use the current system ya..."
+  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Desired yaw angle at waypoint (rotary wing). NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.)."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
@@ -111,10 +111,10 @@ COMMAND <%= target_name %> NAV_LOITER_UNLIM BIG_ENDIAN "Loiter around this waypo
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
-  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius around waypoint for forward-only moving vehicles (not multicopt..."
+  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise"
     UNITS "Meters" m
 
-  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw t..."
+  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.)."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
@@ -147,12 +147,12 @@ COMMAND <%= target_name %> NAV_LOITER_TURNS BIG_ENDIAN "Loiter around this waypo
 
   APPEND_PARAMETER TURNS 32 FLOAT 0.0 MIN MAX "Number of turns."
 
-  APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT 0.0 MIN MAX "Leave loiter circle only when track heads towards the next waypoint (MAV_BOOL..."
+  APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT 0.0 MIN MAX "Leave loiter circle only when track heads towards the next waypoint (MAV_BOOL_FALSE: Leave when turns complete). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius around waypoint for forward-only moving vehicles (not multicopt..."
+  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise"
     UNITS "Meters" m
 
-  APPEND_PARAMETER XTRACK_LOCATION 32 FLOAT 0.0 MIN MAX "Loiter circle exit location and/or path to next waypoint ('xtrack') for forwa..."
+  APPEND_PARAMETER XTRACK_LOCATION 32 FLOAT 0.0 MIN MAX "Loiter circle exit location and/or path to next waypoint ('xtrack') for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. Otherwise the angle (in degrees) between the tangent of the loiter circle and the center xtrack at which the vehicle must leave the loiter (and converge to the center xtrack). NaN to use the current system default xtrack behaviour."
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
 
@@ -172,7 +172,7 @@ COMMAND <%= target_name %> NAV_LOITER_TURNS BIG_ENDIAN "Loiter around this waypo
 # Heading Required parameter (2) is non-zero forward moving aircraft will
 # only leave the loiter circle once heading towards the next waypoint.
 # ============================================================================
-COMMAND <%= target_name %> NAV_LOITER_TIME BIG_ENDIAN "Loiter at the specified latitude, longitude and altitude for a certain amount of time. Multicopte..."
+COMMAND <%= target_name %> NAV_LOITER_TIME BIG_ENDIAN "Loiter at the specified latitude, longitude and altitude for a certain amount of time. Multicopter vehicles stop at the point (within a vehicle-specific acceptance radius). Forward-only moving vehicles (e.g. fixed-wing) circle the point with the specified radius/direction. If the Heading Required parameter (2) is non-zero forward moving aircraft will only leave the loiter circle once heading towards the next waypoint."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":19,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -190,12 +190,12 @@ COMMAND <%= target_name %> NAV_LOITER_TIME BIG_ENDIAN "Loiter at the specified l
   APPEND_PARAMETER TIME 32 FLOAT 0.0 MIN MAX "Loiter time (only starts once Lat, Lon and Alt is reached)."
     UNITS "Seconds" s
 
-  APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT 0.0 MIN MAX "Leave loiter circle only when track heading towards the next waypoint (MAV_BO..."
+  APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT 0.0 MIN MAX "Leave loiter circle only when track heading towards the next waypoint (MAV_BOOL_FALSE: Leave on time expiry). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius around waypoint for forward-only moving vehicles (not multicopt..."
+  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, else counter-clockwise."
     UNITS "Meters" m
 
-  APPEND_PARAMETER XTRACK_LOCATION 32 FLOAT 0.0 MIN MAX "Loiter circle exit location and/or path to next waypoint ('xtrack') for forwa..."
+  APPEND_PARAMETER XTRACK_LOCATION 32 FLOAT 0.0 MIN MAX "Loiter circle exit location and/or path to next waypoint ('xtrack') for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. Otherwise the angle (in degrees) between the tangent of the loiter circle and the center xtrack at which the vehicle must leave the loiter (and converge to the center xtrack). NaN to use the current system default xtrack behaviour."
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
 
@@ -261,7 +261,7 @@ COMMAND <%= target_name %> NAV_LAND BIG_ENDIAN "Land at location."
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER ABORT_ALT 32 FLOAT 0.0 MIN MAX "Minimum target altitude if landing is aborted (0 = undefined/use system defau..."
+  APPEND_PARAMETER ABORT_ALT 32 FLOAT 0.0 MIN MAX "Minimum target altitude if landing is aborted (0 = undefined/use system default)."
     UNITS "Meters" m
 
   APPEND_PARAMETER LAND_MODE 32 FLOAT 0.0 MIN MAX "Precision land mode."
@@ -271,7 +271,7 @@ COMMAND <%= target_name %> NAV_LAND BIG_ENDIAN "Land at location."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty."
 
-  APPEND_PARAMETER YAW_ANGLE 32 FLOAT 0.0 MIN MAX "Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw t..."
+  APPEND_PARAMETER YAW_ANGLE 32 FLOAT 0.0 MIN MAX "Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.)."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude."
@@ -289,7 +289,7 @@ COMMAND <%= target_name %> NAV_LAND BIG_ENDIAN "Land at location."
 # Takeoff from ground / hand. Vehicles that support multiple takeoff modes
 # (e.g. VTOL quadplane) should take off using the currently configured mode.
 # ============================================================================
-COMMAND <%= target_name %> NAV_TAKEOFF BIG_ENDIAN "Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) sh..."
+COMMAND <%= target_name %> NAV_TAKEOFF BIG_ENDIAN "Takeoff from ground / hand. Vehicles that support multiple takeoff modes (e.g. VTOL quadplane) should take off using the currently configured mode."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":22,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -311,7 +311,7 @@ COMMAND <%= target_name %> NAV_TAKEOFF BIG_ENDIAN "Takeoff from ground / hand. V
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty"
 
-  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use..."
+  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw angle (if magnetometer present), ignored without magnetometer. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.)."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
@@ -345,7 +345,7 @@ COMMAND <%= target_name %> NAV_LAND_LOCAL BIG_ENDIAN "Land at local position (lo
 
   APPEND_PARAMETER TARGET 32 FLOAT 0.0 MIN MAX "Landing target number (if available)"
 
-  APPEND_PARAMETER OFFSET 32 FLOAT 0.0 MIN MAX "Maximum accepted offset from desired landing position - computed magnitude fr..."
+  APPEND_PARAMETER OFFSET 32 FLOAT 0.0 MIN MAX "Maximum accepted offset from desired landing position - computed magnitude from spherical coordinates: d = sqrt(x^2 + y^2 + z^2), which gives the maximum accepted distance between the desired landing position and the position where the vehicle is about to land"
     UNITS "Meters" m
 
   APPEND_PARAMETER DESCEND_RATE 32 FLOAT 0.0 MIN MAX "Landing descend rate"
@@ -393,7 +393,7 @@ COMMAND <%= target_name %> NAV_TAKEOFF_LOCAL BIG_ENDIAN "Takeoff from local posi
   APPEND_PARAMETER ASCEND_RATE 32 FLOAT 0.0 MIN MAX "Takeoff ascend rate"
     UNITS "Meters_per_second" m/s
 
-  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw angle (if magnetometer or another yaw estimation source present), ignored..."
+  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw angle (if magnetometer or another yaw estimation source present), ignored without one of these"
     UNITS "Radians" rad
 
   APPEND_PARAMETER Y_POSITION 32 FLOAT 0.0 MIN MAX "Y-axis position"
@@ -428,7 +428,7 @@ COMMAND <%= target_name %> NAV_FOLLOW BIG_ENDIAN "Vehicle following, i.e. this w
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER FOLLOWING 32 FLOAT 0.0 MIN MAX "Following logic to use (e.g. loitering or sinusoidal following) - depends on ..."
+  APPEND_PARAMETER FOLLOWING 32 FLOAT 0.0 MIN MAX "Following logic to use (e.g. loitering or sinusoidal following) - depends on specific autopilot implementation"
 
   APPEND_PARAMETER GROUND_SPEED 32 FLOAT 0.0 MIN MAX "Ground speed of vehicle to be followed"
     UNITS "Meters_per_second" m/s
@@ -454,7 +454,7 @@ COMMAND <%= target_name %> NAV_FOLLOW BIG_ENDIAN "Vehicle following, i.e. this w
 # When the altitude is reached continue to the next command (i.e., don't
 # proceed to the next command until the desired altitude is reached.
 # ============================================================================
-COMMAND <%= target_name %> NAV_CONTINUE_AND_CHANGE_ALT BIG_ENDIAN "Continue on the current course and climb/descend to specified altitude. When the altitude is reac..."
+COMMAND <%= target_name %> NAV_CONTINUE_AND_CHANGE_ALT BIG_ENDIAN "Continue on the current course and climb/descend to specified altitude. When the altitude is reached continue to the next command (i.e., don't proceed to the next command until the desired altitude is reached."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":30,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -469,7 +469,7 @@ COMMAND <%= target_name %> NAV_CONTINUE_AND_CHANGE_ALT BIG_ENDIAN "Continue on t
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER ACTION 32 FLOAT 0.0 MIN MAX "Climb or Descend (0 = Neutral, command completes when within 5m of this comma..."
+  APPEND_PARAMETER ACTION 32 FLOAT 0.0 MIN MAX "Climb or Descend (0 = Neutral, command completes when within 5m of this command's altitude, 1 = Climbing, command completes when at or above this command's altitude, 2 = Descending, command completes when at or below this command's altitude."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -494,7 +494,7 @@ COMMAND <%= target_name %> NAV_CONTINUE_AND_CHANGE_ALT BIG_ENDIAN "Continue on t
 # Additionally, if the Heading Required parameter is non-zero the aircraft
 # will not leave the loiter until heading toward the next waypoint.
 # ============================================================================
-COMMAND <%= target_name %> NAV_LOITER_TO_ALT BIG_ENDIAN "Begin loiter at the specified Latitude and Longitude. If Lat=Lon=0, then loiter at the current po..."
+COMMAND <%= target_name %> NAV_LOITER_TO_ALT BIG_ENDIAN "Begin loiter at the specified Latitude and Longitude. If Lat=Lon=0, then loiter at the current position. Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached. Additionally, if the Heading Required parameter is non-zero the aircraft will not leave the loiter until heading toward the next waypoint."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -509,14 +509,14 @@ COMMAND <%= target_name %> NAV_LOITER_TO_ALT BIG_ENDIAN "Begin loiter at the spe
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT 0.0 MIN MAX "Leave loiter circle only when track heading towards the next waypoint (MAV_BO..."
+  APPEND_PARAMETER HEADING_REQUIRED 32 FLOAT 0.0 MIN MAX "Leave loiter circle only when track heading towards the next waypoint (MAV_BOOL_FALSE: Leave when altitude reached). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius around waypoint for forward-only moving vehicles (not multicopt..."
+  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius around waypoint for forward-only moving vehicles (not multicopters). If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter."
     UNITS "Meters" m
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty"
 
-  APPEND_PARAMETER XTRACK_LOCATION 32 FLOAT 0.0 MIN MAX "Loiter circle exit location and/or path to next waypoint ('xtrack') for forwa..."
+  APPEND_PARAMETER XTRACK_LOCATION 32 FLOAT 0.0 MIN MAX "Loiter circle exit location and/or path to next waypoint ('xtrack') for forward-only moving vehicles (not multicopters). 0 for the vehicle to converge towards the center xtrack when it leaves the loiter (the line between the centers of the current and next waypoint), 1 to converge to the direct line between the location that the vehicle exits the loiter radius and the next waypoint. Otherwise the angle (in degrees) between the tangent of the loiter circle and the center xtrack at which the vehicle must leave the loiter (and converge to the center xtrack). NaN to use the current system default xtrack behaviour."
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
 
@@ -546,20 +546,20 @@ COMMAND <%= target_name %> DO_FOLLOW BIG_ENDIAN "Begin following a target"
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER SYSTEM_ID 32 FLOAT 0.0 MIN MAX "System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and retu..."
+  APPEND_PARAMETER SYSTEM_ID 32 FLOAT 0.0 MIN MAX "System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved"
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved"
 
-  APPEND_PARAMETER ALTITUDE_MODE 32 FLOAT 0.0 MIN MAX "Altitude mode: 0: Keep current altitude, 1: keep altitude difference to targe..."
+  APPEND_PARAMETER ALTITUDE_MODE 32 FLOAT 0.0 MIN MAX "Altitude mode: 0: Keep current altitude, 1: keep altitude difference to target, 2: go to a fixed altitude above home."
 
   APPEND_PARAMETER ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude above home. (used if mode=2)"
     UNITS "Meters" m
 
   APPEND_PARAMETER PARAM6 32 FLOAT 0.0 MIN MAX "Reserved"
 
-  APPEND_PARAMETER TIME_TO_LAND 32 FLOAT 0.0 MIN MAX "Time to land in which the MAV should go to the default position hold mode aft..."
+  APPEND_PARAMETER TIME_TO_LAND 32 FLOAT 0.0 MIN MAX "Time to land in which the MAV should go to the default position hold mode after a message RX timeout."
     UNITS "Seconds" s
 
   RESPONSE <%= target_name %> COMMAND_ACK
@@ -608,7 +608,7 @@ COMMAND <%= target_name %> DO_FOLLOW_REPOSITION BIG_ENDIAN "Reposition the MAV a
 # Setting values to NaN/INT32_MAX (as appropriate) results in using
 # defaults.
 # ============================================================================
-COMMAND <%= target_name %> DO_ORBIT BIG_ENDIAN "Start orbiting on the circumference of a circle defined by the parameters. Setting values to NaN/..."
+COMMAND <%= target_name %> DO_ORBIT BIG_ENDIAN "Start orbiting on the circumference of a circle defined by the parameters. Setting values to NaN/INT32_MAX (as appropriate) results in using defaults."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":34,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -623,10 +623,10 @@ COMMAND <%= target_name %> DO_ORBIT BIG_ENDIAN "Start orbiting on the circumfere
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Radius of the circle. Positive: orbit clockwise. Negative: orbit counter-cloc..."
+  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Radius of the circle. Positive: orbit clockwise. Negative: orbit counter-clockwise. NaN: Use vehicle default radius, or current radius if already orbiting."
     UNITS "Meters" m
 
-  APPEND_PARAMETER VELOCITY 32 FLOAT 0.0 MIN MAX "Tangential Velocity. NaN: Use vehicle default velocity, or current velocity i..."
+  APPEND_PARAMETER VELOCITY 32 FLOAT 0.0 MIN MAX "Tangential Velocity. NaN: Use vehicle default velocity, or current velocity if already orbiting."
     UNITS "Meters_per_second" m/s
 
   APPEND_PARAMETER YAW_BEHAVIOR 32 FLOAT 0.0 MIN MAX "Yaw behavior of the vehicle."
@@ -637,14 +637,14 @@ COMMAND <%= target_name %> DO_ORBIT BIG_ENDIAN "Start orbiting on the circumfere
     STATE ORBIT_YAW_BEHAVIOUR_RC_CONTROLLED 4
     STATE ORBIT_YAW_BEHAVIOUR_UNCHANGED 5
 
-  APPEND_PARAMETER ORBITS 32 FLOAT 0 MIN MAX "Orbit around the centre point for this many radians (i.e. for a three-quarter..."
+  APPEND_PARAMETER ORBITS 32 FLOAT 0 MIN MAX "Orbit around the centre point for this many radians (i.e. for a three-quarter orbit set 270*Pi/180). 0: Orbit forever. NaN: Use vehicle default, or current value if already orbiting."
     UNITS "Radians" rad
 
-  APPEND_PARAMETER LATITUDE_X 32 FLOAT 0.0 MIN MAX "Center point latitude (if no MAV_FRAME specified) / X coordinate according to..."
+  APPEND_PARAMETER LATITUDE_X 32 FLOAT 0.0 MIN MAX "Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. INT32_MAX (or NaN if sent in COMMAND_LONG): Use current vehicle position, or current center if already orbiting."
 
-  APPEND_PARAMETER LONGITUDE_Y 32 FLOAT 0.0 MIN MAX "Center point longitude (if no MAV_FRAME specified) / Y coordinate according t..."
+  APPEND_PARAMETER LONGITUDE_Y 32 FLOAT 0.0 MIN MAX "Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. INT32_MAX (or NaN if sent in COMMAND_LONG): Use current vehicle position, or current center if already orbiting."
 
-  APPEND_PARAMETER ALTITUDE_Z 32 FLOAT 0.0 MIN MAX "Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate accord..."
+  APPEND_PARAMETER ALTITUDE_Z 32 FLOAT 0.0 MIN MAX "Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle altitude."
 
   RESPONSE <%= target_name %> COMMAND_ACK
 
@@ -662,7 +662,7 @@ COMMAND <%= target_name %> DO_ORBIT BIG_ENDIAN "Start orbiting on the circumfere
 # flight-stack specific (on vehicles where they can be controlled
 # independent of the heading).
 # ============================================================================
-COMMAND <%= target_name %> DO_FIGURE_EIGHT BIG_ENDIAN "Fly a figure eight path as defined by the parameters. Set parameters to NaN/INT32_MAX (as appropr..."
+COMMAND <%= target_name %> DO_FIGURE_EIGHT BIG_ENDIAN "Fly a figure eight path as defined by the parameters. Set parameters to NaN/INT32_MAX (as appropriate) to use system-default values. The command is intended for fixed wing vehicles (and VTOL hybrids flying in fixed-wing mode), allowing POI tracking for gimbals that don't support infinite rotation. This command only defines the flight path. Speed should be set independently (use e.g. MAV_CMD_DO_CHANGE_SPEED). Yaw and other degrees of freedom are not specified, and will be flight-stack specific (on vehicles where they can be controlled independent of the heading)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":35,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -677,23 +677,23 @@ COMMAND <%= target_name %> DO_FIGURE_EIGHT BIG_ENDIAN "Fly a figure eight path a
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER MAJOR_RADIUS 32 FLOAT 0.0 MIN MAX "Major axis radius of the figure eight. Positive: orbit the north circle clock..."
+  APPEND_PARAMETER MAJOR_RADIUS 32 FLOAT 0.0 MIN MAX "Major axis radius of the figure eight. Positive: orbit the north circle clockwise. Negative: orbit the north circle counter-clockwise. NaN: The radius will be set to 2.5 times the minor radius and direction is clockwise. Must be greater or equal to two times the minor radius for feasible values."
     UNITS "Meters" m
 
-  APPEND_PARAMETER MINOR_RADIUS 32 FLOAT 0.0 MIN MAX "Minor axis radius of the figure eight. Defines the radius of the two circles ..."
+  APPEND_PARAMETER MINOR_RADIUS 32 FLOAT 0.0 MIN MAX "Minor axis radius of the figure eight. Defines the radius of the two circles that make up the figure. Negative value has no effect. NaN: The radius will be set to the default loiter radius."
     UNITS "Meters" m
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
 
-  APPEND_PARAMETER ORIENTATION 32 FLOAT 0.0 MIN MAX "Orientation of the figure eight major axis with respect to true north (range:..."
+  APPEND_PARAMETER ORIENTATION 32 FLOAT 0.0 MIN MAX "Orientation of the figure eight major axis with respect to true north (range: [-pi,pi]). NaN: use default orientation aligned to true north."
     UNITS "Radians" rad
 
-  APPEND_PARAMETER LATITUDE_X 32 FLOAT 0.0 MIN MAX "Center point latitude/X coordinate according to MAV_FRAME. If no MAV_FRAME sp..."
+  APPEND_PARAMETER LATITUDE_X 32 FLOAT 0.0 MIN MAX "Center point latitude/X coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed. INT32_MAX or NaN: Use current vehicle position, or current center if already loitering."
 
-  APPEND_PARAMETER LONGITUDE_Y 32 FLOAT 0.0 MIN MAX "Center point longitude/Y coordinate according to MAV_FRAME. If no MAV_FRAME s..."
+  APPEND_PARAMETER LONGITUDE_Y 32 FLOAT 0.0 MIN MAX "Center point longitude/Y coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed. INT32_MAX or NaN: Use current vehicle position, or current center if already loitering."
 
-  APPEND_PARAMETER ALTITUDE_Z 32 FLOAT 0.0 MIN MAX "Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAM..."
+  APPEND_PARAMETER ALTITUDE_Z 32 FLOAT 0.0 MIN MAX "Center point altitude MSL/Z coordinate according to MAV_FRAME. If no MAV_FRAME specified, MAV_FRAME_GLOBAL is assumed. INT32_MAX or NaN: Use current vehicle altitude."
 
   RESPONSE <%= target_name %> COMMAND_ACK
 
@@ -703,7 +703,7 @@ COMMAND <%= target_name %> DO_FIGURE_EIGHT BIG_ENDIAN "Fly a figure eight path a
 # This can then be used by the vehicle's control system to control the
 # vehicle attitude and the attitude of various sensors such as cameras.
 # ============================================================================
-COMMAND <%= target_name %> NAV_ROI BIG_ENDIAN "Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used b..."
+COMMAND <%= target_name %> NAV_ROI BIG_ENDIAN "Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":80,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -758,9 +758,9 @@ COMMAND <%= target_name %> NAV_PATHPLANNING BIG_ENDIAN "Control autonomous path 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER LOCAL_CTRL 32 FLOAT 0.0 MIN MAX "0: Disable local obstacle avoidance / local path planning (without resetting ..."
+  APPEND_PARAMETER LOCAL_CTRL 32 FLOAT 0.0 MIN MAX "0: Disable local obstacle avoidance / local path planning (without resetting map), 1: Enable local path planning, 2: Enable and reset local path planning"
 
-  APPEND_PARAMETER GLOBAL_CTRL 32 FLOAT 0.0 MIN MAX "0: Disable full path planning (without resetting map), 1: Enable, 2: Enable a..."
+  APPEND_PARAMETER GLOBAL_CTRL 32 FLOAT 0.0 MIN MAX "0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy grid"
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -817,7 +817,7 @@ COMMAND <%= target_name %> NAV_SPLINE_WAYPOINT BIG_ENDIAN "Navigate to waypoint 
 # specified heading. The command should be ignored by vehicles that dont
 # support both VTOL and fixed-wing flight (multicopters, boats,etc.).
 # ============================================================================
-COMMAND <%= target_name %> NAV_VTOL_TAKEOFF BIG_ENDIAN "Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. The..."
+COMMAND <%= target_name %> NAV_VTOL_TAKEOFF BIG_ENDIAN "Takeoff from ground using VTOL mode, and transition to forward flight with specified heading. The command should be ignored by vehicles that dont support both VTOL and fixed-wing flight (multicopters, boats,etc.)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":84,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -843,7 +843,7 @@ COMMAND <%= target_name %> NAV_VTOL_TAKEOFF BIG_ENDIAN "Takeoff from ground usin
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty"
 
-  APPEND_PARAMETER YAW_ANGLE 32 FLOAT 0.0 MIN MAX "Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards n..."
+  APPEND_PARAMETER YAW_ANGLE 32 FLOAT 0.0 MIN MAX "Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.)."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
@@ -881,17 +881,17 @@ COMMAND <%= target_name %> NAV_VTOL_LAND BIG_ENDIAN "Land using VTOL mode"
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
-  APPEND_PARAMETER APPROACH_ALTITUDE 32 FLOAT 0.0 MIN MAX "Approach altitude (with the same reference as the Altitude field). NaN if uns..."
+  APPEND_PARAMETER APPROACH_ALTITUDE 32 FLOAT 0.0 MIN MAX "Approach altitude (with the same reference as the Altitude field). NaN if unspecified."
     UNITS "Meters" m
 
-  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards n..."
+  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.)."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
 
   APPEND_PARAMETER LONGITUDE 32 FLOAT 0.0 MIN MAX "Longitude"
 
-  APPEND_PARAMETER GROUND_ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude (ground level) relative to the current coordinate frame. NaN to use ..."
+  APPEND_PARAMETER GROUND_ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude (ground level) relative to the current coordinate frame. NaN to use system default landing altitude (ignore value)."
     UNITS "Meters" m
 
   RESPONSE <%= target_name %> COMMAND_ACK
@@ -976,7 +976,7 @@ COMMAND <%= target_name %> NAV_DELAY BIG_ENDIAN "Delay the next navigation comma
 # maximum descent value (param1), the command will complete without
 # releasing the payload.
 # ============================================================================
-COMMAND <%= target_name %> NAV_PAYLOAD_PLACE BIG_ENDIAN "Descend and place payload. Vehicle moves to specified location, descends until it detects a hangi..."
+COMMAND <%= target_name %> NAV_PAYLOAD_PLACE BIG_ENDIAN "Descend and place payload. Vehicle moves to specified location, descends until it detects a hanging payload has reached the ground, and then releases the payload. If ground is not detected before the reaching the maximum descent value (param1), the command will complete without releasing the payload."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":94,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1014,7 +1014,7 @@ COMMAND <%= target_name %> NAV_PAYLOAD_PLACE BIG_ENDIAN "Descend and place paylo
 # NOP - This command is only used to mark the upper limit of the NAV/ACTION
 # commands in the enumeration
 # ============================================================================
-COMMAND <%= target_name %> NAV_LAST BIG_ENDIAN "NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumera..."
+COMMAND <%= target_name %> NAV_LAST BIG_ENDIAN "NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumeration"
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":95,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1086,7 +1086,7 @@ COMMAND <%= target_name %> CONDITION_DELAY BIG_ENDIAN "Delay mission state machi
 # Ascend/descend to target altitude at specified rate. Delay mission state
 # machine until desired altitude reached.
 # ============================================================================
-COMMAND <%= target_name %> CONDITION_CHANGE_ALT BIG_ENDIAN "Ascend/descend to target altitude at specified rate. Delay mission state machine until desired al..."
+COMMAND <%= target_name %> CONDITION_CHANGE_ALT BIG_ENDIAN "Ascend/descend to target altitude at specified rate. Delay mission state machine until desired altitude reached."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":113,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1175,7 +1175,7 @@ COMMAND <%= target_name %> CONDITION_YAW BIG_ENDIAN "Reach a certain target angl
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER ANGLE 32 FLOAT 0.0 MIN MAX "target angle [0-360]. Absolute angles: 0 is north. Relative angle: 0 is initi..."
+  APPEND_PARAMETER ANGLE 32 FLOAT 0.0 MIN MAX "target angle [0-360]. Absolute angles: 0 is north. Relative angle: 0 is initial yaw. Direction set by param3."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER ANGULAR_SPEED 32 FLOAT 0.0 MIN MAX "angular speed"
@@ -1183,7 +1183,7 @@ COMMAND <%= target_name %> CONDITION_YAW BIG_ENDIAN "Reach a certain target angl
 
   APPEND_PARAMETER DIRECTION 32 FLOAT 0.0 MIN MAX "direction: -1: counter clockwise, 0: shortest direction, 1: clockwise"
 
-  APPEND_PARAMETER RELATIVE 32 FLOAT 0.0 MIN MAX "Relative offset (MAV_BOOL_FALSE: absolute angle). Values not equal to 0 or 1 ..."
+  APPEND_PARAMETER RELATIVE 32 FLOAT 0.0 MIN MAX "Relative offset (MAV_BOOL_FALSE: absolute angle). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM5 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -1250,9 +1250,9 @@ COMMAND <%= target_name %> DO_SET_MODE BIG_ENDIAN "Set system mode."
 
   APPEND_PARAMETER MODE 32 FLOAT 0.0 MIN MAX "Mode flags. MAV_MODE values can be used to set some mode flag combinations."
 
-  APPEND_PARAMETER CUSTOM_MODE 32 FLOAT 0.0 MIN MAX "Custom system-specific mode (see target autopilot specifications for mode inf..."
+  APPEND_PARAMETER CUSTOM_MODE 32 FLOAT 0.0 MIN MAX "Custom system-specific mode (see target autopilot specifications for mode information). If MAV_MODE_FLAG_CUSTOM_MODE_ENABLED is set in param1 (mode) this mode is used: otherwise the field is ignored."
 
-  APPEND_PARAMETER CUSTOM_SUBMODE 32 FLOAT 0.0 MIN MAX "Custom sub mode - this is system specific, please refer to the individual aut..."
+  APPEND_PARAMETER CUSTOM_SUBMODE 32 FLOAT 0.0 MIN MAX "Custom sub mode - this is system specific, please refer to the individual autopilot specifications for details."
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -1269,7 +1269,7 @@ COMMAND <%= target_name %> DO_SET_MODE BIG_ENDIAN "Set system mode."
 # Jump to the desired command in the mission list.  Repeat this action only
 # the specified number of times
 # ============================================================================
-COMMAND <%= target_name %> DO_JUMP BIG_ENDIAN "Jump to the desired command in the mission list. Repeat this action only the specified number of ..."
+COMMAND <%= target_name %> DO_JUMP BIG_ENDIAN "Jump to the desired command in the mission list. Repeat this action only the specified number of times"
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":177,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1305,7 +1305,7 @@ COMMAND <%= target_name %> DO_JUMP BIG_ENDIAN "Jump to the desired command in th
 # Change speed and/or throttle set points. The value persists until it is
 # overridden or there is a mode change
 # ============================================================================
-COMMAND <%= target_name %> DO_CHANGE_SPEED BIG_ENDIAN "Change speed and/or throttle set points. The value persists until it is overridden or there is a ..."
+COMMAND <%= target_name %> DO_CHANGE_SPEED BIG_ENDIAN "Change speed and/or throttle set points. The value persists until it is overridden or there is a mode change"
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":178,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1329,7 +1329,7 @@ COMMAND <%= target_name %> DO_CHANGE_SPEED BIG_ENDIAN "Change speed and/or throt
   APPEND_PARAMETER SPEED 32 FLOAT 0.0 MIN MAX "Speed (-1 indicates no change, -2 indicates return to default vehicle speed)"
     UNITS "Meters_per_second" m/s
 
-  APPEND_PARAMETER THROTTLE 32 FLOAT 0.0 MIN MAX "Throttle (-1 indicates no change, -2 indicates return to default vehicle thro..."
+  APPEND_PARAMETER THROTTLE 32 FLOAT 0.0 MIN MAX "Throttle (-1 indicates no change, -2 indicates return to default vehicle throttle value)"
     UNITS "Percent" %
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
@@ -1357,7 +1357,7 @@ COMMAND <%= target_name %> DO_CHANGE_SPEED BIG_ENDIAN "Change speed and/or throt
 # Note: the current home position may be emitted in a HOME_POSITION message
 # on request (using MAV_CMD_REQUEST_MESSAGE with param1=242).
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_HOME BIG_ENDIAN "Sets the home position to either to the current position or a specified position. The home positi..."
+COMMAND <%= target_name %> DO_SET_HOME BIG_ENDIAN "Sets the home position to either to the current position or a specified position. The home position is the default position that the system will return to and land on. The position is set automatically by the system during the takeoff (and may also be set using this command). Note: the current home position may be emitted in a HOME_POSITION message on request (using MAV_CMD_REQUEST_MESSAGE with param1=242)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":179,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1372,12 +1372,12 @@ COMMAND <%= target_name %> DO_SET_HOME BIG_ENDIAN "Sets the home position to eit
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER USE_CURRENT 32 FLOAT 0.0 MIN MAX "Use current location (MAV_BOOL_FALSE: use specified location). Values not equ..."
+  APPEND_PARAMETER USE_CURRENT 32 FLOAT 0.0 MIN MAX "Use current location (MAV_BOOL_FALSE: use specified location). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER ROLL 32 FLOAT 0.0 MIN MAX "Roll angle (of surface). Range: -180..180 degrees. NAN or 0 means value not s..."
+  APPEND_PARAMETER ROLL 32 FLOAT 0.0 MIN MAX "Roll angle (of surface). Range: -180..180 degrees. NAN or 0 means value not set. 0.01 indicates zero roll."
     UNITS "Degrees" deg
 
-  APPEND_PARAMETER PITCH 32 FLOAT 0.0 MIN MAX "Pitch angle (of surface). Range: -90..90 degrees. NAN or 0 means value not se..."
+  APPEND_PARAMETER PITCH 32 FLOAT 0.0 MIN MAX "Pitch angle (of surface). Range: -90..90 degrees. NAN or 0 means value not set. 0.01 means zero pitch."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw angle. NaN to use default heading. Range: -180..180 degrees."
@@ -1397,7 +1397,7 @@ COMMAND <%= target_name %> DO_SET_HOME BIG_ENDIAN "Sets the home position to eit
 # Set a system parameter.  Caution!  Use of this command requires knowledge
 # of the numeric enumeration value of the parameter.
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_PARAMETER BIG_ENDIAN "Set a system parameter. Caution! Use of this command requires knowledge of the numeric enumeratio..."
+COMMAND <%= target_name %> DO_SET_PARAMETER BIG_ENDIAN "Set a system parameter. Caution! Use of this command requires knowledge of the numeric enumeration value of the parameter."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":180,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1541,7 +1541,7 @@ COMMAND <%= target_name %> DO_SET_SERVO BIG_ENDIAN "Set a servo to a desired PWM
 # Cycle a between its nominal setting and a desired PWM for a desired number
 # of cycles with a desired period.
 # ============================================================================
-COMMAND <%= target_name %> DO_REPEAT_SERVO BIG_ENDIAN "Cycle a between its nominal setting and a desired PWM for a desired number of cycles with a desir..."
+COMMAND <%= target_name %> DO_REPEAT_SERVO BIG_ENDIAN "Cycle a between its nominal setting and a desired PWM for a desired number of cycles with a desired period."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":184,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1590,7 +1590,7 @@ COMMAND <%= target_name %> DO_REPEAT_SERVO BIG_ENDIAN "Cycle a between its nomin
 # param1=0 (< 0.5); the ACK should be either MAV_RESULT_FAILED or
 # MAV_RESULT_UNSUPPORTED.
 # ============================================================================
-COMMAND <%= target_name %> DO_FLIGHTTERMINATION BIG_ENDIAN "Terminate flight immediately. Flight termination immediately and irreversibly terminates the curr..."
+COMMAND <%= target_name %> DO_FLIGHTTERMINATION BIG_ENDIAN "Terminate flight immediately. Flight termination immediately and irreversibly terminates the current flight, returning the vehicle to ground. The vehicle will ignore RC or other input until it has been power-cycled. Termination may trigger safety measures, including: disabling motors and deployment of parachute on multicopters, and setting flight surfaces to initiate a landing pattern on fixed-wing). On multicopters without a parachute it may trigger a crash landing. Support for this command can be tested using the protocol bit: MAV_PROTOCOL_CAPABILITY_FLIGHT_TERMINATION. Support for this command can also be tested by sending the command with param1=0 (< 0.5); the ACK should be either MAV_RESULT_FAILED or MAV_RESULT_UNSUPPORTED."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":185,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1605,7 +1605,7 @@ COMMAND <%= target_name %> DO_FLIGHTTERMINATION BIG_ENDIAN "Terminate flight imm
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER TERMINATE 32 FLOAT 0.0 MIN MAX "Flight termination activated if > 0.5. Otherwise not activated and ACK with M..."
+  APPEND_PARAMETER TERMINATE 32 FLOAT 0.0 MIN MAX "Flight termination activated if > 0.5. Otherwise not activated and ACK with MAV_RESULT_FAILED."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -1664,7 +1664,7 @@ COMMAND <%= target_name %> DO_CHANGE_ALTITUDE BIG_ENDIAN "Change altitude set po
 # mapped to specific outputs (e.g. on any MAIN or AUX PWM or UAVCAN) using a
 # flight-stack specific mechanism (i.e. a parameter).
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_ACTUATOR BIG_ENDIAN "Sets actuators (e.g. servos) to a desired value. The actuator numbers are mapped to specific outp..."
+COMMAND <%= target_name %> DO_SET_ACTUATOR BIG_ENDIAN "Sets actuators (e.g. servos) to a desired value. The actuator numbers are mapped to specific outputs (e.g. on any MAIN or AUX PWM or UAVCAN) using a flight-stack specific mechanism (i.e. a parameter)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":187,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1723,7 +1723,7 @@ COMMAND <%= target_name %> DO_SET_ACTUATOR BIG_ENDIAN "Sets actuators (e.g. serv
 # landings are not supported, or no mission landing is defined. When used as
 # a command any position information in the command is ignored.
 # ============================================================================
-COMMAND <%= target_name %> DO_RETURN_PATH_START BIG_ENDIAN "Mission item to specify the start of a failsafe/landing return-path segment (the end of the segme..."
+COMMAND <%= target_name %> DO_RETURN_PATH_START BIG_ENDIAN "Mission item to specify the start of a failsafe/landing return-path segment (the end of the segment is the next MAV_CMD_DO_LAND_START item). A vehicle that is using missions for landing (e.g. in a return mode) will join the mission on the closest path of the return-path segment (instead of MAV_CMD_DO_LAND_START or the nearest waypoint). The main use case is to minimize the failsafe flight path in corridor missions, where the inbound/outbound paths are constrained (by geofences) to the same particular path. The MAV_CMD_NAV_RETURN_PATH_START would be placed at the start of the return path. If a failsafe occurs on the outbound path the vehicle will move to the nearest point on the return path (which is parallel for this kind of mission), effectively turning round and following the shortest path to landing. If a failsafe occurs on the inbound path the vehicle is already on the return segment and will continue to landing. The Latitude/Longitude/Altitude are optional, and may be set to 0 if not needed. If specified, the item defines the waypoint at which the return segment starts. If sent using as a command, the vehicle will perform a mission landing (using the land segment if defined) or reject the command if mission landings are not supported, or no mission landing is defined. When used as a command any position information in the command is ignored."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":188,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1774,7 +1774,7 @@ COMMAND <%= target_name %> DO_RETURN_PATH_START BIG_ENDIAN "Mission item to spec
 # pattern.
 # The location parameters are not used in this case, and should be set to 0.
 # ============================================================================
-COMMAND <%= target_name %> DO_LAND_START BIG_ENDIAN "Mission item to mark the start of a mission landing pattern, or a command to land with a mission ..."
+COMMAND <%= target_name %> DO_LAND_START BIG_ENDIAN "Mission item to mark the start of a mission landing pattern, or a command to land with a mission landing pattern. When used in a mission, this is a marker for the start of a sequence of mission items that represent a landing pattern. It should be followed by a navigation item that defines the first waypoint of the landing sequence. The start marker positional params are used only for selecting what landing pattern to use if several are defined in the mission (the selected pattern will be the one with the marker position that is closest to the vehicle when a landing is commanded). If the marker item position has zero-values for latitude, longitude, and altitude, then landing pattern selection is instead based on the position of the first waypoint in the landing sequence. When sent as a command it triggers a landing using a mission landing pattern. The location parameters are not used in this case, and should be set to 0."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":189,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1797,11 +1797,11 @@ COMMAND <%= target_name %> DO_LAND_START BIG_ENDIAN "Mission item to mark the st
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Empty"
 
-  APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude for landing sequence selection, or 0 (see description). Ignored in c..."
+  APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude for landing sequence selection, or 0 (see description). Ignored in commands (set 0)."
 
-  APPEND_PARAMETER LONGITUDE 32 FLOAT 0.0 MIN MAX "Longitude for landing sequence selection, or 0 (see description). Ignored in ..."
+  APPEND_PARAMETER LONGITUDE 32 FLOAT 0.0 MIN MAX "Longitude for landing sequence selection, or 0 (see description). Ignored in commands (set 0)."
 
-  APPEND_PARAMETER ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude for landing sequence selection, or 0 (see description). Ignored in c..."
+  APPEND_PARAMETER ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude for landing sequence selection, or 0 (see description). Ignored in commands (set 0)."
     UNITS "Meters" m
 
   RESPONSE <%= target_name %> COMMAND_ACK
@@ -1885,7 +1885,7 @@ COMMAND <%= target_name %> DO_GO_AROUND BIG_ENDIAN "Mission command to safely ab
 # is intended for guided commands (for missions use MAV_CMD_NAV_WAYPOINT
 # instead).
 # ============================================================================
-COMMAND <%= target_name %> DO_REPOSITION BIG_ENDIAN "Reposition the vehicle to a specific WGS84 global position. This command is intended for guided c..."
+COMMAND <%= target_name %> DO_REPOSITION BIG_ENDIAN "Reposition the vehicle to a specific WGS84 global position. This command is intended for guided commands (for missions use MAV_CMD_NAV_WAYPOINT instead)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":192,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -1905,10 +1905,10 @@ COMMAND <%= target_name %> DO_REPOSITION BIG_ENDIAN "Reposition the vehicle to a
 
   APPEND_PARAMETER BITMASK 32 FLOAT 0.0 MIN MAX "Bitmask of option flags."
 
-  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius for planes. Positive values only, direction is controlled by Ya..."
+  APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored."
     UNITS "Meters" m
 
-  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw heading (heading reference defined in Bitmask field). NaN to use the curr..."
+  APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "Yaw heading (heading reference defined in Bitmask field). NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)"
     UNITS "Radians" rad
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude"
@@ -1940,7 +1940,7 @@ COMMAND <%= target_name %> DO_PAUSE_CONTINUE BIG_ENDIAN "If in a GPS controlled 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER CONTINUE 32 FLOAT 0.0 MIN MAX "Continue mission (MAV_BOOL_TRUE), Pause current mission or reposition command..."
+  APPEND_PARAMETER CONTINUE 32 FLOAT 0.0 MIN MAX "Continue mission (MAV_BOOL_TRUE), Pause current mission or reposition command, hold current position (MAV_BOOL_FALSE). Values not equal to 0 or 1 are invalid. A VTOL capable vehicle should enter hover mode (multicopter and VTOL planes). A plane should loiter with the default loiter radius."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved"
 
@@ -1975,7 +1975,7 @@ COMMAND <%= target_name %> DO_SET_REVERSE BIG_ENDIAN "Set moving direction to fo
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER REVERSE 32 FLOAT 0.0 MIN MAX "Reverse direction (MAV_BOOL_FALSE: Forward direction). Values not equal to 0 ..."
+  APPEND_PARAMETER REVERSE 32 FLOAT 0.0 MIN MAX "Reverse direction (MAV_BOOL_FALSE: Forward direction). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -1999,7 +1999,7 @@ COMMAND <%= target_name %> DO_SET_REVERSE BIG_ENDIAN "Set moving direction to fo
 # gimbal manager but not to a gimbal device. A gimbal is not to react to
 # this message.
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_ROI_LOCATION BIG_ENDIAN "Sets the region of interest (ROI) to a location. This can then be used by the vehicle's control s..."
+COMMAND <%= target_name %> DO_SET_ROI_LOCATION BIG_ENDIAN "Sets the region of interest (ROI) to a location. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal is not to react to this message."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":195,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2014,7 +2014,7 @@ COMMAND <%= target_name %> DO_SET_ROI_LOCATION BIG_ENDIAN "Sets the region of in
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
+  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals)."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2041,7 +2041,7 @@ COMMAND <%= target_name %> DO_SET_ROI_LOCATION BIG_ENDIAN "Sets the region of in
 # sensors such as cameras. This command can be sent to a gimbal manager but
 # not to a gimbal device. A gimbal device is not to react to this message.
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_ROI_WPNEXT_OFFSET BIG_ENDIAN "Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset..."
+COMMAND <%= target_name %> DO_SET_ROI_WPNEXT_OFFSET BIG_ENDIAN "Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":196,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2056,7 +2056,7 @@ COMMAND <%= target_name %> DO_SET_ROI_WPNEXT_OFFSET BIG_ENDIAN "Sets the region 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
+  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals)."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2085,7 +2085,7 @@ COMMAND <%= target_name %> DO_SET_ROI_WPNEXT_OFFSET BIG_ENDIAN "Sets the region 
 # command the gimbal manager should go back to manual input if available,
 # and otherwise assume a neutral position.
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_ROI_NONE BIG_ENDIAN "Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics...."
+COMMAND <%= target_name %> DO_SET_ROI_NONE BIG_ENDIAN "Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message. After this command the gimbal manager should go back to manual input if available, and otherwise assume a neutral position."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":197,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2100,7 +2100,7 @@ COMMAND <%= target_name %> DO_SET_ROI_NONE BIG_ENDIAN "Cancels any previous ROI 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
+  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals)."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2123,7 +2123,7 @@ COMMAND <%= target_name %> DO_SET_ROI_NONE BIG_ENDIAN "Cancels any previous ROI 
 # This command can be sent to a gimbal manager but not to a gimbal device. A
 # gimbal device is not to react to this message.
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_ROI_SYSID BIG_ENDIAN "Mount tracks system with specified system ID. Determination of target vehicle position may be don..."
+COMMAND <%= target_name %> DO_SET_ROI_SYSID BIG_ENDIAN "Mount tracks system with specified system ID. Determination of target vehicle position may be done with GLOBAL_POSITION_INT or any other means. This command can be sent to a gimbal manager but not to a gimbal device. A gimbal device is not to react to this message."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":198,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2140,7 +2140,7 @@ COMMAND <%= target_name %> DO_SET_ROI_SYSID BIG_ENDIAN "Mount tracks system with
 
   APPEND_PARAMETER SYSTEM_ID 32 FLOAT 0.0 MIN MAX "System ID"
 
-  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
+  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals)."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -2201,7 +2201,7 @@ COMMAND <%= target_name %> DO_CONTROL_VIDEO BIG_ENDIAN "Control onboard camera s
 # This can then be used by the vehicle's control system to control the
 # vehicle attitude and the attitude of various sensors such as cameras.
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_ROI BIG_ENDIAN "Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used b..."
+COMMAND <%= target_name %> DO_SET_ROI BIG_ENDIAN "Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicle's control system to control the vehicle attitude and the attitude of various sensors such as cameras."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":201,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2243,7 +2243,7 @@ COMMAND <%= target_name %> DO_SET_ROI BIG_ENDIAN "Sets the region of interest (R
 # not yet implemented PARAM_EXT_XXX messages and camera definition files
 # (see https://mavlink.io/en/services/camera_def.html ).
 # ============================================================================
-COMMAND <%= target_name %> DO_DIGICAM_CONFIGURE BIG_ENDIAN "Configure digital camera. This is a fallback message for systems that have not yet implemented PA..."
+COMMAND <%= target_name %> DO_DIGICAM_CONFIGURE BIG_ENDIAN "Configure digital camera. This is a fallback message for systems that have not yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html )."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":202,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2281,7 +2281,7 @@ COMMAND <%= target_name %> DO_DIGICAM_CONFIGURE BIG_ENDIAN "Configure digital ca
 # not yet implemented PARAM_EXT_XXX messages and camera definition files
 # (see https://mavlink.io/en/services/camera_def.html ).
 # ============================================================================
-COMMAND <%= target_name %> DO_DIGICAM_CONTROL BIG_ENDIAN "Control digital camera. This is a fallback message for systems that have not yet implemented PARA..."
+COMMAND <%= target_name %> DO_DIGICAM_CONTROL BIG_ENDIAN "Control digital camera. This is a fallback message for systems that have not yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html )."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":203,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2308,7 +2308,7 @@ COMMAND <%= target_name %> DO_DIGICAM_CONTROL BIG_ENDIAN "Control digital camera
 
   APPEND_PARAMETER COMMAND_IDENTITY 32 FLOAT 0.0 MIN MAX "Command Identity"
 
-  APPEND_PARAMETER SHOT_ID 32 FLOAT 0.0 MIN MAX "Test shot identifier. If set to 1, image will only be captured, but not count..."
+  APPEND_PARAMETER SHOT_ID 32 FLOAT 0.0 MIN MAX "Test shot identifier. If set to 1, image will only be captured, but not counted towards internal frame count."
 
   RESPONSE <%= target_name %> COMMAND_ACK
 
@@ -2373,9 +2373,9 @@ COMMAND <%= target_name %> DO_MOUNT_CONTROL BIG_ENDIAN "Mission command to contr
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER PITCH 32 FLOAT 0.0 MIN MAX "pitch depending on mount mode (degrees or degrees/second depending on pitch i..."
+  APPEND_PARAMETER PITCH 32 FLOAT 0.0 MIN MAX "pitch depending on mount mode (degrees or degrees/second depending on pitch input)."
 
-  APPEND_PARAMETER ROLL 32 FLOAT 0.0 MIN MAX "roll depending on mount mode (degrees or degrees/second depending on roll inp..."
+  APPEND_PARAMETER ROLL 32 FLOAT 0.0 MIN MAX "roll depending on mount mode (degrees or degrees/second depending on roll input)."
 
   APPEND_PARAMETER YAW 32 FLOAT 0.0 MIN MAX "yaw depending on mount mode (degrees or degrees/second depending on yaw input)."
 
@@ -2403,7 +2403,7 @@ COMMAND <%= target_name %> DO_MOUNT_CONTROL BIG_ENDIAN "Mission command to contr
 # is triggered each time this distance is exceeded. This command can also be
 # used to set the shutter integration time for the camera.
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_CAM_TRIGG_DIST BIG_ENDIAN "Mission command to set camera trigger distance for this flight. The camera is triggered each time..."
+COMMAND <%= target_name %> DO_SET_CAM_TRIGG_DIST BIG_ENDIAN "Mission command to set camera trigger distance for this flight. The camera is triggered each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":206,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2424,9 +2424,9 @@ COMMAND <%= target_name %> DO_SET_CAM_TRIGG_DIST BIG_ENDIAN "Mission command to 
   APPEND_PARAMETER SHUTTER 32 FLOAT 0.0 MIN MAX "Camera shutter integration time. -1 or 0 to ignore"
     UNITS "Milliseconds" ms
 
-  APPEND_PARAMETER TRIGGER 32 FLOAT 0.0 MIN MAX "Trigger camera once, immediately (MAV_BOOL_TRUE). Values not equal to 0 or 1 ..."
+  APPEND_PARAMETER TRIGGER 32 FLOAT 0.0 MIN MAX "Trigger camera once, immediately (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM5 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2445,7 +2445,7 @@ COMMAND <%= target_name %> DO_SET_CAM_TRIGG_DIST BIG_ENDIAN "Mission command to 
 # or it may revert to a system default at the end of a mission.
 # Flight stacks typically reset the setting to system defaults on reboot.
 # ============================================================================
-COMMAND <%= target_name %> DO_FENCE_ENABLE BIG_ENDIAN "Enable the geofence. This can be used in a mission or via the command protocol. The persistence/l..."
+COMMAND <%= target_name %> DO_FENCE_ENABLE BIG_ENDIAN "Enable the geofence. This can be used in a mission or via the command protocol. The persistence/lifetime of the setting is undefined. Depending on flight stack implementation it may persist until superseded, or it may revert to a system default at the end of a mission. Flight stacks typically reset the setting to system defaults on reboot."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":207,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2462,7 +2462,7 @@ COMMAND <%= target_name %> DO_FENCE_ENABLE BIG_ENDIAN "Enable the geofence. This
 
   APPEND_PARAMETER ENABLE 32 FLOAT 0.0 MIN MAX "enable? (0=disable, 1=enable, 2=disable_floor_only)"
 
-  APPEND_PARAMETER TYPES 32 FLOAT 0.0 MIN MAX "Fence types to enable or disable as a bitmask. 0: field is unused/all fences ..."
+  APPEND_PARAMETER TYPES 32 FLOAT 0.0 MIN MAX "Fence types to enable or disable as a bitmask. 0: field is unused/all fences should be enabled or disabled (for compatibility reasons). Parameter is ignored if param1=2."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2537,7 +2537,7 @@ COMMAND <%= target_name %> DO_MOTOR_TEST BIG_ENDIAN "Command to perform motor te
 
   APPEND_PARAMETER INSTANCE 32 FLOAT 0.0 MIN MAX "Motor instance number (from 1 to max number of motors on the vehicle)."
 
-  APPEND_PARAMETER THROTTLE_TYPE 32 FLOAT 0.0 MIN MAX "Throttle type (whether the Throttle Value in param3 is a percentage, PWM valu..."
+  APPEND_PARAMETER THROTTLE_TYPE 32 FLOAT 0.0 MIN MAX "Throttle type (whether the Throttle Value in param3 is a percentage, PWM value, etc.)"
     STATE MOTOR_TEST_THROTTLE_PERCENT 0
     STATE MOTOR_TEST_THROTTLE_PWM 1
     STATE MOTOR_TEST_THROTTLE_PILOT 2
@@ -2548,7 +2548,7 @@ COMMAND <%= target_name %> DO_MOTOR_TEST BIG_ENDIAN "Command to perform motor te
   APPEND_PARAMETER TIMEOUT 32 FLOAT 0.0 MIN MAX "Timeout between tests that are run in sequence."
     UNITS "Seconds" s
 
-  APPEND_PARAMETER MOTOR_COUNT 32 FLOAT 0.0 MIN MAX "Motor count. Number of motors to test in sequence: 0/1=one motor, 2= two moto..."
+  APPEND_PARAMETER MOTOR_COUNT 32 FLOAT 0.0 MIN MAX "Motor count. Number of motors to test in sequence: 0/1=one motor, 2= two motors, etc. The Timeout (param4) is used between tests."
 
   APPEND_PARAMETER TEST_ORDER 32 FLOAT 0.0 MIN MAX "Motor test order."
     STATE MOTOR_TEST_ORDER_DEFAULT 0
@@ -2578,7 +2578,7 @@ COMMAND <%= target_name %> DO_INVERTED_FLIGHT BIG_ENDIAN "Change to/from inverte
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER INVERTED 32 FLOAT 0.0 MIN MAX "Inverted flight (MAV_BOOL_False: normal flight). Values not equal to 0 or 1 a..."
+  APPEND_PARAMETER INVERTED 32 FLOAT 0.0 MIN MAX "Inverted flight (MAV_BOOL_False: normal flight). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2613,7 +2613,7 @@ COMMAND <%= target_name %> DO_GRIPPER BIG_ENDIAN "Mission command to operate a g
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER GRIPPER_ID 32 FLOAT 0.0 MIN MAX "Gripper ID. 1-6 for an autopilot connected gripper. In missions this may be s..."
+  APPEND_PARAMETER GRIPPER_ID 32 FLOAT 0.0 MIN MAX "Gripper ID. 1-6 for an autopilot connected gripper. In missions this may be set to 1-6 for an autopilot gripper, or the gripper component id for a MAVLink gripper. 0 targets all grippers."
 
   APPEND_PARAMETER ACTION 32 FLOAT 0.0 MIN MAX "Gripper action to perform."
     STATE GRIPPER_ACTION_RELEASE 0
@@ -2651,9 +2651,9 @@ COMMAND <%= target_name %> DO_AUTOTUNE_ENABLE BIG_ENDIAN "Enable/disable autotun
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER ENABLE 32 FLOAT 0.0 MIN MAX "Enable autotune (MAV_BOOL_FALSE: disable autotune). Values not equal to 0 or ..."
+  APPEND_PARAMETER ENABLE 32 FLOAT 0.0 MIN MAX "Enable autotune (MAV_BOOL_FALSE: disable autotune). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER AXIS 32 FLOAT 0.0 MIN MAX "Specify axes for which autotuning is enabled/disabled. 0 indicates the field ..."
+  APPEND_PARAMETER AXIS 32 FLOAT 0.0 MIN MAX "Specify axes for which autotuning is enabled/disabled. 0 indicates the field is unused (for compatibility reasons). If 0 the autopilot will follow its default behaviour, which is usually to tune all axes."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty."
 
@@ -2692,7 +2692,7 @@ COMMAND <%= target_name %> NAV_SET_YAW_SPEED BIG_ENDIAN "Sets a desired vehicle 
   APPEND_PARAMETER SPEED 32 FLOAT 0.0 MIN MAX "Speed."
     UNITS "Meters_per_second" m/s
 
-  APPEND_PARAMETER ANGLE 32 FLOAT 0.0 MIN MAX "Relative final angle (MAV_BOOL_FALSE: Absolute angle). Values not equal to 0 ..."
+  APPEND_PARAMETER ANGLE 32 FLOAT 0.0 MIN MAX "Relative final angle (MAV_BOOL_FALSE: Absolute angle). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2711,7 +2711,7 @@ COMMAND <%= target_name %> NAV_SET_YAW_SPEED BIG_ENDIAN "Sets a desired vehicle 
 # expires. This command can also be used to set the shutter integration time
 # for the camera.
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_CAM_TRIGG_INTERVAL BIG_ENDIAN "Mission command to set camera trigger interval for this flight. If triggering is enabled, the cam..."
+COMMAND <%= target_name %> DO_SET_CAM_TRIGG_INTERVAL BIG_ENDIAN "Mission command to set camera trigger interval for this flight. If triggering is enabled, the camera is triggered each time this interval expires. This command can also be used to set the shutter integration time for the camera."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":214,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2729,10 +2729,10 @@ COMMAND <%= target_name %> DO_SET_CAM_TRIGG_INTERVAL BIG_ENDIAN "Mission command
   APPEND_PARAMETER TRIGGER_CYCLE 32 FLOAT 0.0 MIN MAX "Camera trigger cycle time. -1 or 0 to ignore."
     UNITS "Milliseconds" ms
 
-  APPEND_PARAMETER SHUTTER_INTEGRATION 32 FLOAT 0.0 MIN MAX "Camera shutter integration time. Should be less than trigger cycle time. -1 o..."
+  APPEND_PARAMETER SHUTTER_INTEGRATION 32 FLOAT 0.0 MIN MAX "Camera shutter integration time. Should be less than trigger cycle time. -1 or 0 to ignore."
     UNITS "Milliseconds" ms
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2834,16 +2834,16 @@ COMMAND <%= target_name %> DO_GUIDED_LIMITS BIG_ENDIAN "Set limits for external 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER TIMEOUT 32 FLOAT 0.0 MIN MAX "Timeout - maximum time that external controller will be allowed to control ve..."
+  APPEND_PARAMETER TIMEOUT 32 FLOAT 0.0 MIN MAX "Timeout - maximum time that external controller will be allowed to control vehicle. 0 means no timeout."
     UNITS "Seconds" s
 
-  APPEND_PARAMETER MIN_ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude (MSL) min - if vehicle moves below this alt, the command will be abo..."
+  APPEND_PARAMETER MIN_ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude (MSL) min - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit."
     UNITS "Meters" m
 
-  APPEND_PARAMETER MAX_ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude (MSL) max - if vehicle moves above this alt, the command will be abo..."
+  APPEND_PARAMETER MAX_ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude (MSL) max - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit."
     UNITS "Meters" m
 
-  APPEND_PARAMETER HORIZ_MOVE_LIMIT 32 FLOAT 0.0 MIN MAX "Horizontal move limit - if vehicle moves more than this distance from its loc..."
+  APPEND_PARAMETER HORIZ_MOVE_LIMIT 32 FLOAT 0.0 MIN MAX "Horizontal move limit - if vehicle moves more than this distance from its location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal move limit."
     UNITS "Meters" m
 
   APPEND_PARAMETER PARAM5 32 FLOAT 0.0 MIN MAX "Empty"
@@ -2860,7 +2860,7 @@ COMMAND <%= target_name %> DO_GUIDED_LIMITS BIG_ENDIAN "Set limits for external 
 # controller to change the target engine state. It is intended for vehicles
 # with internal combustion engines
 # ============================================================================
-COMMAND <%= target_name %> DO_ENGINE_CONTROL BIG_ENDIAN "Control vehicle engine. This is interpreted by the vehicles engine controller to change the targe..."
+COMMAND <%= target_name %> DO_ENGINE_CONTROL BIG_ENDIAN "Control vehicle engine. This is interpreted by the vehicles engine controller to change the target engine state. It is intended for vehicles with internal combustion engines"
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":223,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2875,11 +2875,11 @@ COMMAND <%= target_name %> DO_ENGINE_CONTROL BIG_ENDIAN "Control vehicle engine.
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER START_ENGINE 32 FLOAT 0.0 MIN MAX "Start engine (MAV_BOOL_False: Stop engine). Values not equal to 0 or 1 are in..."
+  APPEND_PARAMETER START_ENGINE 32 FLOAT 0.0 MIN MAX "Start engine (MAV_BOOL_False: Stop engine). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER COLD_START 32 FLOAT 0.0 MIN MAX "Cold start engine (MAV_BOOL_FALSE: Warm start). Values not equal to 0 or 1 ar..."
+  APPEND_PARAMETER COLD_START 32 FLOAT 0.0 MIN MAX "Cold start engine (MAV_BOOL_FALSE: Warm start). Values not equal to 0 or 1 are invalid. Controls use of choke where applicable"
 
-  APPEND_PARAMETER HEIGHT_DELAY 32 FLOAT 0.0 MIN MAX "Height delay. This is for commanding engine start only after the vehicle has ..."
+  APPEND_PARAMETER HEIGHT_DELAY 32 FLOAT 0.0 MIN MAX "Height delay. This is for commanding engine start only after the vehicle has gained the specified height. Used in VTOL vehicles during takeoff to start engine after the aircraft is off the ground. Zero for no delay."
     UNITS "Meters" m
 
   APPEND_PARAMETER OPTIONS 32 FLOAT 0.0 MIN MAX "A bitmask of options for engine control"
@@ -2917,7 +2917,7 @@ COMMAND <%= target_name %> DO_ENGINE_CONTROL BIG_ENDIAN "Control vehicle engine.
 # The command will ACK with MAV_RESULT_FAILED if the sequence number is out
 # of range (including if there is no mission item).
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_MISSION_CURRENT BIG_ENDIAN "Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (wheth..."
+COMMAND <%= target_name %> DO_SET_MISSION_CURRENT BIG_ENDIAN "Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (whether or not the mission number changed). If a mission is currently being executed, the system will continue to this new mission item on the shortest path, skipping any intermediate mission items. Note that mission jump repeat counters are not reset unless param2 is set (see MAV_CMD_DO_JUMP param2). This command may trigger a mission state-machine change on some systems: for example from MISSION_STATE_NOT_STARTED or MISSION_STATE_PAUSED to MISSION_STATE_ACTIVE. If the system is in mission mode, on those systems this command might therefore start, restart or resume the mission. If the system is not in mission mode this command must not trigger a switch to mission mode. The mission may be 'reset' using param2. Resetting sets jump counters to initial values (to reset counters without changing the current mission item set the param1 to `-1`). Resetting also explicitly changes a mission state of MISSION_STATE_COMPLETE to MISSION_STATE_PAUSED or MISSION_STATE_ACTIVE, potentially allowing it to resume when it is (next) in a mission mode. The command will ACK with MAV_RESULT_FAILED if the sequence number is out of range (including if there is no mission item)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":224,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -2932,9 +2932,9 @@ COMMAND <%= target_name %> DO_SET_MISSION_CURRENT BIG_ENDIAN "Set the mission it
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER NUMBER 32 FLOAT 0.0 MIN MAX "Mission sequence value to set. -1 for the current mission item (use to reset ..."
+  APPEND_PARAMETER NUMBER 32 FLOAT 0.0 MIN MAX "Mission sequence value to set. -1 for the current mission item (use to reset mission without changing current mission item)."
 
-  APPEND_PARAMETER RESET_MISSION 32 FLOAT 0.0 MIN MAX "Reset mission (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid. Resets..."
+  APPEND_PARAMETER RESET_MISSION 32 FLOAT 0.0 MIN MAX "Reset mission (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid. Resets jump counters to initial values and changes mission state 'completed' to be 'active' or 'paused'."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -2990,7 +2990,7 @@ COMMAND <%= target_name %> DO_LAST BIG_ENDIAN "NOP - This command is only used t
 # mode. Except for Temperature Calibration, only one sensor should be set in
 # a single message and all others should be zero.
 # ============================================================================
-COMMAND <%= target_name %> PREFLIGHT_CALIBRATION BIG_ENDIAN "Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Tempera..."
+COMMAND <%= target_name %> PREFLIGHT_CALIBRATION BIG_ENDIAN "Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":241,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3013,9 +3013,9 @@ COMMAND <%= target_name %> PREFLIGHT_CALIBRATION BIG_ENDIAN "Trigger calibration
 
   APPEND_PARAMETER REMOTE_CONTROL 32 FLOAT 0.0 MIN MAX "1: radio RC calibration, 2: RC trim calibration"
 
-  APPEND_PARAMETER ACCELEROMETER 32 FLOAT 0.0 MIN MAX "1: accelerometer calibration, 2: board level calibration, 3: accelerometer te..."
+  APPEND_PARAMETER ACCELEROMETER 32 FLOAT 0.0 MIN MAX "1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration, 4: simple accelerometer calibration"
 
-  APPEND_PARAMETER COMPMOT_OR_AIRSPEED 32 FLOAT 0.0 MIN MAX "1: APM: compass/motor interference calibration (PX4: airspeed calibration, de..."
+  APPEND_PARAMETER COMPMOT_OR_AIRSPEED 32 FLOAT 0.0 MIN MAX "1: APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated), 2: airspeed calibration"
 
   APPEND_PARAMETER ESC_OR_BARO 32 FLOAT 0.0 MIN MAX "1: ESC calibration, 3: barometer temperature calibration"
 
@@ -3041,7 +3041,7 @@ COMMAND <%= target_name %> PREFLIGHT_SET_SENSOR_OFFSETS BIG_ENDIAN "Set sensor o
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER SENSOR_TYPE 32 FLOAT 0.0 MIN MAX "Sensor to adjust the offsets for: 0: gyros, 1: accelerometer, 2: magnetometer..."
+  APPEND_PARAMETER SENSOR_TYPE 32 FLOAT 0.0 MIN MAX "Sensor to adjust the offsets for: 0: gyros, 1: accelerometer, 2: magnetometer, 3: barometer, 4: optical flow, 5: second magnetometer, 6: third magnetometer"
 
   APPEND_PARAMETER X_OFFSET 32 FLOAT 0.0 MIN MAX "X axis offset (or generic dimension 1), in the sensor's raw units"
 
@@ -3065,7 +3065,7 @@ COMMAND <%= target_name %> PREFLIGHT_SET_SENSOR_OFFSETS BIG_ENDIAN "Set sensor o
 # initial vehicle configuration (it is not a normal pre-flight command and
 # has been poorly named).
 # ============================================================================
-COMMAND <%= target_name %> PREFLIGHT_UAVCAN BIG_ENDIAN "Trigger UAVCAN configuration (actuator ID assignment and direction mapping). Note that this maps ..."
+COMMAND <%= target_name %> PREFLIGHT_UAVCAN BIG_ENDIAN "Trigger UAVCAN configuration (actuator ID assignment and direction mapping). Note that this maps to the legacy UAVCAN v0 function UAVCAN_ENUMERATE, which is intended to be executed just once during initial vehicle configuration (it is not a normal pre-flight command and has been poorly named)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":243,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3101,7 +3101,7 @@ COMMAND <%= target_name %> PREFLIGHT_UAVCAN BIG_ENDIAN "Trigger UAVCAN configura
 # Request storage of different parameter values and logs. This command will
 # be only accepted if in pre-flight mode.
 # ============================================================================
-COMMAND <%= target_name %> PREFLIGHT_STORAGE BIG_ENDIAN "Request storage of different parameter values and logs. This command will be only accepted if in ..."
+COMMAND <%= target_name %> PREFLIGHT_STORAGE BIG_ENDIAN "Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":245,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3128,7 +3128,7 @@ COMMAND <%= target_name %> PREFLIGHT_STORAGE BIG_ENDIAN "Request storage of diff
     STATE MISSION_WRITE_PERSISTENT 1
     STATE MISSION_RESET_DEFAULT 2
 
-  APPEND_PARAMETER LOGGING_RATE 32 FLOAT 0.0 MIN MAX "Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, ..."
+  APPEND_PARAMETER LOGGING_RATE 32 FLOAT 0.0 MIN MAX "Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, > 1: logging rate (e.g. set to 1000 for 1000 Hz logging)"
     UNITS "Hertz" Hz
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Reserved"
@@ -3201,7 +3201,7 @@ COMMAND <%= target_name %> PREFLIGHT_REBOOT_SHUTDOWN BIG_ENDIAN "Request the reb
 # mission is paused (MAV_GOTO_DO_HOLD), param 2 defines whether it holds in
 # place or moves to another position.
 # ============================================================================
-COMMAND <%= target_name %> OVERRIDE_GOTO BIG_ENDIAN "Override current mission with command to pause mission, pause mission and move to position, conti..."
+COMMAND <%= target_name %> OVERRIDE_GOTO BIG_ENDIAN "Override current mission with command to pause mission, pause mission and move to position, continue/resume mission. When param 1 indicates that the mission is paused (MAV_GOTO_DO_HOLD), param 2 defines whether it holds in place or moves to another position."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":252,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3216,13 +3216,13 @@ COMMAND <%= target_name %> OVERRIDE_GOTO BIG_ENDIAN "Override current mission wi
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER CONTINUE 32 FLOAT 0.0 MIN MAX "MAV_GOTO_DO_HOLD: pause mission and either hold or move to specified position..."
+  APPEND_PARAMETER CONTINUE 32 FLOAT 0.0 MIN MAX "MAV_GOTO_DO_HOLD: pause mission and either hold or move to specified position (depending on param2), MAV_GOTO_DO_CONTINUE: resume mission."
     STATE MAV_GOTO_DO_HOLD 0
     STATE MAV_GOTO_DO_CONTINUE 1
     STATE MAV_GOTO_HOLD_AT_CURRENT_POSITION 2
     STATE MAV_GOTO_HOLD_AT_SPECIFIED_POSITION 3
 
-  APPEND_PARAMETER POSITION 32 FLOAT 0.0 MIN MAX "MAV_GOTO_HOLD_AT_CURRENT_POSITION: hold at current position, MAV_GOTO_HOLD_AT..."
+  APPEND_PARAMETER POSITION 32 FLOAT 0.0 MIN MAX "MAV_GOTO_HOLD_AT_CURRENT_POSITION: hold at current position, MAV_GOTO_HOLD_AT_SPECIFIED_POSITION: hold at specified position."
     STATE MAV_GOTO_DO_HOLD 0
     STATE MAV_GOTO_DO_CONTINUE 1
     STATE MAV_GOTO_HOLD_AT_CURRENT_POSITION 2
@@ -3253,7 +3253,7 @@ COMMAND <%= target_name %> OVERRIDE_GOTO BIG_ENDIAN "Override current mission wi
 # This command can also be used to set the shutter integration time for the
 # camera.
 # ============================================================================
-COMMAND <%= target_name %> OBLIQUE_SURVEY BIG_ENDIAN "Mission command to set a Camera Auto Mount Pivoting Oblique Survey (Replaces CAM_TRIGG_DIST for t..."
+COMMAND <%= target_name %> OBLIQUE_SURVEY BIG_ENDIAN "Mission command to set a Camera Auto Mount Pivoting Oblique Survey (Replaces CAM_TRIGG_DIST for this purpose). The camera is triggered each time this distance is exceeded, then the mount moves to the next position. Params 4~6 set-up the angle limits and number of positions for oblique survey, where mount-enabled vehicles automatically roll the camera between shots to emulate an oblique camera setup (providing an increased HFOV). This command can also be used to set the shutter integration time for the camera."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":260,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3274,15 +3274,15 @@ COMMAND <%= target_name %> OBLIQUE_SURVEY BIG_ENDIAN "Mission command to set a C
   APPEND_PARAMETER SHUTTER 32 FLOAT 0 MIN MAX "Camera shutter integration time. 0 to ignore"
     UNITS "Milliseconds" ms
 
-  APPEND_PARAMETER MIN_INTERVAL 32 FLOAT 0 MIN MAX "The minimum interval in which the camera is capable of taking subsequent pict..."
+  APPEND_PARAMETER MIN_INTERVAL 32 FLOAT 0 MIN MAX "The minimum interval in which the camera is capable of taking subsequent pictures repeatedly. 0 to ignore."
     UNITS "Milliseconds" ms
 
-  APPEND_PARAMETER POSITIONS 32 FLOAT 0.0 MIN MAX "Total number of roll positions at which the camera will capture photos (image..."
+  APPEND_PARAMETER POSITIONS 32 FLOAT 0.0 MIN MAX "Total number of roll positions at which the camera will capture photos (images captures spread evenly across the limits defined by param5)."
 
   APPEND_PARAMETER ROLL_ANGLE 32 FLOAT 0 MIN MAX "Angle limits that the camera can be rolled to left and right of center."
     UNITS "Degrees" deg
 
-  APPEND_PARAMETER PITCH_ANGLE 32 FLOAT 0 MIN MAX "Fixed pitch angle that the camera will hold in oblique mode if the mount is a..."
+  APPEND_PARAMETER PITCH_ANGLE 32 FLOAT 0 MIN MAX "Fixed pitch angle that the camera will hold in oblique mode if the mount is actuated in the pitch axis."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER PARAM7 32 FLOAT 0.0 MIN MAX "Empty"
@@ -3296,7 +3296,7 @@ COMMAND <%= target_name %> OBLIQUE_SURVEY BIG_ENDIAN "Mission command to set a C
 # MAV_RESULT_FAILED.
 # See https://mavlink.io/en/services/standard_modes.html
 # ============================================================================
-COMMAND <%= target_name %> DO_SET_STANDARD_MODE BIG_ENDIAN "Enable the specified standard MAVLink mode. If the specified mode is not supported, the vehicle s..."
+COMMAND <%= target_name %> DO_SET_STANDARD_MODE BIG_ENDIAN "Enable the specified standard MAVLink mode. If the specified mode is not supported, the vehicle should ACK with MAV_RESULT_FAILED. See https://mavlink.io/en/services/standard_modes.html"
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":262,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3363,7 +3363,7 @@ COMMAND <%= target_name %> MISSION_START BIG_ENDIAN "start running a mission"
 
   APPEND_PARAMETER FIRST_ITEM 32 FLOAT 0.0 MIN MAX "first_item: the first mission item to run"
 
-  APPEND_PARAMETER LAST_ITEM 32 FLOAT 0.0 MIN MAX "last_item: the last mission item to run (after this item is run, the mission ..."
+  APPEND_PARAMETER LAST_ITEM 32 FLOAT 0.0 MIN MAX "last_item: the last mission item to run (after this item is run, the mission ends)"
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -3390,7 +3390,7 @@ COMMAND <%= target_name %> MISSION_START BIG_ENDIAN "start running a mission"
 # Motor1 independent from which output it is configured on. Autopilots must
 # NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed.
 # ============================================================================
-COMMAND <%= target_name %> ACTUATOR_TEST BIG_ENDIAN "Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of o..."
+COMMAND <%= target_name %> ACTUATOR_TEST BIG_ENDIAN "Actuator testing command. This is similar to MAV_CMD_DO_MOTOR_TEST but operates on the level of output functions, i.e. it is possible to test Motor1 independent from which output it is configured on. Autopilots must NACK this command with MAV_RESULT_TEMPORARILY_REJECTED while armed."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":310,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3405,9 +3405,9 @@ COMMAND <%= target_name %> ACTUATOR_TEST BIG_ENDIAN "Actuator testing command. T
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER VALUE 32 FLOAT 0.0 MIN MAX "Output value: 1 means maximum positive output, 0 to center servos or minimum ..."
+  APPEND_PARAMETER VALUE 32 FLOAT 0.0 MIN MAX "Output value: 1 means maximum positive output, 0 to center servos or minimum motor thrust (expected to spin), -1 for maximum negative (if not supported by the motors, i.e. motor is not reversible, smaller than 0 maps to NaN). And NaN maps to disarmed (stop the motors)."
 
-  APPEND_PARAMETER TIMEOUT 32 FLOAT 0.0 MIN MAX "Timeout after which the test command expires and the output is restored to th..."
+  APPEND_PARAMETER TIMEOUT 32 FLOAT 0.0 MIN MAX "Timeout after which the test command expires and the output is restored to the previous value. A timeout has to be set for safety reasons. A timeout of 0 means to restore the previous value immediately."
     UNITS "Seconds" s
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
@@ -3493,7 +3493,7 @@ COMMAND <%= target_name %> COMPONENT_ARM_DISARM BIG_ENDIAN "Arms / Disarms a com
 
   APPEND_PARAMETER ARM 32 FLOAT 0.0 MIN MAX "Arm (MAV_BOOL_FALSE: disarm). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER FORCE 32 FLOAT 0.0 MIN MAX "0: arm-disarm unless prevented by safety checks (i.e. when landed), 21196: fo..."
+  APPEND_PARAMETER FORCE 32 FLOAT 0.0 MIN MAX "0: arm-disarm unless prevented by safety checks (i.e. when landed), 21196: force arming/disarming (e.g. allow arming to override preflight checks and disarming in flight)"
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -3525,7 +3525,7 @@ COMMAND <%= target_name %> COMPONENT_ARM_DISARM BIG_ENDIAN "Arms / Disarms a com
 # The command should return MAV_RESULT_TEMPORARILY_REJECTED if the system is
 # already armed.
 # ============================================================================
-COMMAND <%= target_name %> RUN_PREARM_CHECKS BIG_ENDIAN "Instructs a target system to run pre-arm checks. This allows preflight checks to be run on demand..."
+COMMAND <%= target_name %> RUN_PREARM_CHECKS BIG_ENDIAN "Instructs a target system to run pre-arm checks. This allows preflight checks to be run on demand, which may be useful on systems that normally run them at low rate, or which do not trigger checks when the armable state might have changed. This command should return MAV_RESULT_ACCEPTED if it will run the checks. The results of the checks are usually then reported in SYS_STATUS messages (this is system-specific). The command should return MAV_RESULT_TEMPORARILY_REJECTED if the system is already armed."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":401,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3570,7 +3570,7 @@ COMMAND <%= target_name %> RUN_PREARM_CHECKS BIG_ENDIAN "Instructs a target syst
 # searchlight (as opposed to a light source for illuminating the system
 # itself, e.g. an indicator light).
 # ============================================================================
-COMMAND <%= target_name %> ILLUMINATOR_ON_OFF BIG_ENDIAN "Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting up dark are..."
+COMMAND <%= target_name %> ILLUMINATOR_ON_OFF BIG_ENDIAN "Turns illuminators ON/OFF. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":405,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3585,7 +3585,7 @@ COMMAND <%= target_name %> ILLUMINATOR_ON_OFF BIG_ENDIAN "Turns illuminators ON/
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER ENABLE 32 FLOAT 0.0 MIN MAX "Illuminators on/off (MAV_BOOL_TRUE: illuminators on). Values not equal to 0 o..."
+  APPEND_PARAMETER ENABLE 32 FLOAT 0.0 MIN MAX "Illuminators on/off (MAV_BOOL_TRUE: illuminators on). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -3614,7 +3614,7 @@ COMMAND <%= target_name %> ILLUMINATOR_ON_OFF BIG_ENDIAN "Turns illuminators ON/
 # searchlight (as opposed to a light source for illuminating the system
 # itself, e.g. an indicator light).
 # ============================================================================
-COMMAND <%= target_name %> DO_ILLUMINATOR_CONFIGURE BIG_ENDIAN "Configures illuminator settings. An illuminator is a light source that is used for lighting up da..."
+COMMAND <%= target_name %> DO_ILLUMINATOR_CONFIGURE BIG_ENDIAN "Configures illuminator settings. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":406,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3640,7 +3640,7 @@ COMMAND <%= target_name %> DO_ILLUMINATOR_CONFIGURE BIG_ENDIAN "Configures illum
   APPEND_PARAMETER STROBE_PERIOD 32 FLOAT 0.0 MIN MAX "Strobe period in seconds where 0 means strobing is not used"
     UNITS "Seconds" s
 
-  APPEND_PARAMETER STROBE_DUTY 32 FLOAT 0.0 MIN MAX "Strobe duty cycle where 100% means it is on constantly and 0 means strobing i..."
+  APPEND_PARAMETER STROBE_DUTY 32 FLOAT 0.0 MIN MAX "Strobe duty cycle where 100% means it is on constantly and 0 means strobing is not used"
     UNITS "Percent" %
 
   APPEND_PARAMETER PARAM5 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
@@ -3659,7 +3659,7 @@ COMMAND <%= target_name %> DO_ILLUMINATOR_CONFIGURE BIG_ENDIAN "Configures illum
 # Request the home position from the vehicle.
 # The vehicle will ACK the command and then emit the HOME_POSITION message.
 # ============================================================================
-COMMAND <%= target_name %> GET_HOME_POSITION BIG_ENDIAN "Request the home position from the vehicle. The vehicle will ACK the command and then emit the HO..."
+COMMAND <%= target_name %> GET_HOME_POSITION BIG_ENDIAN "Request the home position from the vehicle. The vehicle will ACK the command and then emit the HOME_POSITION message."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":410,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3696,7 +3696,7 @@ COMMAND <%= target_name %> GET_HOME_POSITION BIG_ENDIAN "Request the home positi
 # should implement an additional protection before accepting this command
 # such as a specific param setting.
 # ============================================================================
-COMMAND <%= target_name %> INJECT_FAILURE BIG_ENDIAN "Inject artificial failure for testing purposes. Note that autopilots should implement an addition..."
+COMMAND <%= target_name %> INJECT_FAILURE BIG_ENDIAN "Inject artificial failure for testing purposes. Note that autopilots should implement an additional protection before accepting this command such as a specific param setting."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":420,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3805,7 +3805,7 @@ COMMAND <%= target_name %> START_RX_PAIR BIG_ENDIAN "Starts receiver pairing."
 # The receiver should ACK the command and then emit its response in a
 # MESSAGE_INTERVAL message.
 # ============================================================================
-COMMAND <%= target_name %> GET_MESSAGE_INTERVAL BIG_ENDIAN "Request the interval between messages for a particular MAVLink message ID. The receiver should AC..."
+COMMAND <%= target_name %> GET_MESSAGE_INTERVAL BIG_ENDIAN "Request the interval between messages for a particular MAVLink message ID. The receiver should ACK the command and then emit its response in a MESSAGE_INTERVAL message."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":510,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3847,7 +3847,7 @@ COMMAND <%= target_name %> GET_MESSAGE_INTERVAL BIG_ENDIAN "Request the interval
 # Set the interval between messages for a particular MAVLink message ID.
 # This interface replaces REQUEST_DATA_STREAM.
 # ============================================================================
-COMMAND <%= target_name %> SET_MESSAGE_INTERVAL BIG_ENDIAN "Set the interval between messages for a particular MAVLink message ID. This interface replaces RE..."
+COMMAND <%= target_name %> SET_MESSAGE_INTERVAL BIG_ENDIAN "Set the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":511,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3864,18 +3864,18 @@ COMMAND <%= target_name %> SET_MESSAGE_INTERVAL BIG_ENDIAN "Set the interval bet
 
   APPEND_PARAMETER MESSAGE_ID 32 FLOAT 0.0 MIN MAX "The MAVLink message ID"
 
-  APPEND_PARAMETER INTERVAL 32 FLOAT 0.0 MIN MAX "The interval between two messages. -1: disable. 0: request default rate (whic..."
+  APPEND_PARAMETER INTERVAL 32 FLOAT 0.0 MIN MAX "The interval between two messages. -1: disable. 0: request default rate (which may be zero)."
     UNITS "Microseconds" us
 
-  APPEND_PARAMETER REQ_PARAM_3 32 FLOAT 0.0 MIN MAX "Use for index ID, if required. Otherwise, the use of this parameter (if any) ..."
+  APPEND_PARAMETER REQ_PARAM_3 32 FLOAT 0.0 MIN MAX "Use for index ID, if required. Otherwise, the use of this parameter (if any) must be defined in the requested message. By default assumed not used (0). When used as an index ID, 0 means 'all instances', '1' means the first instance in the sequence (the emitted message will have an id of 0 if message ids are 0-indexed, or 1 if index numbers start from one)."
 
-  APPEND_PARAMETER REQ_PARAM_4 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message...."
+  APPEND_PARAMETER REQ_PARAM_4 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0)."
 
-  APPEND_PARAMETER REQ_PARAM_5 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message...."
+  APPEND_PARAMETER REQ_PARAM_5 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0/NaN)."
 
-  APPEND_PARAMETER REQ_PARAM_6 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message...."
+  APPEND_PARAMETER REQ_PARAM_6 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0/NaN)."
 
-  APPEND_PARAMETER RESPONSE_TARGET 32 FLOAT 0.0 MIN MAX "Target address of message stream (if message has target address fields). 0: F..."
+  APPEND_PARAMETER RESPONSE_TARGET 32 FLOAT 0.0 MIN MAX "Target address of message stream (if message has target address fields). 0: Flight-stack default (recommended), 1: address of requester, 2: broadcast."
 
   RESPONSE <%= target_name %> COMMAND_ACK
 
@@ -3884,7 +3884,7 @@ COMMAND <%= target_name %> SET_MESSAGE_INTERVAL BIG_ENDIAN "Set the interval bet
 # Request the target system(s) emit a single instance of a specified message
 # (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).
 # ============================================================================
-COMMAND <%= target_name %> REQUEST_MESSAGE BIG_ENDIAN "Request the target system(s) emit a single instance of a specified message (i.e. a 'one-shot' ver..."
+COMMAND <%= target_name %> REQUEST_MESSAGE BIG_ENDIAN "Request the target system(s) emit a single instance of a specified message (i.e. a 'one-shot' version of MAV_CMD_SET_MESSAGE_INTERVAL)."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":512,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3901,17 +3901,17 @@ COMMAND <%= target_name %> REQUEST_MESSAGE BIG_ENDIAN "Request the target system
 
   APPEND_PARAMETER MESSAGE_ID 32 FLOAT 0.0 MIN MAX "The MAVLink message ID of the requested message."
 
-  APPEND_PARAMETER REQ_PARAM_1 32 FLOAT 0.0 MIN MAX "Use for index ID, if required. Otherwise, the use of this parameter (if any) ..."
+  APPEND_PARAMETER REQ_PARAM_1 32 FLOAT 0.0 MIN MAX "Use for index ID, if required. Otherwise, the use of this parameter (if any) must be defined in the requested message. By default assumed not used (0)."
 
-  APPEND_PARAMETER REQ_PARAM_2 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message...."
+  APPEND_PARAMETER REQ_PARAM_2 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0)."
 
-  APPEND_PARAMETER REQ_PARAM_3 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message...."
+  APPEND_PARAMETER REQ_PARAM_3 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0)."
 
-  APPEND_PARAMETER REQ_PARAM_4 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message...."
+  APPEND_PARAMETER REQ_PARAM_4 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0)."
 
-  APPEND_PARAMETER REQ_PARAM_5 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message...."
+  APPEND_PARAMETER REQ_PARAM_5 32 FLOAT 0.0 MIN MAX "The use of this parameter (if any), must be defined in the requested message. By default assumed not used (0)."
 
-  APPEND_PARAMETER RESPONSE_TARGET 32 FLOAT 0.0 MIN MAX "Target address for requested message (if message has target address fields). ..."
+  APPEND_PARAMETER RESPONSE_TARGET 32 FLOAT 0.0 MIN MAX "Target address for requested message (if message has target address fields). 0: Flight-stack default, 1: address of requester, 2: broadcast."
 
   RESPONSE <%= target_name %> COMMAND_ACK
 
@@ -3921,7 +3921,7 @@ COMMAND <%= target_name %> REQUEST_MESSAGE BIG_ENDIAN "Request the target system
 # the command and then emit their capabilities in an PROTOCOL_VERSION
 # message
 # ============================================================================
-COMMAND <%= target_name %> REQUEST_PROTOCOL_VERSION BIG_ENDIAN "Request MAVLink protocol version compatibility. All receivers should ACK the command and then emi..."
+COMMAND <%= target_name %> REQUEST_PROTOCOL_VERSION BIG_ENDIAN "Request MAVLink protocol version compatibility. All receivers should ACK the command and then emit their capabilities in an PROTOCOL_VERSION message"
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":519,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3936,7 +3936,7 @@ COMMAND <%= target_name %> REQUEST_PROTOCOL_VERSION BIG_ENDIAN "Request MAVLink 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER PROTOCOL 32 FLOAT 0.0 MIN MAX "Request supported protocol versions by all nodes on the network (MAV_BOOL_TRU..."
+  APPEND_PARAMETER PROTOCOL 32 FLOAT 0.0 MIN MAX "Request supported protocol versions by all nodes on the network (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (all remaining params)"
 
@@ -3962,7 +3962,7 @@ COMMAND <%= target_name %> REQUEST_PROTOCOL_VERSION BIG_ENDIAN "Request MAVLink 
 # Request autopilot capabilities. The receiver should ACK the command and
 # then emit its capabilities in an AUTOPILOT_VERSION message
 # ============================================================================
-COMMAND <%= target_name %> REQUEST_AUTOPILOT_CAPABILITIES BIG_ENDIAN "Request autopilot capabilities. The receiver should ACK the command and then emit its capabilitie..."
+COMMAND <%= target_name %> REQUEST_AUTOPILOT_CAPABILITIES BIG_ENDIAN "Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message"
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":520,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -3977,7 +3977,7 @@ COMMAND <%= target_name %> REQUEST_AUTOPILOT_CAPABILITIES BIG_ENDIAN "Request au
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER VERSION 32 FLOAT 0.0 MIN MAX "Request autopilot version (MAV_BOOL_TRUE). Values not equal to 0 or 1 are inv..."
+  APPEND_PARAMETER VERSION 32 FLOAT 0.0 MIN MAX "Request autopilot version (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (all remaining params)"
 
@@ -4017,7 +4017,7 @@ COMMAND <%= target_name %> REQUEST_CAMERA_INFORMATION BIG_ENDIAN "Request camera
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER CAPABILITIES 32 FLOAT 0.0 MIN MAX "Request camera capabilities (MAV_BOOL_TRUE). Values not equal to 0 or 1 are i..."
+  APPEND_PARAMETER CAPABILITIES 32 FLOAT 0.0 MIN MAX "Request camera capabilities (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (all remaining params)"
 
@@ -4083,7 +4083,7 @@ COMMAND <%= target_name %> REQUEST_CAMERA_SETTINGS BIG_ENDIAN "Request camera se
 # Request storage information (STORAGE_INFORMATION). Use the command's
 # target_component to target a specific component's storage.
 # ============================================================================
-COMMAND <%= target_name %> REQUEST_STORAGE_INFORMATION BIG_ENDIAN "Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a..."
+COMMAND <%= target_name %> REQUEST_STORAGE_INFORMATION BIG_ENDIAN "Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":525,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4100,7 +4100,7 @@ COMMAND <%= target_name %> REQUEST_STORAGE_INFORMATION BIG_ENDIAN "Request stora
 
   APPEND_PARAMETER STORAGE_ID 32 FLOAT 0.0 MIN MAX "Storage ID (0 for all, 1 for first, 2 for second, etc.)"
 
-  APPEND_PARAMETER INFORMATION 32 FLOAT 0.0 MIN MAX "Request storage information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are i..."
+  APPEND_PARAMETER INFORMATION 32 FLOAT 0.0 MIN MAX "Request storage information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (all remaining params)"
 
@@ -4124,7 +4124,7 @@ COMMAND <%= target_name %> REQUEST_STORAGE_INFORMATION BIG_ENDIAN "Request stora
 # message is sent. Use the command's target_component to target a specific
 # component's storage.
 # ============================================================================
-COMMAND <%= target_name %> STORAGE_FORMAT BIG_ENDIAN "Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the ..."
+COMMAND <%= target_name %> STORAGE_FORMAT BIG_ENDIAN "Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":526,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4143,7 +4143,7 @@ COMMAND <%= target_name %> STORAGE_FORMAT BIG_ENDIAN "Format a storage medium. O
 
   APPEND_PARAMETER FORMAT 32 FLOAT 0.0 MIN MAX "Format storage (and reset image log). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER RESET_IMAGE_LOG 32 FLOAT 0.0 MIN MAX "Reset Image Log (without formatting storage medium). This will reset CAMERA_C..."
+  APPEND_PARAMETER RESET_IMAGE_LOG 32 FLOAT 0.0 MIN MAX "Reset Image Log (without formatting storage medium). This will reset CAMERA_CAPTURE_STATUS.image_count and CAMERA_IMAGE_CAPTURED.image_index. Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Reserved (all remaining params)"
 
@@ -4177,7 +4177,7 @@ COMMAND <%= target_name %> REQUEST_CAMERA_CAPTURE_STATUS BIG_ENDIAN "Request cam
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER CAPTURE_STATUS 32 FLOAT 0.0 MIN MAX "Request camera capture status (MAV_BOOL_TRUE). Values not equal to 0 or 1 are..."
+  APPEND_PARAMETER CAPTURE_STATUS 32 FLOAT 0.0 MIN MAX "Request camera capture status (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (all remaining params)"
 
@@ -4217,7 +4217,7 @@ COMMAND <%= target_name %> REQUEST_FLIGHT_INFORMATION BIG_ENDIAN "Request flight
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER FLIGHT_INFORMATION 32 FLOAT 0.0 MIN MAX "Request flight information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are in..."
+  APPEND_PARAMETER FLIGHT_INFORMATION 32 FLOAT 0.0 MIN MAX "Request flight information (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (all remaining params)"
 
@@ -4259,7 +4259,7 @@ COMMAND <%= target_name %> RESET_CAMERA_SETTINGS BIG_ENDIAN "Reset all camera se
 
   APPEND_PARAMETER RESET 32 FLOAT 0.0 MIN MAX "Reset all settings (MAV_BOOL_TRUE). Values not equal to 0 or 1 are invalid."
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4284,7 +4284,7 @@ COMMAND <%= target_name %> RESET_CAMERA_SETTINGS BIG_ENDIAN "Reset all camera se
 # MAV_CMD_REQUEST_VIDEO_STREAM_STATUS command after a mode change if the
 # camera supports video streaming.
 # ============================================================================
-COMMAND <%= target_name %> SET_CAMERA_MODE BIG_ENDIAN "Set camera running mode. Use NaN for reserved values. GCS will send a MAV_CMD_REQUEST_VIDEO_STREA..."
+COMMAND <%= target_name %> SET_CAMERA_MODE BIG_ENDIAN "Set camera running mode. Use NaN for reserved values. GCS will send a MAV_CMD_REQUEST_VIDEO_STREAM_STATUS command after a mode change if the camera supports video streaming."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":530,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4299,7 +4299,7 @@ COMMAND <%= target_name %> SET_CAMERA_MODE BIG_ENDIAN "Set camera running mode. 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER CAMERA_MODE 32 FLOAT 0.0 MIN MAX "Camera mode"
     STATE CAMERA_MODE_IMAGE 0
@@ -4352,7 +4352,7 @@ COMMAND <%= target_name %> SET_CAMERA_ZOOM BIG_ENDIAN "Set camera zoom. Camera m
 
   APPEND_PARAMETER ZOOM_VALUE 32 FLOAT 0.0 MIN MAX "Zoom value. The range of valid values depend on the zoom type."
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4399,7 +4399,7 @@ COMMAND <%= target_name %> SET_CAMERA_FOCUS BIG_ENDIAN "Set camera focus. Camera
 
   APPEND_PARAMETER FOCUS_VALUE 32 FLOAT 0.0 MIN MAX "Focus value"
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4430,7 +4430,7 @@ COMMAND <%= target_name %> SET_CAMERA_FOCUS BIG_ENDIAN "Set camera focus. Camera
 # preferred storage, in which case it should ACK the command with
 # MAV_RESULT_DENIED.
 # ============================================================================
-COMMAND <%= target_name %> SET_STORAGE_USAGE BIG_ENDIAN "Set that a particular storage is the preferred location for saving photos, videos, and/or other m..."
+COMMAND <%= target_name %> SET_STORAGE_USAGE BIG_ENDIAN "Set that a particular storage is the preferred location for saving photos, videos, and/or other media (e.g. to set that an SD card is used for storing videos). There can only be one preferred save location for each particular media type: setting a media usage flag will clear/reset that same flag if set on any other storage. If no flag is set the system should use its default storage. A target system can choose to always use default storage, in which case it should ACK the command with MAV_RESULT_UNSUPPORTED. A target system can choose to not allow a particular storage to be set as preferred storage, in which case it should ACK the command with MAV_RESULT_DENIED."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":533,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4486,7 +4486,7 @@ COMMAND <%= target_name %> SET_CAMERA_SOURCE BIG_ENDIAN "Set camera source. Chan
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component Id of camera to address or 1-6 for non-MAVLink cameras, 0 for all c..."
+  APPEND_PARAMETER DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component Id of camera to address or 1-6 for non-MAVLink cameras, 0 for all cameras."
 
   APPEND_PARAMETER PRIMARY_SOURCE 32 FLOAT 0.0 MIN MAX "Primary Source"
     STATE CAMERA_SOURCE_DEFAULT 0
@@ -4494,7 +4494,7 @@ COMMAND <%= target_name %> SET_CAMERA_SOURCE BIG_ENDIAN "Set camera source. Chan
     STATE CAMERA_SOURCE_IR 2
     STATE CAMERA_SOURCE_NDVI 3
 
-  APPEND_PARAMETER SECONDARY_SOURCE 32 FLOAT 0.0 MIN MAX "Secondary Source. If non-zero the second source will be displayed as picture-..."
+  APPEND_PARAMETER SECONDARY_SOURCE 32 FLOAT 0.0 MIN MAX "Secondary Source. If non-zero the second source will be displayed as picture-in-picture."
     STATE CAMERA_SOURCE_DEFAULT 0
     STATE CAMERA_SOURCE_RGB 1
     STATE CAMERA_SOURCE_IR 2
@@ -4563,7 +4563,7 @@ COMMAND <%= target_name %> JUMP_TAG BIG_ENDIAN "Tagged jump target. Can be jumpe
 # complete the mission, and a jump where there are multiple matching tags
 # should always select the one with the lowest mission sequence number.
 # ============================================================================
-COMMAND <%= target_name %> DO_JUMP_TAG BIG_ENDIAN "Jump to the matching tag in the mission list. Repeat this action for the specified number of time..."
+COMMAND <%= target_name %> DO_JUMP_TAG BIG_ENDIAN "Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":601,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4610,7 +4610,7 @@ COMMAND <%= target_name %> DO_JUMP_TAG BIG_ENDIAN "Jump to the matching tag in t
 # GIMBAL_MANAGER_SET_PITCHYAW if you need to stream pitch/yaw setpoints at
 # higher rate.
 # ============================================================================
-COMMAND <%= target_name %> DO_GIMBAL_MANAGER_PITCHYAW BIG_ENDIAN "Set gimbal manager pitch/yaw setpoints (low rate command). It is possible to set combinations of ..."
+COMMAND <%= target_name %> DO_GIMBAL_MANAGER_PITCHYAW BIG_ENDIAN "Set gimbal manager pitch/yaw setpoints (low rate command). It is possible to set combinations of the values below. E.g. an angle as well as a desired angular rate can be used to get to this angle at a certain angular rate, or an angular rate only will result in continuous turning. NaN is to be used to signal unset. Note: only the gimbal manager will react to this command - it will be ignored by a gimbal device. Use GIMBAL_MANAGER_SET_PITCHYAW if you need to stream pitch/yaw setpoints at higher rate."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":1000,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4625,10 +4625,10 @@ COMMAND <%= target_name %> DO_GIMBAL_MANAGER_PITCHYAW BIG_ENDIAN "Set gimbal man
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER PITCH_ANGLE 32 FLOAT 0.0 MIN MAX "Pitch angle (positive to pitch up, relative to vehicle for FOLLOW mode, relat..."
+  APPEND_PARAMETER PITCH_ANGLE 32 FLOAT 0.0 MIN MAX "Pitch angle (positive to pitch up, relative to vehicle for FOLLOW mode, relative to world horizon for LOCK mode)."
     UNITS "Degrees" deg
 
-  APPEND_PARAMETER YAW_ANGLE 32 FLOAT 0.0 MIN MAX "Yaw angle (positive to yaw to the right, relative to vehicle for FOLLOW mode,..."
+  APPEND_PARAMETER YAW_ANGLE 32 FLOAT 0.0 MIN MAX "Yaw angle (positive to yaw to the right, relative to vehicle for FOLLOW mode, absolute to North for LOCK mode)."
     UNITS "Degrees" deg
 
   APPEND_PARAMETER PITCH_RATE 32 FLOAT 0.0 MIN MAX "Pitch rate (positive to pitch up)."
@@ -4642,7 +4642,7 @@ COMMAND <%= target_name %> DO_GIMBAL_MANAGER_PITCHYAW BIG_ENDIAN "Set gimbal man
   APPEND_PARAMETER PARAM6 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
 
-  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
+  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals)."
 
   RESPONSE <%= target_name %> COMMAND_ACK
 
@@ -4666,13 +4666,13 @@ COMMAND <%= target_name %> DO_GIMBAL_MANAGER_CONFIGURE BIG_ENDIAN "Gimbal config
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER SYSID_PRIMARY_CONTROL 32 FLOAT 0.0 MIN MAX "Sysid for primary control (0: no one in control, -1: leave unchanged, -2: set..."
+  APPEND_PARAMETER SYSID_PRIMARY_CONTROL 32 FLOAT 0.0 MIN MAX "Sysid for primary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control)."
 
-  APPEND_PARAMETER COMPID_PRIMARY_CONTROL 32 FLOAT 0.0 MIN MAX "Compid for primary control (0: no one in control, -1: leave unchanged, -2: se..."
+  APPEND_PARAMETER COMPID_PRIMARY_CONTROL 32 FLOAT 0.0 MIN MAX "Compid for primary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control)."
 
-  APPEND_PARAMETER SYSID_SECONDARY_CONTROL 32 FLOAT 0.0 MIN MAX "Sysid for secondary control (0: no one in control, -1: leave unchanged, -2: s..."
+  APPEND_PARAMETER SYSID_SECONDARY_CONTROL 32 FLOAT 0.0 MIN MAX "Sysid for secondary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control)."
 
-  APPEND_PARAMETER COMPID_SECONDARY_CONTROL 32 FLOAT 0.0 MIN MAX "Compid for secondary control (0: no one in control, -1: leave unchanged, -2: ..."
+  APPEND_PARAMETER COMPID_SECONDARY_CONTROL 32 FLOAT 0.0 MIN MAX "Compid for secondary control (0: no one in control, -1: leave unchanged, -2: set itself in control (for missions where the own sysid is still unknown), -3: remove control if currently in control)."
 
   APPEND_PARAMETER PARAM5 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4680,7 +4680,7 @@ COMMAND <%= target_name %> DO_GIMBAL_MANAGER_CONFIGURE BIG_ENDIAN "Gimbal config
   APPEND_PARAMETER PARAM6 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
 
-  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 f..."
+  APPEND_PARAMETER GIMBAL_DEVICE_ID 32 FLOAT 0.0 MIN MAX "Component ID of gimbal device to address (or 1-6 for non-MAVLink gimbal), 0 for all gimbal device components. Send command multiple times for more than one gimbal (but not all gimbals)."
 
   RESPONSE <%= target_name %> COMMAND_ACK
 
@@ -4713,7 +4713,7 @@ COMMAND <%= target_name %> DO_GIMBAL_MANAGER_CONFIGURE BIG_ENDIAN "Gimbal config
 # autopilot would trigger any local cameras and forward the command to all
 # channels.
 # ============================================================================
-COMMAND <%= target_name %> IMAGE_START_CAPTURE BIG_ENDIAN "Start image capture sequence. CAMERA_IMAGE_CAPTURED must be emitted after each capture. Param1 (i..."
+COMMAND <%= target_name %> IMAGE_START_CAPTURE BIG_ENDIAN "Start image capture sequence. CAMERA_IMAGE_CAPTURED must be emitted after each capture. Param1 (id) may be used to specify the target camera: 0: all cameras, 1 to 6: autopilot-connected cameras, 7-255: MAVLink camera component ID. It is needed in order to target specific cameras connected to the autopilot, or specific sensors in a multi-sensor camera (neither of which have a distinct MAVLink component ID). It is also needed to specify the target camera in missions. When used in a mission, an autopilot should execute the MAV_CMD for a specified local camera (param1 = 1-6), or resend it as a command if it is intended for a MAVLink camera (param1 = 7 - 255), setting the command's target_component as the param1 value (and setting param1 in the command to zero). If the param1 is 0 the autopilot should do both. When sent in a command the target MAVLink address is set using target_component. If addressed specifically to an autopilot: param1 should be used in the same way as it is for missions (though command should NACK with MAV_RESULT_DENIED if a specified local camera does not exist). If addressed to a MAVLink camera, param 1 can be used to address all cameras (0), or to separately address 1 to 7 individual sensors. Other values should be NACKed with MAV_RESULT_DENIED. If the command is broadcast (target_component is 0) then param 1 should be set to 0 (any other value should be NACKED with MAV_RESULT_DENIED). An autopilot would trigger any local cameras and forward the command to all channels."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":2000,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4728,14 +4728,14 @@ COMMAND <%= target_name %> IMAGE_START_CAPTURE BIG_ENDIAN "Start image capture s
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
-  APPEND_PARAMETER INTERVAL 32 FLOAT 0.0 MIN MAX "Desired elapsed time between two consecutive pictures (in seconds). Minimum v..."
+  APPEND_PARAMETER INTERVAL 32 FLOAT 0.0 MIN MAX "Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds)."
     UNITS "Seconds" s
 
-  APPEND_PARAMETER TOTAL_IMAGES 32 FLOAT 0.0 MIN MAX "Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_S..."
+  APPEND_PARAMETER TOTAL_IMAGES 32 FLOAT 0.0 MIN MAX "Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE."
 
-  APPEND_PARAMETER SEQUENCE_NUMBER 32 FLOAT 0.0 MIN MAX "Capture sequence number starting from 1. This is only valid for single-captur..."
+  APPEND_PARAMETER SEQUENCE_NUMBER 32 FLOAT 0.0 MIN MAX "Capture sequence number starting from 1. This is only valid for single-capture (param3 == 1), otherwise set to 0. Increment the capture ID for each capture command to prevent double captures when a command is re-transmitted."
 
   APPEND_PARAMETER PARAM5 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4776,7 +4776,7 @@ COMMAND <%= target_name %> IMAGE_START_CAPTURE BIG_ENDIAN "Start image capture s
 # autopilot would trigger any local cameras and forward the command to all
 # channels.
 # ============================================================================
-COMMAND <%= target_name %> IMAGE_STOP_CAPTURE BIG_ENDIAN "Stop image capture sequence. Param1 (id) may be used to specify the target camera: 0: all cameras..."
+COMMAND <%= target_name %> IMAGE_STOP_CAPTURE BIG_ENDIAN "Stop image capture sequence. Param1 (id) may be used to specify the target camera: 0: all cameras, 1 to 6: autopilot-connected cameras, 7-255: MAVLink camera component ID. It is needed in order to target specific cameras connected to the autopilot, or specific sensors in a multi-sensor camera (neither of which have a distinct MAVLink component ID). It is also needed to specify the target camera in missions. When used in a mission, an autopilot should execute the MAV_CMD for a specified local camera (param1 = 1-6), or resend it as a command if it is intended for a MAVLink camera (param1 = 7 - 255), setting the command's target_component as the param1 value (and setting param1 in the command to zero). If the param1 is 0 the autopilot should do both. When sent in a command the target MAVLink address is set using target_component. If addressed specifically to an autopilot: param1 should be used in the same way as it is for missions (though command should NACK with MAV_RESULT_DENIED if a specified local camera does not exist). If addressed to a MAVLink camera, param1 can be used to address all cameras (0), or to separately address 1 to 7 individual sensors. Other values should be NACKed with MAV_RESULT_DENIED. If the command is broadcast (target_component is 0) then param 1 should be set to 0 (any other value should be NACKED with MAV_RESULT_DENIED). An autopilot would trigger any local cameras and forward the command to all channels."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":2001,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4791,7 +4791,7 @@ COMMAND <%= target_name %> IMAGE_STOP_CAPTURE BIG_ENDIAN "Stop image capture seq
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4877,9 +4877,9 @@ COMMAND <%= target_name %> DO_TRIGGER_CONTROL BIG_ENDIAN "Enable or disable on-b
 
   APPEND_PARAMETER RESET 32 FLOAT 0.0 MIN MAX "1 to reset the trigger sequence, -1 or 0 to ignore"
 
-  APPEND_PARAMETER PAUSE 32 FLOAT 0.0 MIN MAX "1 to pause triggering, but without switching the camera off or retracting it...."
+  APPEND_PARAMETER PAUSE 32 FLOAT 0.0 MIN MAX "1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore"
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM5 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4898,7 +4898,7 @@ COMMAND <%= target_name %> DO_TRIGGER_CONTROL BIG_ENDIAN "Enable or disable on-b
 # (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to
 # initiate the tracking.
 # ============================================================================
-COMMAND <%= target_name %> CAMERA_TRACK_POINT BIG_ENDIAN "If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this c..."
+COMMAND <%= target_name %> CAMERA_TRACK_POINT BIG_ENDIAN "If the camera supports point visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_POINT is set), this command allows to initiate the tracking."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":2004,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4919,7 +4919,7 @@ COMMAND <%= target_name %> CAMERA_TRACK_POINT BIG_ENDIAN "If the camera supports
 
   APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Point radius (normalized 0..1, 0 is one pixel, 1 is full image width)."
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM5 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4938,7 +4938,7 @@ COMMAND <%= target_name %> CAMERA_TRACK_POINT BIG_ENDIAN "If the camera supports
 # (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to
 # initiate the tracking.
 # ============================================================================
-COMMAND <%= target_name %> CAMERA_TRACK_RECTANGLE BIG_ENDIAN "If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set)..."
+COMMAND <%= target_name %> CAMERA_TRACK_RECTANGLE BIG_ENDIAN "If the camera supports rectangle visual tracking (CAMERA_CAP_FLAGS_HAS_TRACKING_RECTANGLE is set), this command allows to initiate the tracking."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":2005,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -4957,11 +4957,11 @@ COMMAND <%= target_name %> CAMERA_TRACK_RECTANGLE BIG_ENDIAN "If the camera supp
 
   APPEND_PARAMETER TOP_LEFT_CORNER_Y 32 FLOAT 0.0 MIN MAX "Top left corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom)."
 
-  APPEND_PARAMETER BOTTOM_RIGHT_CORNER_X 32 FLOAT 0.0 MIN MAX "Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is ri..."
+  APPEND_PARAMETER BOTTOM_RIGHT_CORNER_X 32 FLOAT 0.0 MIN MAX "Bottom right corner of rectangle x value (normalized 0..1, 0 is left, 1 is right)."
 
-  APPEND_PARAMETER BOTTOM_RIGHT_CORNER_Y 32 FLOAT 0.0 MIN MAX "Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bot..."
+  APPEND_PARAMETER BOTTOM_RIGHT_CORNER_Y 32 FLOAT 0.0 MIN MAX "Bottom right corner of rectangle y value (normalized 0..1, 0 is top, 1 is bottom)."
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM6 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -4990,7 +4990,7 @@ COMMAND <%= target_name %> CAMERA_STOP_TRACKING BIG_ENDIAN "Stops ongoing tracki
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -5033,10 +5033,10 @@ COMMAND <%= target_name %> VIDEO_START_CAPTURE BIG_ENDIAN "Starts video capture 
 
   APPEND_PARAMETER STREAM_ID 32 FLOAT 0.0 MIN MAX "Video Stream ID (0 for all streams)"
 
-  APPEND_PARAMETER STATUS_FREQUENCY 32 FLOAT 0.0 MIN MAX "Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 fo..."
+  APPEND_PARAMETER STATUS_FREQUENCY 32 FLOAT 0.0 MIN MAX "Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency)"
     UNITS "Hertz" Hz
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -5073,7 +5073,7 @@ COMMAND <%= target_name %> VIDEO_STOP_CAPTURE BIG_ENDIAN "Stop the current video
 
   APPEND_PARAMETER STREAM_ID 32 FLOAT 0.0 MIN MAX "Video Stream ID (0 for all streams)"
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -5113,7 +5113,7 @@ COMMAND <%= target_name %> VIDEO_START_STREAMING BIG_ENDIAN "Start video streami
 
   APPEND_PARAMETER STREAM_ID 32 FLOAT 0.0 MIN MAX "Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)"
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -5153,7 +5153,7 @@ COMMAND <%= target_name %> VIDEO_STOP_STREAMING BIG_ENDIAN "Stop the given video
 
   APPEND_PARAMETER STREAM_ID 32 FLOAT 0.0 MIN MAX "Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)"
 
-  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras a..."
+  APPEND_PARAMETER TARGET_CAMERA_ID 32 FLOAT 0.0 MIN MAX "Target camera ID. 7 to 255: MAVLink camera component id. 1 to 6 for cameras attached to the autopilot, which don't have a distinct component id. 0: all cameras. This is used to target specific autopilot-connected cameras. It is also used to target specific cameras when the MAV_CMD is used in a mission."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -5384,7 +5384,7 @@ COMMAND <%= target_name %> CONTROL_HIGH_LATENCY BIG_ENDIAN "Request to start/sto
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER ENABLE 32 FLOAT 0.0 MIN MAX "Start transmission over high latency telemetry (MAV_BOOL_FALSE: stop transmis..."
+  APPEND_PARAMETER ENABLE 32 FLOAT 0.0 MIN MAX "Start transmission over high latency telemetry (MAV_BOOL_FALSE: stop transmission). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -5461,14 +5461,14 @@ COMMAND <%= target_name %> DO_VTOL_TRANSITION BIG_ENDIAN "Request VTOL transitio
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER STATE 32 FLOAT 0.0 MIN MAX "The target VTOL state. For normal transitions, only MAV_VTOL_STATE_MC and MAV..."
+  APPEND_PARAMETER STATE 32 FLOAT 0.0 MIN MAX "The target VTOL state. For normal transitions, only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used."
     STATE MAV_VTOL_STATE_UNDEFINED 0
     STATE MAV_VTOL_STATE_TRANSITION_TO_FW 1
     STATE MAV_VTOL_STATE_TRANSITION_TO_MC 2
     STATE MAV_VTOL_STATE_MC 3
     STATE MAV_VTOL_STATE_FW 4
 
-  APPEND_PARAMETER IMMEDIATE 32 FLOAT 0.0 MIN MAX "Force immediate transition to the specified MAV_VTOL_STATE. 1: Force immediat..."
+  APPEND_PARAMETER IMMEDIATE 32 FLOAT 0.0 MIN MAX "Force immediate transition to the specified MAV_VTOL_STATE. 1: Force immediate, 0: normal transition. Can be used, for example, to trigger an emergency 'Quadchute'. Caution: Can be dangerous/damage vehicle, depending on autopilot implementation of this command."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -5497,7 +5497,7 @@ COMMAND <%= target_name %> DO_VTOL_TRANSITION BIG_ENDIAN "Request VTOL transitio
 # If the authorization is denied COMMAND_ACK.result_param2 should be set
 # with one of the reasons in ARM_AUTH_DENIED_REASON.
 # ============================================================================
-COMMAND <%= target_name %> ARM_AUTHORIZATION_REQUEST BIG_ENDIAN "Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible ..."
+COMMAND <%= target_name %> ARM_AUTHORIZATION_REQUEST BIG_ENDIAN "Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the COMMAND_ACK message progress field should be set with period of time that this authorization is valid in seconds. If the authorization is denied COMMAND_ACK.result_param2 should be set with one of the reasons in ARM_AUTH_DENIED_REASON."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":3001,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -5512,7 +5512,7 @@ COMMAND <%= target_name %> ARM_AUTHORIZATION_REQUEST BIG_ENDIAN "Request authori
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER SYSTEM_ID 32 FLOAT 0.0 MIN MAX "Vehicle system id, this way ground station can request arm authorization on b..."
+  APPEND_PARAMETER SYSTEM_ID 32 FLOAT 0.0 MIN MAX "Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle"
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved (set to 0)"
     HIDDEN
@@ -5540,7 +5540,7 @@ COMMAND <%= target_name %> ARM_AUTHORIZATION_REQUEST BIG_ENDIAN "Request authori
 # mode. The vehicle holds position and altitude and the user can input the
 # desired velocities along all three axes.
 # ============================================================================
-COMMAND <%= target_name %> SET_GUIDED_SUBMODE_STANDARD BIG_ENDIAN "This command sets the submode to standard guided when vehicle is in guided mode. The vehicle hold..."
+COMMAND <%= target_name %> SET_GUIDED_SUBMODE_STANDARD BIG_ENDIAN "This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocities along all three axes."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":4000,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -5585,7 +5585,7 @@ COMMAND <%= target_name %> SET_GUIDED_SUBMODE_STANDARD BIG_ENDIAN "This command 
 # the velocity along the circle and change the radius. If no input is given
 # the vehicle will hold position.
 # ============================================================================
-COMMAND <%= target_name %> SET_GUIDED_SUBMODE_CIRCLE BIG_ENDIAN "This command sets submode circle when vehicle is in guided mode. Vehicle flies along a circle fac..."
+COMMAND <%= target_name %> SET_GUIDED_SUBMODE_CIRCLE BIG_ENDIAN "This command sets submode circle when vehicle is in guided mode. Vehicle flies along a circle facing the center of the circle. The user can input the velocity along the circle and change the radius. If no input is given the vehicle will hold position."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":4001,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -5641,7 +5641,7 @@ COMMAND <%= target_name %> CONDITION_GATE BIG_ENDIAN "Delay mission state machin
 
   APPEND_PARAMETER GEOMETRY 32 FLOAT 0.0 MIN MAX "Geometry: 0: orthogonal to path between previous and next waypoint."
 
-  APPEND_PARAMETER USEALTITUDE 32 FLOAT 0.0 MIN MAX "Use altitude (MAV_BOOL_FALSE: ignore altitude). Values not equal to 0 or 1 ar..."
+  APPEND_PARAMETER USEALTITUDE 32 FLOAT 0.0 MIN MAX "Use altitude (MAV_BOOL_FALSE: ignore altitude). Values not equal to 0 or 1 are invalid."
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -5661,7 +5661,7 @@ COMMAND <%= target_name %> CONDITION_GATE BIG_ENDIAN "Delay mission state machin
 # Fence return point (there can only be one such point in a geofence
 # definition). If rally points are supported they should be used instead.
 # ============================================================================
-COMMAND <%= target_name %> NAV_FENCE_RETURN_POINT BIG_ENDIAN "Fence return point (there can only be one such point in a geofence definition). If rally points a..."
+COMMAND <%= target_name %> NAV_FENCE_RETURN_POINT BIG_ENDIAN "Fence return point (there can only be one such point in a geofence definition). If rally points are supported they should be used instead."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":5000,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -5701,7 +5701,7 @@ COMMAND <%= target_name %> NAV_FENCE_RETURN_POINT BIG_ENDIAN "Fence return point
 # The vertices for a polygon must be sent sequentially, each with param1 set
 # to the total number of vertices in the polygon.
 # ============================================================================
-COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_INCLUSION BIG_ENDIAN "Fence vertex for an inclusion polygon (the polygon must not be self-intersecting). The vehicle mu..."
+COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_INCLUSION BIG_ENDIAN "Fence vertex for an inclusion polygon (the polygon must not be self-intersecting). The vehicle must stay within this area. Minimum of 3 vertices required. The vertices for a polygon must be sent sequentially, each with param1 set to the total number of vertices in the polygon."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":5001,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -5716,9 +5716,9 @@ COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_INCLUSION BIG_ENDIAN "Fence 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER VERTEX_COUNT 32 FLOAT 0.0 MIN MAX "Polygon vertex count. This is the number of vertices in the current polygon (..."
+  APPEND_PARAMETER VERTEX_COUNT 32 FLOAT 0.0 MIN MAX "Polygon vertex count. This is the number of vertices in the current polygon (all vertices will have the same number)."
 
-  APPEND_PARAMETER INCLUSION_GROUP 32 FLOAT 0.0 MIN MAX "Vehicle must be inside ALL inclusion zones in a single group, vehicle must be..."
+  APPEND_PARAMETER INCLUSION_GROUP 32 FLOAT 0.0 MIN MAX "Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group, must be the same for all points in each polygon"
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved"
 
@@ -5740,7 +5740,7 @@ COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_INCLUSION BIG_ENDIAN "Fence 
 # The vertices for a polygon must be sent sequentially, each with param1 set
 # to the total number of vertices in the polygon.
 # ============================================================================
-COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_EXCLUSION BIG_ENDIAN "Fence vertex for an exclusion polygon (the polygon must not be self-intersecting). The vehicle mu..."
+COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_EXCLUSION BIG_ENDIAN "Fence vertex for an exclusion polygon (the polygon must not be self-intersecting). The vehicle must stay outside this area. Minimum of 3 vertices required. The vertices for a polygon must be sent sequentially, each with param1 set to the total number of vertices in the polygon."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":5002,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -5755,7 +5755,7 @@ COMMAND <%= target_name %> NAV_FENCE_POLYGON_VERTEX_EXCLUSION BIG_ENDIAN "Fence 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER VERTEX_COUNT 32 FLOAT 0.0 MIN MAX "Polygon vertex count. This is the number of vertices in the current polygon (..."
+  APPEND_PARAMETER VERTEX_COUNT 32 FLOAT 0.0 MIN MAX "Polygon vertex count. This is the number of vertices in the current polygon (all vertices will have the same number)."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved"
 
@@ -5793,7 +5793,7 @@ COMMAND <%= target_name %> NAV_FENCE_CIRCLE_INCLUSION BIG_ENDIAN "Circular fence
   APPEND_PARAMETER RADIUS 32 FLOAT 0.0 MIN MAX "Radius."
     UNITS "Meters" m
 
-  APPEND_PARAMETER INCLUSION_GROUP 32 FLOAT 0.0 MIN MAX "Vehicle must be inside ALL inclusion zones in a single group, vehicle must be..."
+  APPEND_PARAMETER INCLUSION_GROUP 32 FLOAT 0.0 MIN MAX "Vehicle must be inside ALL inclusion zones in a single group, vehicle must be inside at least one group"
 
   APPEND_PARAMETER PARAM3 32 FLOAT 0.0 MIN MAX "Reserved"
 
@@ -5889,7 +5889,7 @@ COMMAND <%= target_name %> NAV_RALLY_POINT BIG_ENDIAN "Rally point. You can have
 # should be sent again in order to request re-transmission of the node
 # information messages.
 # ============================================================================
-COMMAND <%= target_name %> UAVCAN_GET_NODE_INFO BIG_ENDIAN "Commands the vehicle to respond with a sequence of messages UAVCAN_NODE_INFO, one message per eve..."
+COMMAND <%= target_name %> UAVCAN_GET_NODE_INFO BIG_ENDIAN "Commands the vehicle to respond with a sequence of messages UAVCAN_NODE_INFO, one message per every UAVCAN node that is online. Note that some of the response messages can be lost, which the receiver can detect easily by checking whether every received UAVCAN_NODE_STATUS has a matching message UAVCAN_NODE_INFO received earlier; if not, this command should be sent again in order to request re-transmission of the node information messages."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":5200,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -5964,7 +5964,7 @@ COMMAND <%= target_name %> DO_SET_SAFETY_SWITCH_STATE BIG_ENDIAN "Change state o
 # This starts the IDENT which is then typically held for 18 seconds by the
 # hardware per the Mode A, C, and S transponder spec.
 # ============================================================================
-COMMAND <%= target_name %> DO_ADSB_OUT_IDENT BIG_ENDIAN "Trigger the start of an ADSB-out IDENT. This should only be used when requested to do so by an Ai..."
+COMMAND <%= target_name %> DO_ADSB_OUT_IDENT BIG_ENDIAN "Trigger the start of an ADSB-out IDENT. This should only be used when requested to do so by an Air Traffic Controller in controlled airspace. This starts the IDENT which is then typically held for 18 seconds by the hardware per the Mode A, C, and S transponder spec."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":10001,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6000,7 +6000,7 @@ COMMAND <%= target_name %> DO_ADSB_OUT_IDENT BIG_ENDIAN "Trigger the start of an
 # Deploy payload on a Lat / Lon / Alt position. This includes the navigation
 # to reach the required release position and velocity.
 # ============================================================================
-COMMAND <%= target_name %> PAYLOAD_PREPARE_DEPLOY BIG_ENDIAN "Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required ..."
+COMMAND <%= target_name %> PAYLOAD_PREPARE_DEPLOY BIG_ENDIAN "Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":30001,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6015,14 +6015,14 @@ COMMAND <%= target_name %> PAYLOAD_PREPARE_DEPLOY BIG_ENDIAN "Deploy payload on 
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER OPERATION_MODE 32 FLOAT 0.0 MIN MAX "Operation mode. 0: prepare single payload deploy (overwriting previous reques..."
+  APPEND_PARAMETER OPERATION_MODE 32 FLOAT 0.0 MIN MAX "Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list."
 
-  APPEND_PARAMETER APPROACH_VECTOR 32 FLOAT 0.0 MIN MAX "Desired approach vector in compass heading. A negative value indicates the sy..."
+  APPEND_PARAMETER APPROACH_VECTOR 32 FLOAT 0.0 MIN MAX "Desired approach vector in compass heading. A negative value indicates the system can define the approach vector at will."
     UNITS "Degrees" deg
 
-  APPEND_PARAMETER GROUND_SPEED 32 FLOAT 0.0 MIN MAX "Desired ground speed at release time. This can be overridden by the airframe ..."
+  APPEND_PARAMETER GROUND_SPEED 32 FLOAT 0.0 MIN MAX "Desired ground speed at release time. This can be overridden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will."
 
-  APPEND_PARAMETER ALTITUDE_CLEARANCE 32 FLOAT 0.0 MIN MAX "Minimum altitude clearance to the release position. A negative value indicate..."
+  APPEND_PARAMETER ALTITUDE_CLEARANCE 32 FLOAT 0.0 MIN MAX "Minimum altitude clearance to the release position. A negative value indicates the system can define the clearance at will."
     UNITS "Meters" m
 
   APPEND_PARAMETER LATITUDE 32 FLOAT 0.0 MIN MAX "Latitude."
@@ -6055,7 +6055,7 @@ COMMAND <%= target_name %> PAYLOAD_CONTROL_DEPLOY BIG_ENDIAN "Control the payloa
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER OPERATION_MODE 32 FLOAT 0.0 MIN MAX "Operation mode. 0: Abort deployment, continue normal mission. 1: switch to pa..."
+  APPEND_PARAMETER OPERATION_MODE 32 FLOAT 0.0 MIN MAX "Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deployment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Reserved"
 
@@ -6261,7 +6261,7 @@ COMMAND <%= target_name %> WAYPOINT_USER_5 BIG_ENDIAN "User defined waypoint ite
 # User defined spatial item. Ground Station will not show the Vehicle as
 # flying through this item. Example: ROI item.
 # ============================================================================
-COMMAND <%= target_name %> SPATIAL_USER_1 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
+COMMAND <%= target_name %> SPATIAL_USER_1 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31005,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6298,7 +6298,7 @@ COMMAND <%= target_name %> SPATIAL_USER_1 BIG_ENDIAN "User defined spatial item.
 # User defined spatial item. Ground Station will not show the Vehicle as
 # flying through this item. Example: ROI item.
 # ============================================================================
-COMMAND <%= target_name %> SPATIAL_USER_2 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
+COMMAND <%= target_name %> SPATIAL_USER_2 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31006,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6335,7 +6335,7 @@ COMMAND <%= target_name %> SPATIAL_USER_2 BIG_ENDIAN "User defined spatial item.
 # User defined spatial item. Ground Station will not show the Vehicle as
 # flying through this item. Example: ROI item.
 # ============================================================================
-COMMAND <%= target_name %> SPATIAL_USER_3 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
+COMMAND <%= target_name %> SPATIAL_USER_3 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31007,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6372,7 +6372,7 @@ COMMAND <%= target_name %> SPATIAL_USER_3 BIG_ENDIAN "User defined spatial item.
 # User defined spatial item. Ground Station will not show the Vehicle as
 # flying through this item. Example: ROI item.
 # ============================================================================
-COMMAND <%= target_name %> SPATIAL_USER_4 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
+COMMAND <%= target_name %> SPATIAL_USER_4 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31008,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6409,7 +6409,7 @@ COMMAND <%= target_name %> SPATIAL_USER_4 BIG_ENDIAN "User defined spatial item.
 # User defined spatial item. Ground Station will not show the Vehicle as
 # flying through this item. Example: ROI item.
 # ============================================================================
-COMMAND <%= target_name %> SPATIAL_USER_5 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. ..."
+COMMAND <%= target_name %> SPATIAL_USER_5 BIG_ENDIAN "User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31009,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6446,7 +6446,7 @@ COMMAND <%= target_name %> SPATIAL_USER_5 BIG_ENDIAN "User defined spatial item.
 # User defined command. Ground Station will not show the Vehicle as flying
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
-COMMAND <%= target_name %> USER_1 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
+COMMAND <%= target_name %> USER_1 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31010,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6482,7 +6482,7 @@ COMMAND <%= target_name %> USER_1 BIG_ENDIAN "User defined command. Ground Stati
 # User defined command. Ground Station will not show the Vehicle as flying
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
-COMMAND <%= target_name %> USER_2 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
+COMMAND <%= target_name %> USER_2 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31011,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6518,7 +6518,7 @@ COMMAND <%= target_name %> USER_2 BIG_ENDIAN "User defined command. Ground Stati
 # User defined command. Ground Station will not show the Vehicle as flying
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
-COMMAND <%= target_name %> USER_3 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
+COMMAND <%= target_name %> USER_3 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31012,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6554,7 +6554,7 @@ COMMAND <%= target_name %> USER_3 BIG_ENDIAN "User defined command. Ground Stati
 # User defined command. Ground Station will not show the Vehicle as flying
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
-COMMAND <%= target_name %> USER_4 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
+COMMAND <%= target_name %> USER_4 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31013,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6590,7 +6590,7 @@ COMMAND <%= target_name %> USER_4 BIG_ENDIAN "User defined command. Ground Stati
 # User defined command. Ground Station will not show the Vehicle as flying
 # through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
 # ============================================================================
-COMMAND <%= target_name %> USER_5 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Examp..."
+COMMAND <%= target_name %> USER_5 BIG_ENDIAN "User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":31014,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6626,7 +6626,7 @@ COMMAND <%= target_name %> USER_5 BIG_ENDIAN "User defined command. Ground Stati
 # Request forwarding of CAN packets from the given CAN bus to this
 # component. CAN Frames are sent using CAN_FRAME and CANFD_FRAME messages
 # ============================================================================
-COMMAND <%= target_name %> CAN_FORWARD BIG_ENDIAN "Request forwarding of CAN packets from the given CAN bus to this component. CAN Frames are sent u..."
+COMMAND <%= target_name %> CAN_FORWARD BIG_ENDIAN "Request forwarding of CAN packets from the given CAN bus to this component. CAN Frames are sent using CAN_FRAME and CANFD_FRAME messages"
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":32000,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6641,7 +6641,7 @@ COMMAND <%= target_name %> CAN_FORWARD BIG_ENDIAN "Request forwarding of CAN pac
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER BUS 32 FLOAT 0.0 MIN MAX "Bus number (0 to disable forwarding, 1 for first bus, 2 for 2nd bus, 3 for 3r..."
+  APPEND_PARAMETER BUS 32 FLOAT 0.0 MIN MAX "Bus number (0 to disable forwarding, 1 for first bus, 2 for 2nd bus, 3 for 3rd bus)."
 
   APPEND_PARAMETER PARAM2 32 FLOAT 0.0 MIN MAX "Empty."
 
@@ -6664,7 +6664,7 @@ COMMAND <%= target_name %> CAN_FORWARD BIG_ENDIAN "Request forwarding of CAN pac
 # yaw of the vehicle. If Latitude and longitude are both zero then use the
 # current vehicle location.
 # ============================================================================
-COMMAND <%= target_name %> FIXED_MAG_CAL_YAW BIG_ENDIAN "Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM ..."
+COMMAND <%= target_name %> FIXED_MAG_CAL_YAW BIG_ENDIAN "Magnetometer calibration based on provided known yaw. This allows for fast calibration using WMM field tables in the vehicle, given only the known yaw of the vehicle. If Latitude and longitude are both zero then use the current vehicle location."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":42006,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6751,7 +6751,7 @@ COMMAND <%= target_name %> DO_WINCH BIG_ENDIAN "Command to operate winch."
 # meant to be used for occasional position resets that may be provided by a
 # external system such as a remote pilot using landmarks over a video link.
 # ============================================================================
-COMMAND <%= target_name %> EXTERNAL_POSITION_ESTIMATE BIG_ENDIAN "Provide an external position estimate for use when dead-reckoning. This is meant to be used for o..."
+COMMAND <%= target_name %> EXTERNAL_POSITION_ESTIMATE BIG_ENDIAN "Provide an external position estimate for use when dead-reckoning. This is meant to be used for occasional position resets that may be provided by a external system such as a remote pilot using landmarks over a video link."
   ACCESSOR JsonAccessor
   TEMPLATE '{"MSGNAME":"COMMAND_LONG","target_system":1,"target_component":1,"command":43003,"confirmation":0,"param1":0.0,"param2":0.0,"param3":0.0,"param4":0.0,"param5":0.0,"param6":0.0,"param7":0.0}'
   # Sent as JSON - converted to MAVLink COMMAND_LONG by protocol
@@ -6766,13 +6766,13 @@ COMMAND <%= target_name %> EXTERNAL_POSITION_ESTIMATE BIG_ENDIAN "Provide an ext
 
   APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 "0=First transmission, increment for retries"
 
-  APPEND_PARAMETER TRANSMISSION_TIME 32 FLOAT 0.0 MIN MAX "Timestamp that this message was sent as a time in the transmitters time domai..."
+  APPEND_PARAMETER TRANSMISSION_TIME 32 FLOAT 0.0 MIN MAX "Timestamp that this message was sent as a time in the transmitters time domain. The sender should wrap this time back to zero based on required timing accuracy for the application and the limitations of a 32 bit float. For example, wrapping at 10 hours would give approximately 1ms accuracy. Recipient must handle time wrap in any timing jitter correction applied to this field. Wrap rollover time should not be at not more than 250 seconds, which would give approximately 10 microsecond accuracy."
     UNITS "Seconds" s
 
-  APPEND_PARAMETER PROCESSING_TIME 32 FLOAT 0.0 MIN MAX "The time spent in processing the sensor data that is the basis for this posit..."
+  APPEND_PARAMETER PROCESSING_TIME 32 FLOAT 0.0 MIN MAX "The time spent in processing the sensor data that is the basis for this position. The recipient can use this to improve time alignment of the data. Set to zero if not known."
     UNITS "Seconds" s
 
-  APPEND_PARAMETER ACCURACY 32 FLOAT 0.0 MIN MAX "estimated one standard deviation accuracy of the measurement. Set to NaN if n..."
+  APPEND_PARAMETER ACCURACY 32 FLOAT 0.0 MIN MAX "estimated one standard deviation accuracy of the measurement. Set to NaN if not known."
 
   APPEND_PARAMETER PARAM4 32 FLOAT 0.0 MIN MAX "Empty"
 
@@ -6780,7 +6780,7 @@ COMMAND <%= target_name %> EXTERNAL_POSITION_ESTIMATE BIG_ENDIAN "Provide an ext
 
   APPEND_PARAMETER LONGITUDE 32 FLOAT 0.0 MIN MAX "Longitude"
 
-  APPEND_PARAMETER ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude, not used. Should be sent as NaN. May be supported in a future versi..."
+  APPEND_PARAMETER ALTITUDE 32 FLOAT 0.0 MIN MAX "Altitude, not used. Should be sent as NaN. May be supported in a future version of this message."
     UNITS "Meters" m
 
   RESPONSE <%= target_name %> COMMAND_ACK

@@ -604,9 +604,8 @@ class MavlinkToCosmosConverter
   # HELPER METHODS
   # ============================================================================
 
-  def truncate_description(desc, max_len)
-    clean = desc.to_s.gsub('"', "'").gsub(/\s+/, ' ').strip
-    clean.length > max_len ? clean[0, max_len-3] + "..." : clean
+  def truncate_description(desc, max_len = nil)
+    desc.to_s.gsub('"', "'").gsub(/\s+/, ' ').strip
   end
 
   def parse_units(units_str)

@@ -1,5 +1,0 @@
-  # COMMAND_LONG payload fields (before param1-7)
-  PARAMETER TARGET_SYSTEM 80 8 UINT 0 255 1 "Target system ID"
-  PARAMETER TARGET_COMPONENT 88 8 UINT 0 255 1 "Target component ID"
-  PARAMETER COMMAND 96 16 UINT <%= command_id %> <%= command_id %> <%= command_id %> "<%= command_name %>"
-  PARAMETER CONFIRMATION 112 8 UINT 0 255 0 "0=First transmission, increment for retries"
