@@ -420,11 +420,11 @@ class MavlinkToCosmosConverter
     f.puts ""
     f.puts "  APPEND_PARAMETER MSGNAME 0 STRING \"COMMAND_LONG\" \"Message type\""
     f.puts ""
-    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 1 0 255 \"Target system ID\""
+    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 \"Target system ID\""
     f.puts ""
-    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 1 0 255 \"Target component ID\""
+    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 \"Target component ID\""
     f.puts ""
-    f.puts "  APPEND_PARAMETER COMMAND 16 UINT 0 0 65535 \"MAV_CMD command ID\""
+    f.puts "  APPEND_PARAMETER COMMAND 16 UINT 0 65535 0 \"MAV_CMD command ID\""
     f.puts "    STATE MAV_CMD_NAV_WAYPOINT 16"
     f.puts "    STATE MAV_CMD_NAV_RETURN_TO_LAUNCH 20"
     f.puts "    STATE MAV_CMD_NAV_LAND 21"
@@ -433,7 +433,7 @@ class MavlinkToCosmosConverter
     f.puts "    STATE MAV_CMD_COMPONENT_ARM_DISARM 400"
     f.puts "    STATE MAV_CMD_REQUEST_MESSAGE 512"
     f.puts ""
-    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 \"0=First transmission, increment for retries\""
+    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
     f.puts ""
 
     # PARAM1-7 (each 32-bit float)
@@ -444,7 +444,7 @@ class MavlinkToCosmosConverter
       when 7 then "Parameter 7 (often Altitude)"
       else "Parameter #{i}"
       end
-      f.puts "  APPEND_PARAMETER PARAM#{i} 32 FLOAT 0.0 MIN MAX \"#{label}\""
+      f.puts "  APPEND_PARAMETER PARAM#{i} 32 FLOAT MIN MAX 0.0 \"#{label}\""
       f.puts ""
     end
 
@@ -473,13 +473,13 @@ class MavlinkToCosmosConverter
     f.puts ""
     f.puts "  APPEND_PARAMETER MSGNAME 0 STRING \"COMMAND_LONG\" \"Message type\""
     f.puts ""
-    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 1 0 255 \"Target system ID\""
+    f.puts "  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 \"Target system ID\""
     f.puts ""
-    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 1 0 255 \"Target component ID\""
+    f.puts "  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 \"Target component ID\""
     f.puts ""
     f.puts "  APPEND_PARAMETER COMMAND 16 UINT #{cmd_id} #{cmd_id} #{cmd_id} \"#{cmd[:name]}\""
     f.puts ""
-    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 0 255 \"0=First transmission, increment for retries\""
+    f.puts "  APPEND_PARAMETER CONFIRMATION 8 UINT 0 255 0 \"0=First transmission, increment for retries\""
     f.puts ""
 
     # Write param1-7 based on command definition
@@ -501,46 +501,46 @@ class MavlinkToCosmosConverter
     cmd_id = cmd[:value]
     params = cmd[:params] || []
 
-    # Build JSON object with lowercase keys (matching MAVLink convention)
+    # Build JSON object with uppercase keys to match APPEND_PARAMETER names
     template_obj = {
       "MSGNAME" => "COMMAND_LONG",
-      "target_system" => 1,
-      "target_component" => 1,
-      "command" => cmd_id,
-      "confirmation" => 0
+      "TARGET_SYSTEM" => 1,
+      "TARGET_COMPONENT" => 1,
+      "COMMAND" => cmd_id,
+      "CONFIRMATION" => 0
     }
 
-    # Add param1-7 with default values
+    # Add PARAM1-7 with default values (uppercase to match parameter names)
     (1..7).each do |i|
       param = params.find { |p| p[:index] == i }
       default_val = param&.dig(:default) || "0.0"
       default_val = "0.0" if default_val == "NaN" || default_val.to_s.empty?
-      template_obj["param#{i}"] = default_val.to_f
+      template_obj["PARAM#{i}"] = default_val.to_f
     end
 
     JSON.generate(template_obj)
   end
 
   def write_command_param(f, index, param)
-    param_name = param[:label]&.upcase&.gsub(/[^A-Z0-9_]/, '_') || "PARAM#{index}"
-    param_name = "PARAM#{index}" if param_name.empty?
+    # Always use PARAM1-7 as the parameter name (matches pymavlink field names)
+    param_name = "PARAM#{index}"
 
-    # Clean up the param name
-    param_name = param_name.gsub(/_+/, '_').gsub(/^_|_$/, '')
-    param_name = "PARAM#{index}" if param_name.empty?
-
+    # Build description with label if available
     desc = param[:description] || "Parameter #{index}"
-    desc = truncate_description(desc, 80)
+    if param[:label] && !param[:label].empty?
+      desc = "#{param[:label]}: #{desc}"
+    end
+    desc = truncate_description(desc, 120)
 
     # Get default value
     default_val = param[:default] || "0.0"
     default_val = "0.0" if default_val == "NaN" || default_val.to_s.empty?
 
     if param[:reserved]
-      f.puts "  APPEND_PARAMETER PARAM#{index} 32 FLOAT 0.0 MIN MAX \"Reserved (set to 0)\""
+      f.puts "  APPEND_PARAMETER PARAM#{index} 32 FLOAT MIN MAX 0.0 \"Reserved (set to 0)\""
       f.puts "    HIDDEN"
     else
-      f.puts "  APPEND_PARAMETER #{param_name} 32 FLOAT #{default_val} MIN MAX \"#{desc}\""
+      f.puts "  APPEND_PARAMETER #{param_name} 32 FLOAT MIN MAX #{default_val} \"#{desc}\""
 
       # Add units if specified
       if param[:units]

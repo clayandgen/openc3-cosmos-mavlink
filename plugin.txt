@@ -11,7 +11,7 @@ VARIABLE_DESCRIPTION "Name for this MAVLink target"
 VARIABLE mavlink_host host.docker.internal
 VARIABLE_DESCRIPTION "MAVLink vehicle IP address"
 
-VARIABLE mavlink_write_port 18570
+VARIABLE mavlink_write_port 14560
 VARIABLE_DESCRIPTION "UDP port where vehicle listens"
 
 VARIABLE mavlink_read_port 14552
@@ -31,6 +31,7 @@ VARIABLE_DESCRIPTION "Target vehicle System ID (0 = accept all)"
 # Target Definition
 # ============================================================================
 TARGET DRONE <%= drone_target_name %>
+  TLM_BUFFER_DEPTH 1000
 
 # ============================================================================
 # Interface Definition - UDP with Python MAVLink Protocol
