@@ -97,10 +97,7 @@ class UdpMavlinkProtocol(Protocol):
 
             # Parse the packet with pymavlink
             try:
-                # Feed the packet to pymavlink byte-by-byte
-                msg = None
-                for byte in packet_data:
-                    msg = self.mav.parse_char(bytes([byte]))
+                msg = self.mav.parse_char(packet_data)
 
                 if msg is not None:
                     # Filter by system ID if specified
