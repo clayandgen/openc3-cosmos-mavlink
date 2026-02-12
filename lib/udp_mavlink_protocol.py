@@ -6,14 +6,13 @@ This protocol uses pymavlink to handle all MAVLink complexity:
 - Packet framing and sync detection
 - CRC validation with CRC_EXTRA
 - MAVLink v2 packet truncation
+- Field extraction and byte ordering
 
-Read path: raw binary passthrough (header + zero-padded payload) for BinaryAccessor.
-Write path: JSON commands encoded via pymavlink.
+The protocol outputs JSON that COSMOS reads using JsonAccessor.
 """
 
 from openc3.interfaces.protocols.protocol import Protocol
 from pymavlink.dialects.v20 import common as mavlink2
-import struct
 import json
 import logging
 
@@ -34,7 +33,7 @@ class UdpMavlinkProtocol(Protocol):
         self.gcs_compid = int(gcs_compid)
         self.target_sysid = int(target_sysid)
 
-        # MAVLink parser (used only for write/command encoding)
+        # MAVLink parser
         self.mav = mavlink2.MAVLink(None, srcSystem=self.gcs_sysid, srcComponent=self.gcs_compid)
         logger.info(f"Initialized MAVLink protocol: sysid={self.gcs_sysid}, compid={self.gcs_compid}")
 
@@ -42,11 +41,6 @@ class UdpMavlinkProtocol(Protocol):
         self._msg_classes = {}
         for msg_id, cls in mavlink2.mavlink_map.items():
             self._msg_classes[cls.msgname] = cls
-
-        # Build payload length lookup: msg_id -> full (untruncated) payload size
-        self._payload_lengths = {}
-        for msg_id, cls in mavlink2.mavlink_map.items():
-            self._payload_lengths[msg_id] = struct.calcsize('<' + cls.format)
 
         # Buffer for incoming data
         self.buffer = b''
@@ -62,10 +56,7 @@ class UdpMavlinkProtocol(Protocol):
 
     def read_data(self, data, extra=None):
         """
-        Read MAVLink packets and return raw binary (header + zero-padded payload).
-
-        COSMOS uses BinaryAccessor to extract fields directly from the binary
-        data, so no JSON serialization is needed on the read path.
+        Read and parse MAVLink packets, return as JSON
 
         Args:
             data: Raw bytes from UDP interface
@@ -90,42 +81,54 @@ class UdpMavlinkProtocol(Protocol):
             if len(self.buffer) < self.MAVLINK_HEADER_LEN:
                 return 'STOP', extra
 
-            # Get payload length from byte 1 (may be truncated)
+            # Get payload length from byte 1
             payload_len = self.buffer[1]
 
-            # Calculate total packet length (header + truncated payload + CRC)
+            # Calculate total packet length
             total_len = self.MAVLINK_HEADER_LEN + payload_len + self.MAVLINK_CRC_LEN
 
             # Wait for complete packet
             if len(self.buffer) < total_len:
                 return 'STOP', extra
 
-            # Extract the complete packet and advance buffer
-            pkt = self.buffer[:total_len]
+            # Extract the complete packet
+            packet_data = self.buffer[:total_len]
             self.buffer = self.buffer[total_len:]
 
-            # Read message ID from bytes 7-9 (little-endian 24-bit)
-            msg_id = pkt[7] | (pkt[8] << 8) | (pkt[9] << 16)
+            # Parse the packet with pymavlink
+            try:
+                # Feed the packet to pymavlink byte-by-byte
+                msg = None
+                for byte in packet_data:
+                    msg = self.mav.parse_char(bytes([byte]))
 
-            # Skip unknown message IDs
-            expected_len = self._payload_lengths.get(msg_id)
-            if expected_len is None:
-                logger.warning(f"Unknown MAVLink message ID {msg_id}")
+                if msg is not None:
+                    # Filter by system ID if specified
+                    if self.target_sysid != 0 and msg.get_srcSystem() != self.target_sysid:
+                        continue
+
+                    # Convert to JSON for COSMOS
+                    msg_dict = msg.to_dict()
+
+                    # Remove internal pymavlink fields
+                    msg_dict.pop('mavpackettype', None)
+
+                    # Add metadata
+                    msg_dict['MSGID'] = msg.get_msgId()
+                    msg_dict['MSGNAME'] = msg.get_type()
+                    msg_dict['SYSTEM_ID'] = msg.get_srcSystem()
+                    msg_dict['COMPONENT_ID'] = msg.get_srcComponent()
+
+                    # Return as JSON bytes
+                    return json.dumps(msg_dict).encode('utf-8'), extra
+                else:
+                    # Parsing failed - log and continue
+                    logger.warning(f"Failed to parse MAVLink packet (len={len(packet_data)})")
+                    continue
+
+            except Exception as e:
+                logger.warning(f"MAVLink decode error: {e}")
                 continue
-
-            # Filter by system ID if specified (byte 5 is system ID)
-            if self.target_sysid != 0 and pkt[5] != self.target_sysid:
-                continue
-
-            # Extract header (10 bytes) and truncated payload (strip CRC)
-            header = pkt[:self.MAVLINK_HEADER_LEN]
-            payload = pkt[self.MAVLINK_HEADER_LEN:self.MAVLINK_HEADER_LEN + payload_len]
-
-            # Zero-pad payload to full (untruncated) length
-            if len(payload) < expected_len:
-                payload = payload + b'\x00' * (expected_len - len(payload))
-
-            return header + payload, extra
 
     def write_data(self, data, extra=None):
         """

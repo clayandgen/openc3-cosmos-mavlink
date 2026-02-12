@@ -235,43 +235,18 @@ class MavlinkToCosmosConverter
     end
   end
 
-  # Returns the byte size of a MAVLink base type (used for wire-order sorting)
-  def type_byte_size(type_name)
-    case type_name
-    when 'uint64_t', 'int64_t', 'double' then 8
-    when 'uint32_t', 'int32_t', 'float'  then 4
-    when 'uint16_t', 'int16_t'           then 2
-    else 1  # uint8_t, int8_t, char, uint8_t_mavlink_version
-    end
-  end
-
-  # Sort fields into MAVLink wire order.
-  # MAVLink reorders fields by type size (descending) for alignment.
-  # Arrays use the element type size for sorting, not the total array size.
-  # Fields of the same size preserve their original XML order.
-  # Extension fields are sorted separately and placed after all regular fields.
-  def wire_order_fields(fields)
-    regular = fields.select { |f| !f[:extension] }
-    extensions = fields.select { |f| f[:extension] }
-
-    sorted_regular = regular.sort_by.with_index { |f, i| [-type_byte_size(f[:type]), i] }
-    sorted_extensions = extensions.sort_by.with_index { |f, i| [-type_byte_size(f[:type]), i] }
-
-    sorted_regular + sorted_extensions
-  end
-
   # ============================================================================
-  # TELEMETRY GENERATION - All messages become telemetry (binary format)
+  # TELEMETRY GENERATION - All messages become telemetry (JSON format)
   # ============================================================================
 
   def generate_telemetry_file(output_path)
     File.open(output_path, 'w') do |f|
-      f.puts "# MAVLink Common Message Set - Telemetry Definitions (Binary Format)"
+      f.puts "# MAVLink Common Message Set - Telemetry Definitions (JSON Format)"
       f.puts "# Auto-generated from #{File.basename(@xml_file)}"
       f.puts "# Reference: https://mavlink.io/en/messages/common.html"
       f.puts "#"
-      f.puts "# Raw MAVLink v2 binary: 10-byte header + zero-padded payload"
-      f.puts "# Fields use BinaryAccessor (default) in wire order"
+      f.puts "# All MAVLink messages are parsed as JSON by the Python protocol"
+      f.puts "# Fields are accessed using JsonAccessor"
       f.puts ""
 
       @messages.each do |msg|
@@ -291,38 +266,88 @@ class MavlinkToCosmosConverter
     f.puts "# " + "=" * 76
 
     short_desc = truncate_description(msg[:description], 100)
-    f.puts "TELEMETRY #{TARGET_NAME_PLACEHOLDER} #{msg[:name]} LITTLE_ENDIAN \"#{short_desc}\""
-    f.puts "  <%= render \"_mavlink_header_tlm.txt\", msgid: #{msg[:id]} %>"
+    f.puts "TELEMETRY #{TARGET_NAME_PLACEHOLDER} #{msg[:name]} BIG_ENDIAN \"#{short_desc}\""
+    f.puts "  ACCESSOR JsonAccessor"
+
+    # Build template with default values for all fields
+    template = build_telemetry_template(msg)
+    f.puts "  TEMPLATE '#{template}'"
+    f.puts "  # Processed as JSON - fields extracted by JsonAccessor"
     f.puts ""
 
-    # Payload fields in wire order with explicit LITTLE_ENDIAN bit offsets
-    # LE bit offset = byte_bit_offset + bit_size - 8 (offset points to MSB)
-    ordered = wire_order_fields(msg[:fields])
-    byte_bit_offset = 80  # After 10-byte header (80 bits)
-    first_extension = true
-    ordered.each do |field|
-      if field[:extension] && first_extension
-        f.puts "  # MAVLink 2 Extension Fields"
-        first_extension = false
+    # Add metadata fields (injected by protocol)
+    f.puts "  APPEND_ID_ITEM MSGID 16 UINT #{msg[:id]} \"Message ID\""
+    f.puts "    KEY $.MSGID"
+    f.puts ""
+    f.puts "  APPEND_ITEM MSGNAME 0 STRING \"Message name\""
+    f.puts "    KEY $.MSGNAME"
+    f.puts ""
+    f.puts "  APPEND_ITEM SYSTEM_ID 8 UINT \"System ID\""
+    f.puts "    KEY $.SYSTEM_ID"
+    f.puts ""
+    f.puts "  APPEND_ITEM COMPONENT_ID 8 UINT \"Component ID\""
+    f.puts "    KEY $.COMPONENT_ID"
+    f.puts ""
+
+    # Add message-specific fields (in original order, no sorting needed)
+    msg[:fields].each do |field|
+      if field[:extension]
+        f.puts "  # MAVLink 2 Extension Field" if msg[:fields].find { |f| f[:extension] } == field
       end
-      byte_bit_offset = write_telemetry_field(f, field, byte_bit_offset)
+      write_telemetry_field(f, field)
     end
   end
 
-  # Write a single telemetry field as ITEM with explicit LE bit offset.
-  # Returns the updated byte_bit_offset for the next field.
-  def write_telemetry_field(f, field, byte_bit_offset)
-    desc = truncate_description(field[:description], 80)
-    total_bits = bit_size(field)
-    le_offset = byte_bit_offset + total_bits - 8
+  def build_telemetry_template(msg)
+    # Build JSON object with metadata and all fields with default values
+    template_obj = {
+      "MSGID" => msg[:id],
+      "MSGNAME" => msg[:name],
+      "SYSTEM_ID" => 0,
+      "COMPONENT_ID" => 0
+    }
 
-    if field[:type] == 'char' && field[:array_size]
-      f.puts "  ITEM #{field[:name]} #{le_offset} #{total_bits} STRING \"#{desc}\""
-    elsif field[:array_size]
-      f.puts "  ITEM #{field[:name]} #{le_offset} #{total_bits} BLOCK \"#{desc}\""
-    else
-      f.puts "  ITEM #{field[:name]} #{le_offset} #{total_bits} #{cosmos_type(field)} \"#{desc}\""
+    # Add all message fields with default values based on type
+    msg[:fields].each do |field|
+      json_key = field[:original_name]
+      default_value = get_field_default_value(field)
+      template_obj[json_key] = default_value
     end
+
+    JSON.generate(template_obj)
+  end
+
+  def get_field_default_value(field)
+    if field[:type] == 'char'
+      return ""
+    elsif field[:array_size]
+      # Return array of zeros for array types
+      return Array.new(field[:array_size], 0)
+    elsif field[:type].include?('float') || field[:type] == 'double'
+      return 0.0
+    else
+      return 0
+    end
+  end
+
+  def write_telemetry_field(f, field)
+    desc = truncate_description(field[:description], 80)
+    json_key = field[:original_name]  # Use original case from XML
+
+    # For JSON accessor, arrays and complex types should use 0 bit size
+    # Individual scalar types can specify their size
+    if field[:array_size] && field[:type] != 'char'
+      # Non-char arrays: use 0 bit size, let JsonAccessor handle it
+      bit_size_val = 0
+      c_type = 'STRING'  # Arrays are represented as JSON arrays (string format)
+    else
+      bit_size_val = bit_size(field)
+      c_type = cosmos_type(field)
+    end
+
+    # Use APPEND_ITEM with JsonAccessor KEY
+    f.puts "  APPEND_ITEM #{field[:name]} #{bit_size_val} #{c_type} \"#{desc}\""
+    f.puts "    KEY $.#{json_key}"
 
     # Add conversion for degE7 units (degrees * 1e7 -> degrees)
     if field[:units] == 'degE7'
@@ -332,6 +357,7 @@ class MavlinkToCosmosConverter
     # Add units if specified (convert degE7 to degrees for display)
     if field[:units]
       if field[:units] == 'degE7'
+        # After conversion, units are degrees not degE7
         f.puts "    UNITS \"Degrees\" deg"
       else
         units_full, units_abbr = parse_units(field[:units])
@@ -351,7 +377,6 @@ class MavlinkToCosmosConverter
     end
 
     f.puts ""
-    byte_bit_offset + total_bits
   end
 
   # ============================================================================
@@ -656,8 +681,8 @@ class MavlinkToCosmosConverter
     puts "  Telemetry: #{tlm_path} (#{@messages.size} messages)"
     puts "  Commands:  #{cmd_path} (#{@mav_commands.size} MAV_CMD entries)"
     puts ""
-    puts "Format: Binary (LITTLE_ENDIAN, BinaryAccessor, wire-ordered fields)"
-    puts "Protocol: Python UdpMavlinkProtocol passes raw binary for telemetry"
+    puts "Format: JSON accessor (no binary offsets needed)"
+    puts "Protocol: Python UdpMavlinkProtocol handles MAVLink encoding/decoding"
     puts ""
   end
 end
