@@ -15,8 +15,26 @@ from openc3.interfaces.protocols.protocol import Protocol
 from pymavlink.dialects.v20 import common as mavlink2
 import json
 import logging
+import math
 
 logger = logging.getLogger(__name__)
+
+
+def sanitize_for_json(obj):
+    """
+    Recursively sanitize values for JSON serialization.
+    Converts NaN and Infinity to None (which becomes null in JSON).
+    """
+    if isinstance(obj, dict):
+        return {k: sanitize_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [sanitize_for_json(item) for item in obj]
+    elif isinstance(obj, float):
+        if math.isnan(obj) or math.isinf(obj):
+            return None
+        return obj
+    else:
+        return obj
 
 
 class UdpMavlinkProtocol(Protocol):
@@ -115,6 +133,9 @@ class UdpMavlinkProtocol(Protocol):
                     msg_dict['MSGNAME'] = msg.get_type()
                     msg_dict['SYSTEM_ID'] = msg.get_srcSystem()
                     msg_dict['COMPONENT_ID'] = msg.get_srcComponent()
+
+                    # Sanitize NaN/Infinity values to null for valid JSON
+                    msg_dict = sanitize_for_json(msg_dict)
 
                     # Return as JSON bytes
                     return json.dumps(msg_dict).encode('utf-8'), extra

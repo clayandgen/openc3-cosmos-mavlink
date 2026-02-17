@@ -38,6 +38,15 @@ COMMAND_LONG_MSG_ID = 76
 # Messages to skip (deprecated, WIP, or not useful)
 SKIP_MESSAGE_IDS = []
 
+# Native MAVLink messages that should also be generated as COMMAND definitions.
+# These are GCS→vehicle messages used in the mission upload protocol.
+# See: https://mavlink.io/en/services/mission.html
+GCS_COMMAND_MESSAGES = %w[
+  MISSION_CLEAR_ALL
+  MISSION_COUNT
+  MISSION_ITEM_INT
+]
+
 class MavlinkToCosmosConverter
   def initialize(xml_file, target_name = nil)
     @xml_file = xml_file
@@ -349,20 +358,10 @@ class MavlinkToCosmosConverter
     f.puts "  APPEND_ITEM #{field[:name]} #{bit_size_val} #{c_type} \"#{desc}\""
     f.puts "    KEY $.#{json_key}"
 
-    # Add conversion for degE7 units (degrees * 1e7 -> degrees)
-    if field[:units] == 'degE7'
-      f.puts "    READ_CONVERSION dege7_conversion.py"
-    end
-
-    # Add units if specified (convert degE7 to degrees for display)
+    # Add units if specified
     if field[:units]
-      if field[:units] == 'degE7'
-        # After conversion, units are degrees not degE7
-        f.puts "    UNITS \"Degrees\" deg"
-      else
-        units_full, units_abbr = parse_units(field[:units])
-        f.puts "    UNITS \"#{units_full}\" #{units_abbr}"
-      end
+      units_full, units_abbr = parse_units(field[:units])
+      f.puts "    UNITS \"#{units_full}\" #{units_abbr}"
     end
 
     # Add states for enums (limit to non-bitmask enums with reasonable number of entries)
@@ -402,6 +401,9 @@ class MavlinkToCosmosConverter
         write_mav_command(f, cmd)
         f.puts ""
       end
+
+      # Write mission protocol commands (native messages used as GCS→vehicle commands)
+      write_mission_protocol_commands(f)
     end
 
     puts "Generated command file: #{output_path}"
@@ -598,6 +600,128 @@ class MavlinkToCosmosConverter
     else
       "This command may cause vehicle movement!"
     end
+  end
+
+  # ============================================================================
+  # MISSION PROTOCOL COMMAND GENERATION
+  # Native MAVLink messages used as GCS→vehicle commands
+  # ============================================================================
+
+  def write_mission_protocol_commands(f)
+    f.puts "# " + "=" * 76
+    f.puts "# MISSION PROTOCOL COMMANDS"
+    f.puts "# Native MAVLink messages (not COMMAND_LONG wrappers) used for uploading"
+    f.puts "# missions to the vehicle via the MAVLink mission protocol."
+    f.puts "# See: https://mavlink.io/en/services/mission.html"
+    f.puts "# " + "=" * 76
+    f.puts ""
+
+    GCS_COMMAND_MESSAGES.each do |msg_name|
+      msg = @messages.find { |m| m[:name] == msg_name }
+      unless msg
+        puts "  Warning: Mission protocol message #{msg_name} not found in XML"
+        next
+      end
+      write_message_as_command(f, msg)
+      f.puts ""
+    end
+  end
+
+  def write_message_as_command(f, msg)
+    f.puts "# " + "=" * 76
+    f.puts "# #{msg[:name]} (ID #{msg[:id]})"
+    description_lines = word_wrap(msg[:description], 74)
+    description_lines.each { |line| f.puts "# #{line}" }
+    f.puts "# " + "=" * 76
+
+    short_desc = truncate_description(msg[:description], 100)
+    f.puts "COMMAND #{TARGET_NAME_PLACEHOLDER} #{msg[:name]} BIG_ENDIAN \"#{short_desc}\""
+    f.puts "  ACCESSOR JsonAccessor"
+
+    template = build_message_command_template(msg)
+    f.puts "  TEMPLATE '#{template}'"
+    f.puts "  # Native MAVLink message - encoded by protocol"
+    f.puts ""
+
+    f.puts "  APPEND_PARAMETER MSGNAME 0 STRING \"#{msg[:name]}\" \"Message type\""
+    f.puts ""
+
+    msg[:fields].each do |field|
+      if field[:extension]
+        f.puts "  # MAVLink 2 Extension Field" if msg[:fields].find { |ff| ff[:extension] } == field
+      end
+      write_message_command_field(f, field)
+    end
+  end
+
+  def build_message_command_template(msg)
+    template_obj = { "MSGNAME" => msg[:name] }
+
+    msg[:fields].each do |field|
+      key = field[:name] # Already uppercase
+      value = case field[:original_name]
+              when 'target_system' then 1
+              when 'target_component' then 1
+              when 'autocontinue' then 1
+              when 'frame' then 3 # MAV_FRAME_GLOBAL_RELATIVE_ALT
+              else get_field_default_value(field)
+              end
+      template_obj[key] = value
+    end
+
+    JSON.generate(template_obj)
+  end
+
+  def write_message_command_field(f, field)
+    desc = truncate_description(field[:description], 80)
+
+    if field[:array_size] && field[:type] != 'char'
+      bit_size_val = 0
+      c_type = 'STRING'
+    else
+      bit_size_val = bit_size(field)
+      c_type = cosmos_type(field)
+    end
+
+    # Special defaults for command-oriented fields
+    default_val = case field[:original_name]
+                  when 'target_system' then 1
+                  when 'target_component' then 1
+                  when 'autocontinue' then 1
+                  when 'frame' then 3
+                  else get_field_default_value(field)
+                  end
+
+    if c_type == 'STRING'
+      f.puts "  APPEND_PARAMETER #{field[:name]} #{bit_size_val} #{c_type} \"#{default_val}\" \"#{desc}\""
+    elsif c_type == 'FLOAT'
+      f.puts "  APPEND_PARAMETER #{field[:name]} #{bit_size_val} #{c_type} MIN MAX #{default_val} \"#{desc}\""
+    elsif c_type == 'INT'
+      f.puts "  APPEND_PARAMETER #{field[:name]} #{bit_size_val} #{c_type} MIN MAX #{default_val} \"#{desc}\""
+    else
+      # UINT - explicit min/max bounds
+      max_val = (2**bit_size_val) - 1
+      f.puts "  APPEND_PARAMETER #{field[:name]} #{bit_size_val} #{c_type} 0 #{max_val} #{default_val} \"#{desc}\""
+    end
+
+    # Add units
+    if field[:units]
+      units_full, units_abbr = parse_units(field[:units])
+      f.puts "    UNITS \"#{units_full}\" #{units_abbr}"
+    end
+
+    # Add states for enums
+    if field[:enum] && @enums[field[:enum]]
+      enum_data = @enums[field[:enum]]
+      if !enum_data[:bitmask] && enum_data[:entries].size <= 20
+        enum_data[:entries].first(15).each do |entry|
+          next unless entry[:value]
+          f.puts "    STATE #{entry[:name]} #{entry[:value]}"
+        end
+      end
+    end
+
+    f.puts ""
   end
 
   # ============================================================================

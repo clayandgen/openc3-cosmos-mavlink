@@ -6785,3 +6785,116 @@ COMMAND <%= target_name %> EXTERNAL_POSITION_ESTIMATE BIG_ENDIAN "Provide an ext
 
   RESPONSE <%= target_name %> COMMAND_ACK
 
+# ============================================================================
+# MISSION PROTOCOL COMMANDS
+# Native MAVLink messages (not COMMAND_LONG wrappers) used for uploading
+# missions to the vehicle via the MAVLink mission protocol.
+# See: https://mavlink.io/en/services/mission.html
+# ============================================================================
+
+# ============================================================================
+# MISSION_CLEAR_ALL (ID 45)
+# Delete all mission items at once.
+# ============================================================================
+COMMAND <%= target_name %> MISSION_CLEAR_ALL BIG_ENDIAN "Delete all mission items at once."
+  ACCESSOR JsonAccessor
+  TEMPLATE '{"MSGNAME":"MISSION_CLEAR_ALL","TARGET_SYSTEM":1,"TARGET_COMPONENT":1,"MISSION_TYPE":0}'
+  # Native MAVLink message - encoded by protocol
+
+  APPEND_PARAMETER MSGNAME 0 STRING "MISSION_CLEAR_ALL" "Message type"
+
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "System ID"
+
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Component ID"
+
+  # MAVLink 2 Extension Field
+  APPEND_PARAMETER MISSION_TYPE 8 UINT 0 255 0 "Mission type."
+    STATE MAV_MISSION_TYPE_MISSION 0
+    STATE MAV_MISSION_TYPE_FENCE 1
+    STATE MAV_MISSION_TYPE_RALLY 2
+    STATE MAV_MISSION_TYPE_ALL 255
+
+
+# ============================================================================
+# MISSION_COUNT (ID 44)
+# This message is emitted as response to MISSION_REQUEST_LIST by the MAV and
+# to initiate a write transaction. The GCS can then request the individual
+# mission item based on the knowledge of the total number of waypoints.
+# ============================================================================
+COMMAND <%= target_name %> MISSION_COUNT BIG_ENDIAN "This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transaction. The GCS can then request the individual mission item based on the knowledge of the total number of waypoints."
+  ACCESSOR JsonAccessor
+  TEMPLATE '{"MSGNAME":"MISSION_COUNT","TARGET_SYSTEM":1,"TARGET_COMPONENT":1,"COUNT":0,"MISSION_TYPE":0,"OPAQUE_ID":0}'
+  # Native MAVLink message - encoded by protocol
+
+  APPEND_PARAMETER MSGNAME 0 STRING "MISSION_COUNT" "Message type"
+
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "System ID"
+
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Component ID"
+
+  APPEND_PARAMETER COUNT 16 UINT 0 65535 0 "Number of mission items in the sequence"
+
+  # MAVLink 2 Extension Field
+  APPEND_PARAMETER MISSION_TYPE 8 UINT 0 255 0 "Mission type."
+    STATE MAV_MISSION_TYPE_MISSION 0
+    STATE MAV_MISSION_TYPE_FENCE 1
+    STATE MAV_MISSION_TYPE_RALLY 2
+    STATE MAV_MISSION_TYPE_ALL 255
+
+  APPEND_PARAMETER OPAQUE_ID 32 UINT 0 4294967295 0 "Id of current on-vehicle mission, fence, or rally point plan (on download from vehicle). This field is used when downloading a plan from a vehicle to a GCS. 0 on upload to the vehicle from GCS. 0 if plan ids are not supported. The current on-vehicle plan ids are streamed in `MISSION_CURRENT`, allowing a GCS to determine if any part of the plan has changed and needs to be re-uploaded. The ids are recalculated by the vehicle when any part of the on-vehicle plan changes (when a new plan is uploaded, the vehicle returns the new id to the GCS in MISSION_ACK)."
+
+
+# ============================================================================
+# MISSION_ITEM_INT (ID 73)
+# Message encoding a mission item. This message is emitted to announce the
+# presence of a mission item and to set a mission item on the system. The
+# mission item can be either in x, y, z meters (type: LOCAL) or x:lat,
+# y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame
+# is Z-up, right handed (ENU). NaN or INT32_MAX may be used in float/integer
+# params (respectively) to indicate optional/default values (e.g. to use the
+# component's current latitude, yaw rather than a specific value). See also
+# https://mavlink.io/en/services/mission.html.
+# ============================================================================
+COMMAND <%= target_name %> MISSION_ITEM_INT BIG_ENDIAN "Message encoding a mission item. This message is emitted to announce the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). NaN or INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current latitude, yaw rather than a specific value). See also https://mavlink.io/en/services/mission.html."
+  ACCESSOR JsonAccessor
+  TEMPLATE '{"MSGNAME":"MISSION_ITEM_INT","TARGET_SYSTEM":1,"TARGET_COMPONENT":1,"SEQ":0,"FRAME":3,"COMMAND":0,"CURRENT":0,"AUTOCONTINUE":1,"PARAM1":0.0,"PARAM2":0.0,"PARAM3":0.0,"PARAM4":0.0,"X":0,"Y":0,"Z":0.0,"MISSION_TYPE":0}'
+  # Native MAVLink message - encoded by protocol
+
+  APPEND_PARAMETER MSGNAME 0 STRING "MISSION_ITEM_INT" "Message type"
+
+  APPEND_PARAMETER TARGET_SYSTEM 8 UINT 0 255 1 "System ID"
+
+  APPEND_PARAMETER TARGET_COMPONENT 8 UINT 0 255 1 "Component ID"
+
+  APPEND_PARAMETER SEQ 16 UINT 0 65535 0 "Waypoint ID (sequence number). Starts at zero. Increases monotonically for each waypoint, no gaps in the sequence (0,1,2,3,4)."
+
+  APPEND_PARAMETER FRAME 8 UINT 0 255 3 "The coordinate system of the waypoint."
+
+  APPEND_PARAMETER COMMAND 16 UINT 0 65535 0 "The scheduled action for the waypoint."
+
+  APPEND_PARAMETER CURRENT 8 UINT 0 255 0 "false:0, true:1"
+
+  APPEND_PARAMETER AUTOCONTINUE 8 UINT 0 255 1 "Autocontinue to next waypoint. 0: false, 1: true. Set false to pause mission after the item completes."
+
+  APPEND_PARAMETER PARAM1 32 FLOAT MIN MAX 0.0 "PARAM1, see MAV_CMD enum"
+
+  APPEND_PARAMETER PARAM2 32 FLOAT MIN MAX 0.0 "PARAM2, see MAV_CMD enum"
+
+  APPEND_PARAMETER PARAM3 32 FLOAT MIN MAX 0.0 "PARAM3, see MAV_CMD enum"
+
+  APPEND_PARAMETER PARAM4 32 FLOAT MIN MAX 0.0 "PARAM4, see MAV_CMD enum"
+
+  APPEND_PARAMETER X 32 INT MIN MAX 0 "PARAM5 / local: x position in meters * 1e4, global: latitude in degrees * 10^7"
+
+  APPEND_PARAMETER Y 32 INT MIN MAX 0 "PARAM6 / y position: local: x position in meters * 1e4, global: longitude in degrees *10^7"
+
+  APPEND_PARAMETER Z 32 FLOAT MIN MAX 0.0 "PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame."
+
+  # MAVLink 2 Extension Field
+  APPEND_PARAMETER MISSION_TYPE 8 UINT 0 255 0 "Mission type."
+    STATE MAV_MISSION_TYPE_MISSION 0
+    STATE MAV_MISSION_TYPE_FENCE 1
+    STATE MAV_MISSION_TYPE_RALLY 2
+    STATE MAV_MISSION_TYPE_ALL 255
+
+
