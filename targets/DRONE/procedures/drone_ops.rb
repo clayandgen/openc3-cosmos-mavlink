@@ -5,88 +5,19 @@
 # Sequence: connect -> upload mission -> preflight -> arm ->
 #           switch to mission mode -> fly mission -> land -> disarm
 #
-# PX4 DO_SET_MODE via COMMAND_LONG uses separate params:
-#   PARAM1 = 1 (MAV_MODE_FLAG_CUSTOM_MODE_ENABLED)
-#   PARAM2 = main_mode (4 = AUTO)
-#   PARAM3 = sub_mode  (3 = LOITER, 4 = MISSION, 5 = RTL)
-# base_mode bit 7 (0x80 / 128) = armed flag
-#
 # NAV_TAKEOFF via COMMAND_LONG does not work reliably on PX4.
 # Instead, we upload a mission with a NAV_TAKEOFF item and switch
 # to AUTO MISSION mode, which PX4 executes correctly.
 # ============================================================================
 
-# ---------------------------------------------------------------------------
-# Helper: send a COMMAND_LONG and verify the ACK comes back accepted
-# ---------------------------------------------------------------------------
-def cmd_and_ack(cmd_name, timeout: 5, **params)
-  initial_count = tlm("DRONE COMMAND_ACK RECEIVED_COUNT")
-
-  if params.empty?
-    cmd("DRONE #{cmd_name}")
-  else
-    cmd_str = "DRONE #{cmd_name} with " + params.map { |k, v| "#{k} #{v}" }.join(", ")
-    cmd(cmd_str)
-  end
-
-  wait_check("DRONE COMMAND_ACK RECEIVED_COUNT > #{initial_count}", timeout)
-
-  result = tlm("DRONE COMMAND_ACK RESULT")
-  if result != "MAV_RESULT_ACCEPTED"
-    raise "Command #{cmd_name} failed with result: #{result}"
-  end
-end
-
-# ---------------------------------------------------------------------------
-# Helper: upload a mission to the vehicle using the MAVLink mission protocol
-#
-# Flow: MISSION_CLEAR_ALL -> MISSION_COUNT -> respond to MISSION_REQUEST_INT
-#       for each item -> wait for MISSION_ACK
-# ---------------------------------------------------------------------------
-def upload_mission(items)
-  puts "  Clearing existing mission..."
-  ack_count = tlm("DRONE MISSION_ACK RECEIVED_COUNT")
-  cmd("DRONE MISSION_CLEAR_ALL")
-  wait_check("DRONE MISSION_ACK RECEIVED_COUNT > #{ack_count}", 5)
-
-  clear_result = tlm("DRONE MISSION_ACK TYPE")
-  raise "Clear mission failed: #{clear_result}" unless clear_result == "MAV_MISSION_ACCEPTED"
-  puts "  Existing mission cleared."
-
-  puts "  Uploading #{items.length} mission items..."
-  req_count = tlm("DRONE MISSION_REQUEST_INT RECEIVED_COUNT")
-  ack_count = tlm("DRONE MISSION_ACK RECEIVED_COUNT")
-
-  cmd("DRONE MISSION_COUNT with COUNT #{items.length}")
-
-  items.each_with_index do |item, i|
-    # Wait for vehicle to request this sequence number
-    wait_check("DRONE MISSION_REQUEST_INT RECEIVED_COUNT > #{req_count + i}", 5)
-    requested_seq = tlm("DRONE MISSION_REQUEST_INT SEQ").to_i
-    puts "    Vehicle requested item #{requested_seq}"
-
-    # Send the requested mission item
-    cmd("DRONE MISSION_ITEM_INT with " \
-        "SEQ #{item[:seq]}, FRAME #{item[:frame]}, COMMAND #{item[:command]}, " \
-        "CURRENT #{item[:current]}, AUTOCONTINUE #{item[:autocontinue]}, " \
-        "PARAM1 #{item[:param1]}, PARAM2 #{item[:param2]}, " \
-        "PARAM3 #{item[:param3]}, PARAM4 #{item[:param4]}, " \
-        "X #{item[:x]}, Y #{item[:y]}, Z #{item[:z]}")
-  end
-
-  # Wait for final mission ACK
-  wait_check("DRONE MISSION_ACK RECEIVED_COUNT > #{ack_count}", 10)
-  upload_result = tlm("DRONE MISSION_ACK TYPE")
-  raise "Mission upload failed: #{upload_result}" unless upload_result == "MAV_MISSION_ACCEPTED"
-  puts "  Mission upload complete!"
-end
+load_utility '<%= target_name %>/procedures/utilities/cmd_and_ack.rb'
+load_utility '<%= target_name %>/procedures/utilities/upload_mission.rb'
+load_utility '<%= target_name %>/procedures/utilities/flight_ops.rb'
 
 # ============================================================================
-# 1. VERIFY CONNECTION - wait for a heartbeat from the vehicle
+# 1. VERIFY CONNECTION
 # ============================================================================
-puts "--- Waiting for vehicle heartbeat ---"
-wait_check("DRONE HEARTBEAT SYSTEM_STATUS == 'MAV_STATE_STANDBY'", 30)
-puts "Heartbeat received. Vehicle is in STANDBY."
+wait_for_heartbeat
 
 # ============================================================================
 # 2. BUILD AND UPLOAD MISSION
@@ -130,43 +61,12 @@ puts "--- Uploading mission ---"
 upload_mission(mission_items)
 
 # ============================================================================
-# 3. PREFLIGHT CHECKS
+# 3-6. PREFLIGHT, LOITER, ARM, START MISSION
 # ============================================================================
-puts "--- Running pre-arm checks ---"
-cmd_and_ack("RUN_PREARM_CHECKS", timeout: 10)
-puts "Pre-arm checks passed."
-
-# ============================================================================
-# 4. SET MODE TO AUTO LOITER (safe hold mode before arming)
-#    PX4: PARAM1=1 (MAV_MODE_FLAG_CUSTOM_MODE_ENABLED)
-#    PARAM2=4 (main_mode AUTO), PARAM3=3 (sub_mode LOITER)
-# ============================================================================
-puts "--- Setting AUTO LOITER mode ---"
-cmd_and_ack("DO_SET_MODE", PARAM1: 1, PARAM2: 4, PARAM3: 3)
-wait_check("DRONE HEARTBEAT CUSTOM_MODE == 50593792", 5)
-puts "Vehicle is in AUTO LOITER mode."
-
-# ============================================================================
-# 5. ARM THE VEHICLE
-#    PARAM1=1 to arm, PARAM2=0 (respect safety checks)
-# ============================================================================
-puts "--- Arming vehicle ---"
-prompt("Confirm: Area is clear and safe to arm?")
-
-cmd_and_ack("COMPONENT_ARM_DISARM", PARAM1: 1, PARAM2: 0)
-
-# Verify armed via base_mode bit 7 (value >= 128 means armed)
-wait_check("DRONE HEARTBEAT BASE_MODE >= 128", 5)
-puts "Vehicle is ARMED."
-
-# ============================================================================
-# 6. SWITCH TO AUTO MISSION MODE - vehicle begins executing the mission
-#    PX4 AUTO MISSION: PARAM2=4 (AUTO), PARAM3=4 (MISSION)
-# ============================================================================
-puts "--- Starting mission ---"
-cmd_and_ack("DO_SET_MODE", PARAM1: 1, PARAM2: 4, PARAM3: 4)
-wait_check("DRONE HEARTBEAT CUSTOM_MODE == 67371008", 5)
-puts "Vehicle is in AUTO MISSION mode. Mission is executing."
+run_preflight_checks
+set_loiter_mode
+arm_vehicle
+start_mission_mode
 
 # ============================================================================
 # 7. MONITOR MISSION EXECUTION
@@ -184,17 +84,11 @@ puts "Waypoint reached."
 
 # Wait for RTL to complete - altitude drops near ground (< 1m = 1000mm)
 puts "--- Returning to launch ---"
-wait_check("DRONE GLOBAL_POSITION_INT RELATIVE_ALT < 1000", 120)
-puts "Vehicle has landed."
+wait_for_landing
 
 # ============================================================================
 # 8. DISARM
 # ============================================================================
-puts "--- Disarming vehicle ---"
-wait(3) # Let it settle on ground
-
-cmd_and_ack("COMPONENT_ARM_DISARM", PARAM1: 0, PARAM2: 0, timeout: 10)
-wait_check("DRONE HEARTBEAT BASE_MODE < 128", 5)
-puts "Vehicle is DISARMED."
+disarm_vehicle
 
 puts "=== Drone operation complete ==="
