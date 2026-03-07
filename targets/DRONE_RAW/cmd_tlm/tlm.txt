@@ -1,0 +1,2 @@
+TELEMETRY <%= target_name %> RAW_TLM BIG_ENDIAN
+  APPEND_ITEM DATA 0 BLOCK "Raw Telemetry Data pass-thru"

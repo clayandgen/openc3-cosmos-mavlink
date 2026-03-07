@@ -123,7 +123,9 @@ class MavlinkToCosmosConverter
                 enum: param_node['enum'],
                 description: param_node.text.strip,
                 reserved: param_node['reserved'] == 'true',
-                default: param_node['default']
+                default: param_node['default'],
+                min_value: param_node['minValue'],
+                max_value: param_node['maxValue']
               }
             else
               params << { index: i, reserved: true, description: "Reserved" }
@@ -298,6 +300,13 @@ class MavlinkToCosmosConverter
     f.puts "    KEY $.COMPONENT_ID"
     f.puts ""
 
+    # Only add SEQ to HEARTBEAT for monitoring packet loss
+    if msg[:name] == 'HEARTBEAT'
+      f.puts "  APPEND_ITEM SEQ 8 UINT \"Packet sequence number\""
+      f.puts "    KEY $.SEQ"
+      f.puts ""
+    end
+
     # Add message-specific fields (in original order, no sorting needed)
     msg[:fields].each do |field|
       if field[:extension]
@@ -315,6 +324,7 @@ class MavlinkToCosmosConverter
       "SYSTEM_ID" => 0,
       "COMPONENT_ID" => 0
     }
+    template_obj["SEQ"] = 0 if msg[:name] == 'HEARTBEAT'
 
     # Add all message fields with default values based on type
     msg[:fields].each do |field|
@@ -364,14 +374,13 @@ class MavlinkToCosmosConverter
       f.puts "    UNITS \"#{units_full}\" #{units_abbr}"
     end
 
-    # Add states for enums (limit to non-bitmask enums with reasonable number of entries)
+    # Add states for enums
     if field[:enum] && @enums[field[:enum]]
       enum_data = @enums[field[:enum]]
-      if !enum_data[:bitmask] && enum_data[:entries].size <= 20
-        enum_data[:entries].first(15).each do |entry|
-          next unless entry[:value]
-          f.puts "    STATE #{entry[:name]} #{entry[:value]}"
-        end
+      enum_data[:entries].each do |entry|
+        next unless entry[:value]
+        state_name = entry[:name].sub(/^#{Regexp.escape(enum_data[:name])}_/, '')
+        f.puts "    STATE #{state_name} #{entry[:value]}"
       end
     end
 
@@ -503,7 +512,6 @@ class MavlinkToCosmosConverter
     cmd_id = cmd[:value]
     params = cmd[:params] || []
 
-    # Build JSON object with uppercase keys to match APPEND_PARAMETER names
     template_obj = {
       "MSGNAME" => "COMMAND_LONG",
       "TARGET_SYSTEM" => 1,
@@ -512,27 +520,31 @@ class MavlinkToCosmosConverter
       "CONFIRMATION" => 0
     }
 
-    # Add PARAM1-7 with default values (uppercase to match parameter names)
+    # Use friendly label names as keys (matching APPEND_PARAMETER names)
     (1..7).each do |i|
       param = params.find { |p| p[:index] == i }
       default_val = param&.dig(:default) || "0.0"
       default_val = "0.0" if default_val == "NaN" || default_val.to_s.empty?
-      template_obj["PARAM#{i}"] = default_val.to_f
+      key = param_display_name(param, i)
+      template_obj[key] = default_val.to_f
     end
 
     JSON.generate(template_obj)
   end
 
-  def write_command_param(f, index, param)
-    # Always use PARAM1-7 as the parameter name (matches pymavlink field names)
-    param_name = "PARAM#{index}"
-
-    # Build description with label if available
-    desc = param[:description] || "Parameter #{index}"
-    if param[:label] && !param[:label].empty?
-      desc = "#{param[:label]}: #{desc}"
+  def param_display_name(param, index)
+    if param && param[:label] && !param[:label].empty? && !param[:reserved]
+      name = param[:label].upcase.gsub(/[^A-Z0-9_]/, '_').gsub(/_+/, '_').gsub(/^_|_$/, '')
+      "#{name}_#{index}"
+    else
+      "PARAM#{index}"
     end
-    desc = truncate_description(desc, 120)
+  end
+
+  def write_command_param(f, index, param)
+    param_name = param_display_name(param, index)
+
+    desc = truncate_description(param[:description] || "Parameter #{index}", 120)
 
     # Get default value
     default_val = param[:default] || "0.0"
@@ -542,7 +554,20 @@ class MavlinkToCosmosConverter
       f.puts "  APPEND_PARAMETER PARAM#{index} 32 FLOAT MIN MAX 0.0 \"Reserved (set to 0)\""
       f.puts "    HIDDEN"
     else
-      f.puts "  APPEND_PARAMETER #{param_name} 32 FLOAT MIN MAX #{default_val} \"#{desc}\""
+      min_val = param[:min_value]
+      max_val = param[:max_value]
+      if (min_val.nil? || max_val.nil?) && param[:enum] && @enums[param[:enum]]
+        values = @enums[param[:enum]][:entries].map { |e| e[:value] }.compact
+        min_val ||= values.min
+        max_val ||= values.max
+      end
+      min_val ||= "MIN"
+      max_val ||= "MAX"
+      f.puts "  APPEND_PARAMETER #{param_name} 32 FLOAT #{min_val} #{max_val} #{default_val} \"#{desc}\""
+
+      if desc =~ /^(Empty|Reserved)/i
+        f.puts "    HIDDEN"
+      end
 
       # Add units if specified
       if param[:units]
@@ -553,11 +578,10 @@ class MavlinkToCosmosConverter
       # Add states for enum parameters
       if param[:enum] && @enums[param[:enum]]
         enum_data = @enums[param[:enum]]
-        if !enum_data[:bitmask] && enum_data[:entries].size <= 15
-          enum_data[:entries].each do |entry|
-            next unless entry[:value]
-            f.puts "    STATE #{entry[:name]} #{entry[:value]}"
-          end
+        enum_data[:entries].each do |entry|
+          next unless entry[:value]
+          state_name = entry[:name].sub(/^#{Regexp.escape(enum_data[:name])}_/, '')
+          f.puts "    STATE #{state_name} #{entry[:value]}"
         end
       end
     end
@@ -713,11 +737,10 @@ class MavlinkToCosmosConverter
     # Add states for enums
     if field[:enum] && @enums[field[:enum]]
       enum_data = @enums[field[:enum]]
-      if !enum_data[:bitmask] && enum_data[:entries].size <= 20
-        enum_data[:entries].first(15).each do |entry|
-          next unless entry[:value]
-          f.puts "    STATE #{entry[:name]} #{entry[:value]}"
-        end
+      enum_data[:entries].each do |entry|
+        next unless entry[:value]
+        state_name = entry[:name].sub(/^#{Regexp.escape(enum_data[:name])}_/, '')
+        f.puts "    STATE #{state_name} #{entry[:value]}"
       end
     end
 
@@ -806,30 +829,16 @@ class MavlinkToCosmosConverter
     puts "  Commands:  #{cmd_path} (#{@mav_commands.size} MAV_CMD entries)"
     puts ""
     puts "Format: JSON accessor (no binary offsets needed)"
-    puts "Protocol: Python UdpMavlinkProtocol handles MAVLink encoding/decoding"
+    puts "Protocol: Python MavlinkProtocol handles MAVLink encoding/decoding"
     puts ""
   end
 end
 
 # Main execution
 if __FILE__ == $0
-  if ARGV.empty?
-    puts "MAVLink XML to COSMOS Converter"
-    puts ""
-    puts "Usage: ruby mavlink_to_cosmos.rb <mavlink.xml> [output_directory]"
-    puts ""
-    puts "Arguments:"
-    puts "  mavlink.xml       - Path to MAVLink XML definition file (e.g., common.xml)"
-    puts "  output_directory  - Output directory (default: ./cmd_tlm)"
-    puts ""
-    puts "Output:"
-    puts "  - tlm.txt : All MAVLink messages as COSMOS telemetry"
-    puts "  - cmd.txt : All MAV_CMD_* as COSMOS commands"
-    exit 1
-  end
-
-  xml_file = ARGV[0]
-  output_dir = ARGV[1] || './cmd_tlm'
+  script_dir = File.dirname(File.expand_path(__FILE__))
+  xml_file = ARGV[0] || File.join(script_dir, 'ArduPilotMega.xml')
+  output_dir = ARGV[1] || File.join(script_dir, '..', 'targets', 'DRONE', 'cmd_tlm')
 
   unless File.exist?(xml_file)
     puts "Error: File not found: #{xml_file}"

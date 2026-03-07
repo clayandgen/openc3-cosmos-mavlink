@@ -12,7 +12,7 @@ The protocol outputs JSON that COSMOS reads using JsonAccessor.
 """
 
 from openc3.interfaces.protocols.protocol import Protocol
-from pymavlink.dialects.v20 import common as mavlink2
+from pymavlink.dialects.v20 import ardupilotmega as mavlink2
 import json
 import logging
 import math
@@ -27,8 +27,10 @@ def sanitize_for_json(obj):
     """
     if isinstance(obj, dict):
         return {k: sanitize_for_json(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
+    elif isinstance(obj, (list, tuple)):
         return [sanitize_for_json(item) for item in obj]
+    elif isinstance(obj, (bytes, bytearray)):
+        return list(obj)
     elif isinstance(obj, float):
         if math.isnan(obj) or math.isinf(obj):
             return None
@@ -37,7 +39,7 @@ def sanitize_for_json(obj):
         return obj
 
 
-class UdpMavlinkProtocol(Protocol):
+class MavlinkProtocol(Protocol):
     """MAVLink v2 Protocol using pymavlink"""
 
     # MAVLink v2 constants
@@ -77,7 +79,7 @@ class UdpMavlinkProtocol(Protocol):
         Read and parse MAVLink packets, return as JSON
 
         Args:
-            data: Raw bytes from UDP interface
+            data: Raw bytes from tcp/ip interface
             extra: Extra data (unused)
 
         Returns:
@@ -133,6 +135,7 @@ class UdpMavlinkProtocol(Protocol):
                     msg_dict['MSGNAME'] = msg.get_type()
                     msg_dict['SYSTEM_ID'] = msg.get_srcSystem()
                     msg_dict['COMPONENT_ID'] = msg.get_srcComponent()
+                    msg_dict['SEQ'] = msg.get_seq()
 
                     # Sanitize NaN/Infinity values to null for valid JSON
                     msg_dict = sanitize_for_json(msg_dict)
@@ -149,18 +152,8 @@ class UdpMavlinkProtocol(Protocol):
                 continue
 
     def write_data(self, data, extra=None):
-        """
-        Convert JSON command to MAVLink v2 binary packet
-
-        Args:
-            data: Command data as JSON bytes, JSON string, or dict
-            extra: Extra data (passed through)
-
-        Returns:
-            Tuple of (packet_bytes, extra)
-        """
+        """Convert JSON command to MAVLink v2 binary packet"""
         try:
-            # Parse command data
             if isinstance(data, (bytes, bytearray)):
                 cmd = json.loads(data.decode('utf-8'))
             elif isinstance(data, str):
@@ -169,40 +162,39 @@ class UdpMavlinkProtocol(Protocol):
                 cmd = data
 
             msg_name = cmd.get('MSGNAME', '').upper()
-
-            # Look up the message class
             msg_class = self._msg_classes.get(msg_name)
             if msg_class is None:
                 raise ValueError(f"Unknown MAVLink message type: {msg_name}")
 
-            # Build field values in the order the message class expects
-            # pymavlink expects lowercase (param1, target_system)
-            # COSMOS sends uppercase (PARAM1, TARGET_SYSTEM)
-            field_values = []
+            # For COMMAND_LONG, remap friendly param names (e.g. ARM_1 -> PARAM1)
+            if msg_name == 'COMMAND_LONG':
+                remapped = {}
+                for key, value in cmd.items():
+                    upper_key = key.upper()
+                    if upper_key[-2:-1] == '_' and upper_key[-1:].isdigit():
+                        remapped[f'PARAM{upper_key[-1]}'] = value
+                    else:
+                        remapped[upper_key] = value
+                cmd = remapped
+
+            # Build kwargs matching pymavlink's expected field names
+            field_kwargs = {}
             for i, field in enumerate(msg_class.fieldnames):
                 field_upper = field.upper()
-
                 if field_upper in cmd:
-                    value = cmd[field_upper]
+                    field_kwargs[field] = cmd[field_upper]
                 elif field in cmd:
-                    value = cmd[field]
+                    field_kwargs[field] = cmd[field]
                 else:
-                    # Default value based on field type
                     ftype = msg_class.fieldtypes[i]
-                    value = '' if 'char' in ftype else 0
+                    field_kwargs[field] = '' if 'char' in ftype else 0
 
-                field_values.append(value)
-
-            # Pack the message
-            msg = msg_class(*field_values)
+            msg = msg_class(**field_kwargs)
             packet = msg.pack(self.mav)
-
-            # Manually increment sequence (pymavlink doesn't auto-increment with file=None)
             self.mav.seq = (self.mav.seq + 1) % 256
 
-            logger.info(f"Encoded {msg_name} (seq={packet[4]}, size={len(packet)} bytes)")
             return packet, extra
 
         except Exception as e:
-            logger.error(f"Failed to encode MAVLink message: {e}", exc_info=True)
+            logger.error(f"Failed to encode MAVLink message: {e}")
             return data, extra

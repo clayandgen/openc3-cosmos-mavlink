@@ -7,15 +7,18 @@
 VARIABLE drone_target_name DRONE
 VARIABLE_DESCRIPTION "Name for this MAVLink target"
 
+VARIABLE drone_raw_target_name DRONE_RAW
+# VARIABLE_DESCRIPTION "Name for this MAVLink target"
+
 # Connection variables
 VARIABLE mavlink_host host.docker.internal
 VARIABLE_DESCRIPTION "MAVLink vehicle IP address"
 
-VARIABLE mavlink_write_port 14560
-VARIABLE_DESCRIPTION "UDP port where vehicle listens"
+VARIABLE mavlink_write_port 2950
+VARIABLE_DESCRIPTION "Port where vehicle listens (based on bridge's port)"
 
-VARIABLE mavlink_read_port 14552
-VARIABLE_DESCRIPTION "UDP port where COSMOS listens"
+VARIABLE mavlink_read_port 2950
+VARIABLE_DESCRIPTION "Port where COSMOS listens (based on bridge's port)"
 
 # MAVLink system IDs
 VARIABLE gcs_sysid 255
@@ -31,12 +34,18 @@ VARIABLE_DESCRIPTION "Target vehicle System ID (0 = accept all)"
 # Target Definition
 # ============================================================================
 TARGET DRONE <%= drone_target_name %>
-  TLM_BUFFER_DEPTH 1000
+
+TARGET DRONE_RAW <%= drone_raw_target_name %>
 
 # ============================================================================
-# Interface Definition - UDP with Python MAVLink Protocol
+# Interface Definition - Python MAVLink Protocol
 # ============================================================================
-INTERFACE <%= drone_target_name %>_INT openc3/interfaces/udp_interface.py <%= mavlink_host %> <%= mavlink_write_port %> <%= mavlink_read_port %> nil 0.0.0.0 1 nil nil
+INTERFACE <%= drone_raw_target_name %>_INT openc3/interfaces/tcpip_client_interface.py <%= mavlink_host %> <%= mavlink_write_port %> <%= mavlink_read_port %> 10.0 nil BURST
+  MAP_TARGET <%= drone_raw_target_name %>
+
+ROUTER <%= drone_raw_target_name %>_ROUTER openc3/interfaces/tcpip_server_interface.py 2977 2977 10.0 nil BURST
+  MAP_TARGET <%= drone_raw_target_name %>
+
+INTERFACE <%= drone_target_name %>_INT openc3/interfaces/tcpip_client_interface.py openc3-operator 2977 2977 10.0 nil nil
   MAP_TARGET <%= drone_target_name %>
-  # Use Python MAVLink protocol (pymavlink handles parsing)
-  PROTOCOL READ_WRITE udp_mavlink_protocol.py <%= gcs_sysid %> <%= gcs_compid %> <%= target_sysid %>
+  PROTOCOL READ_WRITE mavlink_protocol.py <%= gcs_sysid %> <%= gcs_compid %> <%= target_sysid %>

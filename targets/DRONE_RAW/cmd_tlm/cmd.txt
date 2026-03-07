@@ -1,0 +1,931 @@
+# MAVLink Raw Command Definitions for DRONE_RAW Target
+# Auto-generated from MAVLink XML definitions
+
+COMMAND <%= target_name %> HEARTBEAT LITTLE_ENDIAN "The heartbeat message shows that a system or component is present and responding. The type and autopi"
+  <%= render '_cmd_header.txt', locals: {msgid: 0, payload_len: 9} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SYS_STATUS LITTLE_ENDIAN "Sensor and subsystem status information. Provides a compact representation of sensor/subsystem status"
+  <%= render '_cmd_header.txt', locals: {msgid: 1, payload_len: 31} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SYSTEM_TIME LITTLE_ENDIAN "The system time is the time of the sender's master clock. This can be emitted by flight controllers, "
+  <%= render '_cmd_header.txt', locals: {msgid: 2, payload_len: 12} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PING LITTLE_ENDIAN "A ping message either requesting or responding to a ping. This allows to measure the system latencies"
+  <%= render '_cmd_header.txt', locals: {msgid: 4, payload_len: 14} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CHANGE_OPERATOR_CONTROL LITTLE_ENDIAN "Request to control this MAV"
+  <%= render '_cmd_header.txt', locals: {msgid: 5, payload_len: 28} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CHANGE_OPERATOR_CONTROL_ACK LITTLE_ENDIAN "Accept / deny control of this MAV"
+  <%= render '_cmd_header.txt', locals: {msgid: 6, payload_len: 3} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> AUTH_KEY LITTLE_ENDIAN "Emit an encrypted signature / key identifying this system. PLEASE NOTE: This protocol has been kept s"
+  <%= render '_cmd_header.txt', locals: {msgid: 7, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LINK_NODE_STATUS LITTLE_ENDIAN "Status generated in each node in the communication chain and injected into MAVLink stream."
+  <%= render '_cmd_header.txt', locals: {msgid: 8, payload_len: 36} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SET_MODE LITTLE_ENDIAN "Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by d"
+  <%= render '_cmd_header.txt', locals: {msgid: 11, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_REQUEST_READ LITTLE_ENDIAN "Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as k"
+  <%= render '_cmd_header.txt', locals: {msgid: 20, payload_len: 20} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_REQUEST_LIST LITTLE_ENDIAN "Request all parameters of this component. After this request, all parameters are emitted. The paramet"
+  <%= render '_cmd_header.txt', locals: {msgid: 21, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_VALUE LITTLE_ENDIAN "Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message al"
+  <%= render '_cmd_header.txt', locals: {msgid: 22, payload_len: 25} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_SET LITTLE_ENDIAN "Set a parameter value (write new value to permanent storage). The receiving component should acknowle"
+  <%= render '_cmd_header.txt', locals: {msgid: 23, payload_len: 23} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS_RAW_INT LITTLE_ENDIAN "The global position, as returned by the Global Positioning System (GPS). This is NOT the global posit"
+  <%= render '_cmd_header.txt', locals: {msgid: 24, payload_len: 30} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS_STATUS LITTLE_ENDIAN "The positioning status, as reported by GPS. This message is intended to display status information ab"
+  <%= render '_cmd_header.txt', locals: {msgid: 25, payload_len: 101} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SCALED_IMU LITTLE_ENDIAN "The RAW IMU readings for the usual 9DOF sensor setup. This message should contain the scaled values t"
+  <%= render '_cmd_header.txt', locals: {msgid: 26, payload_len: 22} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RAW_IMU LITTLE_ENDIAN "The RAW IMU readings for a 9DOF sensor, which is identified by the id (default IMU1). This message sh"
+  <%= render '_cmd_header.txt', locals: {msgid: 27, payload_len: 26} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RAW_PRESSURE LITTLE_ENDIAN "The RAW pressure readings for the typical setup of one absolute pressure and one differential pressur"
+  <%= render '_cmd_header.txt', locals: {msgid: 28, payload_len: 16} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SCALED_PRESSURE LITTLE_ENDIAN "The pressure readings for the typical setup of one absolute and differential pressure sensor. The uni"
+  <%= render '_cmd_header.txt', locals: {msgid: 29, payload_len: 14} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ATTITUDE LITTLE_ENDIAN "The attitude in the aeronautical frame (right-handed, Z-down, Y-right, X-front, ZYX, intrinsic)."
+  <%= render '_cmd_header.txt', locals: {msgid: 30, payload_len: 28} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ATTITUDE_QUATERNION LITTLE_ENDIAN "The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right), expressed as quatern"
+  <%= render '_cmd_header.txt', locals: {msgid: 31, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOCAL_POSITION_NED LITTLE_ENDIAN "The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is righ"
+  <%= render '_cmd_header.txt', locals: {msgid: 32, payload_len: 28} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GLOBAL_POSITION_INT LITTLE_ENDIAN "The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right"
+  <%= render '_cmd_header.txt', locals: {msgid: 33, payload_len: 28} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RC_CHANNELS_SCALED LITTLE_ENDIAN "The scaled values of the RC channels received: (-100%) -10000, (0%) 0, (100%) 10000. Channels that ar"
+  <%= render '_cmd_header.txt', locals: {msgid: 34, payload_len: 22} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RC_CHANNELS_RAW LITTLE_ENDIAN "The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseco"
+  <%= render '_cmd_header.txt', locals: {msgid: 35, payload_len: 22} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SERVO_OUTPUT_RAW LITTLE_ENDIAN "Superseded by ACTUATOR_OUTPUT_STATUS. The RAW values of the servo outputs (for RC input from the remo"
+  <%= render '_cmd_header.txt', locals: {msgid: 36, payload_len: 21} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_REQUEST_PARTIAL_LIST LITTLE_ENDIAN "Request a partial list of mission items from the system/component. https://mavlink.io/en/services/mis"
+  <%= render '_cmd_header.txt', locals: {msgid: 37, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_WRITE_PARTIAL_LIST LITTLE_ENDIAN "This message is sent to the MAV to write a partial list. If start index == end index, only one item w"
+  <%= render '_cmd_header.txt', locals: {msgid: 38, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_ITEM LITTLE_ENDIAN "Message encoding a mission item. This message is emitted to announce the presence of a mission item a"
+  <%= render '_cmd_header.txt', locals: {msgid: 39, payload_len: 37} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_REQUEST LITTLE_ENDIAN "Request the information of the mission item with the sequence number seq. The response of the system "
+  <%= render '_cmd_header.txt', locals: {msgid: 40, payload_len: 4} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_SET_CURRENT LITTLE_ENDIAN "Set the mission item with sequence number seq as the current item and emit MISSION_CURRENT (whether o"
+  <%= render '_cmd_header.txt', locals: {msgid: 41, payload_len: 4} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_CURRENT LITTLE_ENDIAN "Message that announces the sequence number of the current target mission item (that the system will f"
+  <%= render '_cmd_header.txt', locals: {msgid: 42, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_REQUEST_LIST LITTLE_ENDIAN "Request the overall list of mission items from the system/component."
+  <%= render '_cmd_header.txt', locals: {msgid: 43, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_COUNT LITTLE_ENDIAN "This message is emitted as response to MISSION_REQUEST_LIST by the MAV and to initiate a write transa"
+  <%= render '_cmd_header.txt', locals: {msgid: 44, payload_len: 4} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_CLEAR_ALL LITTLE_ENDIAN "Delete all mission items at once."
+  <%= render '_cmd_header.txt', locals: {msgid: 45, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_ITEM_REACHED LITTLE_ENDIAN "A certain mission item has been reached. The system will either hold this position (or circle on the "
+  <%= render '_cmd_header.txt', locals: {msgid: 46, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_ACK LITTLE_ENDIAN "Acknowledgment message during waypoint handling. The type field states if this message is a positive "
+  <%= render '_cmd_header.txt', locals: {msgid: 47, payload_len: 3} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SET_GPS_GLOBAL_ORIGIN LITTLE_ENDIAN "Sets the GPS coordinates of the vehicle local origin (0,0,0) position. Vehicle should emit GPS_GLOBAL"
+  <%= render '_cmd_header.txt', locals: {msgid: 48, payload_len: 13} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS_GLOBAL_ORIGIN LITTLE_ENDIAN "Publishes the GPS coordinates of the vehicle local origin (0,0,0) position. Emitted whenever a new GP"
+  <%= render '_cmd_header.txt', locals: {msgid: 49, payload_len: 12} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_MAP_RC LITTLE_ENDIAN "Bind a RC channel to a parameter. The parameter should change according to the RC channel value."
+  <%= render '_cmd_header.txt', locals: {msgid: 50, payload_len: 37} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_REQUEST_INT LITTLE_ENDIAN "Request the information of the mission item with the sequence number seq. The response of the system "
+  <%= render '_cmd_header.txt', locals: {msgid: 51, payload_len: 4} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SAFETY_SET_ALLOWED_AREA LITTLE_ENDIAN "Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to te"
+  <%= render '_cmd_header.txt', locals: {msgid: 54, payload_len: 27} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SAFETY_ALLOWED_AREA LITTLE_ENDIAN "Read out the safety zone the MAV currently assumes."
+  <%= render '_cmd_header.txt', locals: {msgid: 55, payload_len: 25} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ATTITUDE_QUATERNION_COV LITTLE_ENDIAN "The attitude in the aeronautical frame (right-handed, Z-down, X-front, Y-right), expressed as quatern"
+  <%= render '_cmd_header.txt', locals: {msgid: 61, payload_len: 72} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> NAV_CONTROLLER_OUTPUT LITTLE_ENDIAN "The state of the navigation and position controller."
+  <%= render '_cmd_header.txt', locals: {msgid: 62, payload_len: 26} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GLOBAL_POSITION_INT_COV LITTLE_ENDIAN "The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right"
+  <%= render '_cmd_header.txt', locals: {msgid: 63, payload_len: 181} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOCAL_POSITION_NED_COV LITTLE_ENDIAN "The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is righ"
+  <%= render '_cmd_header.txt', locals: {msgid: 64, payload_len: 225} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RC_CHANNELS LITTLE_ENDIAN "The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseco"
+  <%= render '_cmd_header.txt', locals: {msgid: 65, payload_len: 42} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> REQUEST_DATA_STREAM LITTLE_ENDIAN "Request a data stream."
+  <%= render '_cmd_header.txt', locals: {msgid: 66, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> DATA_STREAM LITTLE_ENDIAN "Data stream status information."
+  <%= render '_cmd_header.txt', locals: {msgid: 67, payload_len: 4} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MANUAL_CONTROL LITTLE_ENDIAN "Manual (joystick) control message. This message represents movement axes and button using standard jo"
+  <%= render '_cmd_header.txt', locals: {msgid: 69, payload_len: 11} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RC_CHANNELS_OVERRIDE LITTLE_ENDIAN "The RAW values of the RC channels sent to the MAV to override info received from the RC radio. The st"
+  <%= render '_cmd_header.txt', locals: {msgid: 70, payload_len: 18} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MISSION_ITEM_INT LITTLE_ENDIAN "Message encoding a mission item. This message is emitted to announce the presence of a mission item a"
+  <%= render '_cmd_header.txt', locals: {msgid: 73, payload_len: 37} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> VFR_HUD LITTLE_ENDIAN "Metrics typically displayed on a HUD for fixed wing aircraft."
+  <%= render '_cmd_header.txt', locals: {msgid: 74, payload_len: 20} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> COMMAND_INT LITTLE_ENDIAN "Send a command with up to seven parameters to the MAV, where params 5 and 6 are integers and the othe"
+  <%= render '_cmd_header.txt', locals: {msgid: 75, payload_len: 35} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> COMMAND_LONG LITTLE_ENDIAN "Send a command with up to seven parameters to the MAV. COMMAND_INT is generally preferred when sendin"
+  <%= render '_cmd_header.txt', locals: {msgid: 76, payload_len: 33} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> COMMAND_ACK LITTLE_ENDIAN "Report status of a command. Includes feedback whether the command was executed. The command microserv"
+  <%= render '_cmd_header.txt', locals: {msgid: 77, payload_len: 3} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> COMMAND_CANCEL LITTLE_ENDIAN "Cancel a long running command. The target system should respond with a COMMAND_ACK to the original co"
+  <%= render '_cmd_header.txt', locals: {msgid: 80, payload_len: 4} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MANUAL_SETPOINT LITTLE_ENDIAN "Setpoint in roll, pitch, yaw and thrust from the operator"
+  <%= render '_cmd_header.txt', locals: {msgid: 81, payload_len: 22} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SET_ATTITUDE_TARGET LITTLE_ENDIAN "Sets a desired vehicle attitude. Used by an external controller to command the vehicle (manual contro"
+  <%= render '_cmd_header.txt', locals: {msgid: 82, payload_len: 39} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ATTITUDE_TARGET LITTLE_ENDIAN "Reports the current commanded attitude of the vehicle as specified by the autopilot. This should matc"
+  <%= render '_cmd_header.txt', locals: {msgid: 83, payload_len: 37} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SET_POSITION_TARGET_LOCAL_NED LITTLE_ENDIAN "Sets a desired vehicle position in a local north-east-down coordinate frame. Used by an external cont"
+  <%= render '_cmd_header.txt', locals: {msgid: 84, payload_len: 53} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> POSITION_TARGET_LOCAL_NED LITTLE_ENDIAN "Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopi"
+  <%= render '_cmd_header.txt', locals: {msgid: 85, payload_len: 51} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SET_POSITION_TARGET_GLOBAL_INT LITTLE_ENDIAN "Sets a desired vehicle position, velocity, and/or acceleration in a global coordinate system (WGS84)."
+  <%= render '_cmd_header.txt', locals: {msgid: 86, payload_len: 53} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> POSITION_TARGET_GLOBAL_INT LITTLE_ENDIAN "Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopi"
+  <%= render '_cmd_header.txt', locals: {msgid: 87, payload_len: 51} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET LITTLE_ENDIAN "The offset in X, Y, Z and yaw between the LOCAL_POSITION_NED messages of MAV X and the global coordin"
+  <%= render '_cmd_header.txt', locals: {msgid: 89, payload_len: 28} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIL_STATE LITTLE_ENDIAN "Sent from simulation to autopilot. This packet is useful for high throughput applications such as har"
+  <%= render '_cmd_header.txt', locals: {msgid: 90, payload_len: 56} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIL_CONTROLS LITTLE_ENDIAN "Sent from autopilot to simulation. Hardware in the loop control outputs. Alternative to HIL_ACTUATOR_"
+  <%= render '_cmd_header.txt', locals: {msgid: 91, payload_len: 42} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIL_RC_INPUTS_RAW LITTLE_ENDIAN "Sent from simulation to autopilot. The RAW values of the RC channels received. The standard PPM modul"
+  <%= render '_cmd_header.txt', locals: {msgid: 92, payload_len: 33} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIL_ACTUATOR_CONTROLS LITTLE_ENDIAN "Sent from autopilot to simulation. Hardware in the loop control outputs. Alternative to HIL_CONTROLS."
+  <%= render '_cmd_header.txt', locals: {msgid: 93, payload_len: 81} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPTICAL_FLOW LITTLE_ENDIAN "Optical flow from a flow sensor (e.g. optical mouse sensor)"
+  <%= render '_cmd_header.txt', locals: {msgid: 100, payload_len: 26} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GLOBAL_VISION_POSITION_ESTIMATE LITTLE_ENDIAN "Global position/attitude estimate from a vision source."
+  <%= render '_cmd_header.txt', locals: {msgid: 101, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> VISION_POSITION_ESTIMATE LITTLE_ENDIAN "Local position/attitude estimate from a vision source."
+  <%= render '_cmd_header.txt', locals: {msgid: 102, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> VISION_SPEED_ESTIMATE LITTLE_ENDIAN "Speed estimate from a vision source."
+  <%= render '_cmd_header.txt', locals: {msgid: 103, payload_len: 20} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> VICON_POSITION_ESTIMATE LITTLE_ENDIAN "Global position estimate from a Vicon motion system source."
+  <%= render '_cmd_header.txt', locals: {msgid: 104, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIGHRES_IMU LITTLE_ENDIAN "The IMU readings in SI units in NED body frame"
+  <%= render '_cmd_header.txt', locals: {msgid: 105, payload_len: 62} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPTICAL_FLOW_RAD LITTLE_ENDIAN "Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)"
+  <%= render '_cmd_header.txt', locals: {msgid: 106, payload_len: 44} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIL_SENSOR LITTLE_ENDIAN "The IMU readings in SI units in NED body frame"
+  <%= render '_cmd_header.txt', locals: {msgid: 107, payload_len: 64} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SIM_STATE LITTLE_ENDIAN "Status of simulation environment, if used"
+  <%= render '_cmd_header.txt', locals: {msgid: 108, payload_len: 84} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RADIO_STATUS LITTLE_ENDIAN "Status generated by radio and injected into MAVLink stream."
+  <%= render '_cmd_header.txt', locals: {msgid: 109, payload_len: 9} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> FILE_TRANSFER_PROTOCOL LITTLE_ENDIAN "File transfer protocol message: https://mavlink.io/en/services/ftp.html."
+  <%= render '_cmd_header.txt', locals: {msgid: 110, payload_len: 254} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TIMESYNC LITTLE_ENDIAN "Time synchronization message. The message is used for both timesync requests and responses. The reque"
+  <%= render '_cmd_header.txt', locals: {msgid: 111, payload_len: 16} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_TRIGGER LITTLE_ENDIAN "Camera-IMU triggering and synchronisation message."
+  <%= render '_cmd_header.txt', locals: {msgid: 112, payload_len: 12} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIL_GPS LITTLE_ENDIAN "The global position, as returned by the Global Positioning System (GPS). This is NOT the global posit"
+  <%= render '_cmd_header.txt', locals: {msgid: 113, payload_len: 36} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIL_OPTICAL_FLOW LITTLE_ENDIAN "Simulated optical flow from a flow sensor (e.g. PX4FLOW or optical mouse sensor)"
+  <%= render '_cmd_header.txt', locals: {msgid: 114, payload_len: 44} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIL_STATE_QUATERNION LITTLE_ENDIAN "Sent from simulation to autopilot, avoids in contrast to HIL_STATE singularities. This packet is usef"
+  <%= render '_cmd_header.txt', locals: {msgid: 115, payload_len: 64} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SCALED_IMU2 LITTLE_ENDIAN "The RAW IMU readings for secondary 9DOF sensor setup. This message should contain the scaled values t"
+  <%= render '_cmd_header.txt', locals: {msgid: 116, payload_len: 22} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOG_REQUEST_LIST LITTLE_ENDIAN "Request a list of available logs. On some systems calling this may stop on-board logging until LOG_RE"
+  <%= render '_cmd_header.txt', locals: {msgid: 117, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOG_ENTRY LITTLE_ENDIAN "Reply to LOG_REQUEST_LIST"
+  <%= render '_cmd_header.txt', locals: {msgid: 118, payload_len: 14} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOG_REQUEST_DATA LITTLE_ENDIAN "Request a chunk of a log"
+  <%= render '_cmd_header.txt', locals: {msgid: 119, payload_len: 12} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOG_DATA LITTLE_ENDIAN "Reply to LOG_REQUEST_DATA"
+  <%= render '_cmd_header.txt', locals: {msgid: 120, payload_len: 97} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOG_ERASE LITTLE_ENDIAN "Erase all logs"
+  <%= render '_cmd_header.txt', locals: {msgid: 121, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOG_REQUEST_END LITTLE_ENDIAN "Stop log transfer and resume normal logging"
+  <%= render '_cmd_header.txt', locals: {msgid: 122, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS_INJECT_DATA LITTLE_ENDIAN "Data for injecting into the onboard GPS (used for DGPS)"
+  <%= render '_cmd_header.txt', locals: {msgid: 123, payload_len: 113} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS2_RAW LITTLE_ENDIAN "Second GPS data."
+  <%= render '_cmd_header.txt', locals: {msgid: 124, payload_len: 35} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> POWER_STATUS LITTLE_ENDIAN "Power supply status"
+  <%= render '_cmd_header.txt', locals: {msgid: 125, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SERIAL_CONTROL LITTLE_ENDIAN "Control a serial port. This can be used for raw access to an onboard serial peripheral such as a GPS "
+  <%= render '_cmd_header.txt', locals: {msgid: 126, payload_len: 79} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS_RTK LITTLE_ENDIAN "RTK GPS data. Gives information on the relative baseline calculation the GPS is reporting"
+  <%= render '_cmd_header.txt', locals: {msgid: 127, payload_len: 35} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS2_RTK LITTLE_ENDIAN "RTK GPS data. Gives information on the relative baseline calculation the GPS is reporting"
+  <%= render '_cmd_header.txt', locals: {msgid: 128, payload_len: 35} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SCALED_IMU3 LITTLE_ENDIAN "The RAW IMU readings for 3rd 9DOF sensor setup. This message should contain the scaled values to the "
+  <%= render '_cmd_header.txt', locals: {msgid: 129, payload_len: 22} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> DATA_TRANSMISSION_HANDSHAKE LITTLE_ENDIAN "Handshake message to initiate, control and stop image streaming when using the Image Transmission Pro"
+  <%= render '_cmd_header.txt', locals: {msgid: 130, payload_len: 13} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ENCAPSULATED_DATA LITTLE_ENDIAN "Data packet for images sent using the Image Transmission Protocol: https://mavlink.io/en/services/ima"
+  <%= render '_cmd_header.txt', locals: {msgid: 131, payload_len: 255} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> DISTANCE_SENSOR LITTLE_ENDIAN "Distance sensor information for an onboard rangefinder."
+  <%= render '_cmd_header.txt', locals: {msgid: 132, payload_len: 14} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TERRAIN_REQUEST LITTLE_ENDIAN "Request for terrain data and terrain status. See terrain protocol docs: https://mavlink.io/en/service"
+  <%= render '_cmd_header.txt', locals: {msgid: 133, payload_len: 18} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TERRAIN_DATA LITTLE_ENDIAN "Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN"
+  <%= render '_cmd_header.txt', locals: {msgid: 134, payload_len: 43} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TERRAIN_CHECK LITTLE_ENDIAN "Request that the vehicle report terrain height at the given location (expected response is a TERRAIN_"
+  <%= render '_cmd_header.txt', locals: {msgid: 135, payload_len: 8} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TERRAIN_REPORT LITTLE_ENDIAN "Streamed from drone to report progress of terrain map download (initiated by TERRAIN_REQUEST), or sen"
+  <%= render '_cmd_header.txt', locals: {msgid: 136, payload_len: 22} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SCALED_PRESSURE2 LITTLE_ENDIAN "Barometer readings for 2nd barometer"
+  <%= render '_cmd_header.txt', locals: {msgid: 137, payload_len: 14} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ATT_POS_MOCAP LITTLE_ENDIAN "Motion capture attitude and position"
+  <%= render '_cmd_header.txt', locals: {msgid: 138, payload_len: 36} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SET_ACTUATOR_CONTROL_TARGET LITTLE_ENDIAN "Set the vehicle attitude and body angular rates."
+  <%= render '_cmd_header.txt', locals: {msgid: 139, payload_len: 43} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ACTUATOR_CONTROL_TARGET LITTLE_ENDIAN "Set the vehicle attitude and body angular rates."
+  <%= render '_cmd_header.txt', locals: {msgid: 140, payload_len: 41} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ALTITUDE LITTLE_ENDIAN "The current system altitude."
+  <%= render '_cmd_header.txt', locals: {msgid: 141, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RESOURCE_REQUEST LITTLE_ENDIAN "The autopilot is requesting a resource (file, binary, other type of data)"
+  <%= render '_cmd_header.txt', locals: {msgid: 142, payload_len: 243} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SCALED_PRESSURE3 LITTLE_ENDIAN "Barometer readings for 3rd barometer"
+  <%= render '_cmd_header.txt', locals: {msgid: 143, payload_len: 14} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> FOLLOW_TARGET LITTLE_ENDIAN "Current motion information from a designated system"
+  <%= render '_cmd_header.txt', locals: {msgid: 144, payload_len: 93} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CONTROL_SYSTEM_STATE LITTLE_ENDIAN "The smoothed, monotonic system state used to feed the control loops of the system."
+  <%= render '_cmd_header.txt', locals: {msgid: 146, payload_len: 100} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> BATTERY_STATUS LITTLE_ENDIAN "Battery information. Updates GCS with flight controller battery status. Smart batteries also use this"
+  <%= render '_cmd_header.txt', locals: {msgid: 147, payload_len: 36} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> AUTOPILOT_VERSION LITTLE_ENDIAN "Version and capability of autopilot software. This should be emitted in response to a request with MA"
+  <%= render '_cmd_header.txt', locals: {msgid: 148, payload_len: 60} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LANDING_TARGET LITTLE_ENDIAN "The location of a landing target. See: https://mavlink.io/en/services/landing_target.html"
+  <%= render '_cmd_header.txt', locals: {msgid: 149, payload_len: 30} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> FENCE_STATUS LITTLE_ENDIAN "Status of geo-fencing. Sent in extended status stream when fencing enabled."
+  <%= render '_cmd_header.txt', locals: {msgid: 162, payload_len: 8} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MAG_CAL_REPORT LITTLE_ENDIAN "Reports results of completed compass calibration. Sent until MAG_CAL_ACK received."
+  <%= render '_cmd_header.txt', locals: {msgid: 192, payload_len: 44} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> EFI_STATUS LITTLE_ENDIAN "EFI status output"
+  <%= render '_cmd_header.txt', locals: {msgid: 225, payload_len: 65} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ESTIMATOR_STATUS LITTLE_ENDIAN "Estimator status message including flags, innovation test ratios and estimated accuracies. The flags "
+  <%= render '_cmd_header.txt', locals: {msgid: 230, payload_len: 42} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> WIND_COV LITTLE_ENDIAN "Wind estimate from vehicle. Note that despite the name, this message does not actually contain any co"
+  <%= render '_cmd_header.txt', locals: {msgid: 231, payload_len: 40} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS_INPUT LITTLE_ENDIAN "GPS sensor input message. This is a raw sensor value sent by the GPS. This is NOT the global position"
+  <%= render '_cmd_header.txt', locals: {msgid: 232, payload_len: 63} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GPS_RTCM_DATA LITTLE_ENDIAN "RTCM message for injecting into the onboard GPS (used for DGPS)"
+  <%= render '_cmd_header.txt', locals: {msgid: 233, payload_len: 182} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIGH_LATENCY LITTLE_ENDIAN "Message appropriate for high latency connections like Iridium"
+  <%= render '_cmd_header.txt', locals: {msgid: 234, payload_len: 40} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HIGH_LATENCY2 LITTLE_ENDIAN "Message appropriate for high latency connections like Iridium (version 2)"
+  <%= render '_cmd_header.txt', locals: {msgid: 235, payload_len: 42} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> VIBRATION LITTLE_ENDIAN "Vibration levels and accelerometer clipping"
+  <%= render '_cmd_header.txt', locals: {msgid: 241, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HOME_POSITION LITTLE_ENDIAN "Contains the home position. The home position is the default position that the system will return to "
+  <%= render '_cmd_header.txt', locals: {msgid: 242, payload_len: 52} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SET_HOME_POSITION LITTLE_ENDIAN "Sets the home position. The home position is the default position that the system will return to and "
+  <%= render '_cmd_header.txt', locals: {msgid: 243, payload_len: 53} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MESSAGE_INTERVAL LITTLE_ENDIAN "The interval between messages for a particular MAVLink message ID. This message is sent in response t"
+  <%= render '_cmd_header.txt', locals: {msgid: 244, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> EXTENDED_SYS_STATE LITTLE_ENDIAN "Provides state for additional features"
+  <%= render '_cmd_header.txt', locals: {msgid: 245, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ADSB_VEHICLE LITTLE_ENDIAN "The location and information of an ADSB vehicle"
+  <%= render '_cmd_header.txt', locals: {msgid: 246, payload_len: 38} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> COLLISION LITTLE_ENDIAN "Information about a potential collision"
+  <%= render '_cmd_header.txt', locals: {msgid: 247, payload_len: 19} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> V2_EXTENSION LITTLE_ENDIAN "Message implementing parts of the V2 payload specs in V1 frames for transitional support."
+  <%= render '_cmd_header.txt', locals: {msgid: 248, payload_len: 254} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MEMORY_VECT LITTLE_ENDIAN "Send raw controller memory. The use of this message is discouraged for normal packets, but a quite ef"
+  <%= render '_cmd_header.txt', locals: {msgid: 249, payload_len: 36} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> DEBUG_VECT LITTLE_ENDIAN "To debug something using a named 3D vector."
+  <%= render '_cmd_header.txt', locals: {msgid: 250, payload_len: 30} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> NAMED_VALUE_FLOAT LITTLE_ENDIAN "Send a key-value pair as float. The use of this message is discouraged for normal packets, but a quit"
+  <%= render '_cmd_header.txt', locals: {msgid: 251, payload_len: 18} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> NAMED_VALUE_INT LITTLE_ENDIAN "Send a key-value pair as integer. The use of this message is discouraged for normal packets, but a qu"
+  <%= render '_cmd_header.txt', locals: {msgid: 252, payload_len: 18} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> STATUSTEXT LITTLE_ENDIAN "Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARN"
+  <%= render '_cmd_header.txt', locals: {msgid: 253, payload_len: 51} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> DEBUG LITTLE_ENDIAN "Send a debug value. The index is used to discriminate between values. These values show up in the plo"
+  <%= render '_cmd_header.txt', locals: {msgid: 254, payload_len: 9} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SETUP_SIGNING LITTLE_ENDIAN "Setup a MAVLink2 signing key. If called with secret_key of all zero and zero initial_timestamp will d"
+  <%= render '_cmd_header.txt', locals: {msgid: 256, payload_len: 42} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> BUTTON_CHANGE LITTLE_ENDIAN "Report button state change."
+  <%= render '_cmd_header.txt', locals: {msgid: 257, payload_len: 9} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PLAY_TUNE LITTLE_ENDIAN "Control vehicle tone generation (buzzer)."
+  <%= render '_cmd_header.txt', locals: {msgid: 258, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_INFORMATION LITTLE_ENDIAN "Information about a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command."
+  <%= render '_cmd_header.txt', locals: {msgid: 259, payload_len: 235} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_SETTINGS LITTLE_ENDIAN "Settings of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command."
+  <%= render '_cmd_header.txt', locals: {msgid: 260, payload_len: 5} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> STORAGE_INFORMATION LITTLE_ENDIAN "Information about a storage medium. This message is sent in response to a request with MAV_CMD_REQUES"
+  <%= render '_cmd_header.txt', locals: {msgid: 261, payload_len: 27} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_CAPTURE_STATUS LITTLE_ENDIAN "Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command."
+  <%= render '_cmd_header.txt', locals: {msgid: 262, payload_len: 18} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_IMAGE_CAPTURED LITTLE_ENDIAN "Information about a captured image. This is emitted every time a message is captured. MAV_CMD_REQUEST"
+  <%= render '_cmd_header.txt', locals: {msgid: 263, payload_len: 255} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> FLIGHT_INFORMATION LITTLE_ENDIAN "Flight information. This includes time since boot for arm, takeoff, and land, and a flight number. Ta"
+  <%= render '_cmd_header.txt', locals: {msgid: 264, payload_len: 28} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> MOUNT_ORIENTATION LITTLE_ENDIAN "Orientation of a mount"
+  <%= render '_cmd_header.txt', locals: {msgid: 265, payload_len: 16} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOGGING_DATA LITTLE_ENDIAN "A message containing logged data (see also MAV_CMD_LOGGING_START)"
+  <%= render '_cmd_header.txt', locals: {msgid: 266, payload_len: 255} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOGGING_DATA_ACKED LITTLE_ENDIAN "A message containing logged data which requires a LOGGING_ACK to be sent back"
+  <%= render '_cmd_header.txt', locals: {msgid: 267, payload_len: 255} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> LOGGING_ACK LITTLE_ENDIAN "An ack for a LOGGING_DATA_ACKED message"
+  <%= render '_cmd_header.txt', locals: {msgid: 268, payload_len: 4} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> VIDEO_STREAM_INFORMATION LITTLE_ENDIAN "Information about video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE, where param2 indic"
+  <%= render '_cmd_header.txt', locals: {msgid: 269, payload_len: 213} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> VIDEO_STREAM_STATUS LITTLE_ENDIAN "Information about the status of a video stream. It may be requested using MAV_CMD_REQUEST_MESSAGE."
+  <%= render '_cmd_header.txt', locals: {msgid: 270, payload_len: 19} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_FOV_STATUS LITTLE_ENDIAN "Information about the field of view of a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE comm"
+  <%= render '_cmd_header.txt', locals: {msgid: 271, payload_len: 52} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_TRACKING_IMAGE_STATUS LITTLE_ENDIAN "Camera tracking status, sent while in active tracking. Use MAV_CMD_SET_MESSAGE_INTERVAL to define mes"
+  <%= render '_cmd_header.txt', locals: {msgid: 275, payload_len: 31} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_TRACKING_GEO_STATUS LITTLE_ENDIAN "Camera tracking status, sent while in active tracking. Use MAV_CMD_SET_MESSAGE_INTERVAL to define mes"
+  <%= render '_cmd_header.txt', locals: {msgid: 276, payload_len: 49} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAMERA_THERMAL_RANGE LITTLE_ENDIAN "Camera absolute thermal range. This can be streamed when the associated VIDEO_STREAM_STATUS `flag` fi"
+  <%= render '_cmd_header.txt', locals: {msgid: 277, payload_len: 30} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GIMBAL_MANAGER_INFORMATION LITTLE_ENDIAN "Information about a high level gimbal manager. This message should be requested by a ground station u"
+  <%= render '_cmd_header.txt', locals: {msgid: 280, payload_len: 33} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GIMBAL_MANAGER_STATUS LITTLE_ENDIAN "Current status about a high level gimbal manager. This message should be broadcast at a low regular r"
+  <%= render '_cmd_header.txt', locals: {msgid: 281, payload_len: 13} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GIMBAL_MANAGER_SET_ATTITUDE LITTLE_ENDIAN "High level message to control a gimbal's attitude. This message is to be sent to the gimbal manager ("
+  <%= render '_cmd_header.txt', locals: {msgid: 282, payload_len: 35} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GIMBAL_DEVICE_INFORMATION LITTLE_ENDIAN "Information about a low level gimbal. This message should be requested by the gimbal manager or a gro"
+  <%= render '_cmd_header.txt', locals: {msgid: 283, payload_len: 144} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GIMBAL_DEVICE_SET_ATTITUDE LITTLE_ENDIAN "Low level message to control a gimbal device's attitude. This message is to be sent from the gimbal m"
+  <%= render '_cmd_header.txt', locals: {msgid: 284, payload_len: 32} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GIMBAL_DEVICE_ATTITUDE_STATUS LITTLE_ENDIAN "Message reporting the status of a gimbal device. This message should be broadcast by a gimbal device "
+  <%= render '_cmd_header.txt', locals: {msgid: 285, payload_len: 40} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> AUTOPILOT_STATE_FOR_GIMBAL_DEVICE LITTLE_ENDIAN "Low level message containing autopilot state relevant for a gimbal device. This message is to be sent"
+  <%= render '_cmd_header.txt', locals: {msgid: 286, payload_len: 53} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GIMBAL_MANAGER_SET_PITCHYAW LITTLE_ENDIAN "Set gimbal manager pitch and yaw angles (high rate message). This message is to be sent to the gimbal"
+  <%= render '_cmd_header.txt', locals: {msgid: 287, payload_len: 23} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GIMBAL_MANAGER_SET_MANUAL_CONTROL LITTLE_ENDIAN "High level message to control a gimbal manually. The angles or angular rates are unitless; the actual"
+  <%= render '_cmd_header.txt', locals: {msgid: 288, payload_len: 23} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ESC_INFO LITTLE_ENDIAN "ESC information for lower rate streaming. Recommended streaming rate 1Hz. See ESC_STATUS for higher-r"
+  <%= render '_cmd_header.txt', locals: {msgid: 290, payload_len: 46} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ESC_STATUS LITTLE_ENDIAN "ESC information for higher rate streaming. Recommended streaming rate is ~10 Hz. Information that cha"
+  <%= render '_cmd_header.txt', locals: {msgid: 291, payload_len: 57} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> AIRSPEED LITTLE_ENDIAN "Airspeed information from a sensor."
+  <%= render '_cmd_header.txt', locals: {msgid: 295, payload_len: 12} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> WIFI_CONFIG_AP LITTLE_ENDIAN "Configure WiFi AP SSID, password, and mode. This message is re-emitted as an acknowledgement by the A"
+  <%= render '_cmd_header.txt', locals: {msgid: 299, payload_len: 96} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PROTOCOL_VERSION LITTLE_ENDIAN "Version and capability of protocol version. This message can be requested with MAV_CMD_REQUEST_MESSAG"
+  <%= render '_cmd_header.txt', locals: {msgid: 300, payload_len: 22} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> AIS_VESSEL LITTLE_ENDIAN "The location and information of an AIS vessel"
+  <%= render '_cmd_header.txt', locals: {msgid: 301, payload_len: 58} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> UAVCAN_NODE_STATUS LITTLE_ENDIAN "General status information of an UAVCAN node. Please refer to the definition of the UAVCAN message 'u"
+  <%= render '_cmd_header.txt', locals: {msgid: 310, payload_len: 17} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> UAVCAN_NODE_INFO LITTLE_ENDIAN "General information describing a particular UAVCAN node. Please refer to the definition of the UAVCAN"
+  <%= render '_cmd_header.txt', locals: {msgid: 311, payload_len: 116} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_EXT_REQUEST_READ LITTLE_ENDIAN "Request to read the value of a parameter with either the param_id string id or param_index. PARAM_EXT"
+  <%= render '_cmd_header.txt', locals: {msgid: 320, payload_len: 20} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_EXT_REQUEST_LIST LITTLE_ENDIAN "Request all parameters of this component. All parameters should be emitted in response as PARAM_EXT_V"
+  <%= render '_cmd_header.txt', locals: {msgid: 321, payload_len: 2} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_EXT_VALUE LITTLE_ENDIAN "Emit the value of a parameter. The inclusion of param_count and param_index in the message allows the"
+  <%= render '_cmd_header.txt', locals: {msgid: 322, payload_len: 149} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_EXT_SET LITTLE_ENDIAN "Set a parameter value. In order to deal with message loss (and retransmission of PARAM_EXT_SET), when"
+  <%= render '_cmd_header.txt', locals: {msgid: 323, payload_len: 147} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_EXT_ACK LITTLE_ENDIAN "Response from a PARAM_EXT_SET message."
+  <%= render '_cmd_header.txt', locals: {msgid: 324, payload_len: 146} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OBSTACLE_DISTANCE LITTLE_ENDIAN "Obstacle distances in front of the sensor, starting from the left in increment degrees to the right"
+  <%= render '_cmd_header.txt', locals: {msgid: 330, payload_len: 158} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ODOMETRY LITTLE_ENDIAN "Odometry message to communicate odometry information with an external interface. Fits ROS REP 147 sta"
+  <%= render '_cmd_header.txt', locals: {msgid: 331, payload_len: 230} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TRAJECTORY_REPRESENTATION_WAYPOINTS LITTLE_ENDIAN "Describe a trajectory using an array of up-to 5 waypoints in the local frame (MAV_FRAME_LOCAL_NED)."
+  <%= render '_cmd_header.txt', locals: {msgid: 332, payload_len: 239} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TRAJECTORY_REPRESENTATION_BEZIER LITTLE_ENDIAN "Describe a trajectory using an array of up-to 5 bezier control points in the local frame (MAV_FRAME_L"
+  <%= render '_cmd_header.txt', locals: {msgid: 333, payload_len: 109} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CELLULAR_STATUS LITTLE_ENDIAN "Report current used cellular network status"
+  <%= render '_cmd_header.txt', locals: {msgid: 334, payload_len: 10} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ISBD_LINK_STATUS LITTLE_ENDIAN "Status of the Iridium SBD link."
+  <%= render '_cmd_header.txt', locals: {msgid: 335, payload_len: 24} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CELLULAR_CONFIG LITTLE_ENDIAN "Configure cellular modems. This message is re-emitted as an acknowledgement by the modem. The message"
+  <%= render '_cmd_header.txt', locals: {msgid: 336, payload_len: 84} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RAW_RPM LITTLE_ENDIAN "RPM sensor data message."
+  <%= render '_cmd_header.txt', locals: {msgid: 339, payload_len: 5} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> UTM_GLOBAL_POSITION LITTLE_ENDIAN "The global position resulting from GPS and sensor fusion."
+  <%= render '_cmd_header.txt', locals: {msgid: 340, payload_len: 70} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PARAM_ERROR LITTLE_ENDIAN "Parameter set/get error. Returned from a MAVLink node in response to an error in the parameter protoc"
+  <%= render '_cmd_header.txt', locals: {msgid: 345, payload_len: 21} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> DEBUG_FLOAT_ARRAY LITTLE_ENDIAN "Large debug/prototyping array. The message uses the maximum available payload for data. The array_id "
+  <%= render '_cmd_header.txt', locals: {msgid: 350, payload_len: 20} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ORBIT_EXECUTION_STATUS LITTLE_ENDIAN "Vehicle status report that is sent out while orbit execution is in progress (see MAV_CMD_DO_ORBIT)."
+  <%= render '_cmd_header.txt', locals: {msgid: 360, payload_len: 25} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> FIGURE_EIGHT_EXECUTION_STATUS LITTLE_ENDIAN "Vehicle status report that is sent out while figure eight execution is in progress (see MAV_CMD_DO_FI"
+  <%= render '_cmd_header.txt', locals: {msgid: 361, payload_len: 33} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SMART_BATTERY_INFO LITTLE_ENDIAN "Smart Battery information (static/infrequent update). Use for updates from: smart battery to flight s"
+  <%= render '_cmd_header.txt', locals: {msgid: 370, payload_len: 87} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> FUEL_STATUS LITTLE_ENDIAN "Fuel status. This message provides 'generic' fuel level information for in a GCS and for triggering f"
+  <%= render '_cmd_header.txt', locals: {msgid: 371, payload_len: 26} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> BATTERY_INFO LITTLE_ENDIAN "Battery information that is static, or requires infrequent update. This message should requested usin"
+  <%= render '_cmd_header.txt', locals: {msgid: 372, payload_len: 140} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> GENERATOR_STATUS LITTLE_ENDIAN "Telemetry of power generation system. Alternator or mechanical generator."
+  <%= render '_cmd_header.txt', locals: {msgid: 373, payload_len: 42} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ACTUATOR_OUTPUT_STATUS LITTLE_ENDIAN "The raw values of the actuator outputs (e.g. on Pixhawk, from MAIN, AUX ports). This message supersed"
+  <%= render '_cmd_header.txt', locals: {msgid: 375, payload_len: 140} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TIME_ESTIMATE_TO_TARGET LITTLE_ENDIAN "Time/duration estimates for various events and actions given the current vehicle state and position."
+  <%= render '_cmd_header.txt', locals: {msgid: 380, payload_len: 20} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> TUNNEL LITTLE_ENDIAN "Message for transporting 'arbitrary' variable-length data from one component to another (broadcast is"
+  <%= render '_cmd_header.txt', locals: {msgid: 385, payload_len: 133} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAN_FRAME LITTLE_ENDIAN "A forwarded CAN frame as requested by MAV_CMD_CAN_FORWARD."
+  <%= render '_cmd_header.txt', locals: {msgid: 386, payload_len: 16} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CANFD_FRAME LITTLE_ENDIAN "A forwarded CANFD frame as requested by MAV_CMD_CAN_FORWARD. These are separated from CAN_FRAME as th"
+  <%= render '_cmd_header.txt', locals: {msgid: 387, payload_len: 72} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CAN_FILTER_MODIFY LITTLE_ENDIAN "Modify the filter of what CAN messages to forward over the mavlink. This can be used to make CAN forw"
+  <%= render '_cmd_header.txt', locals: {msgid: 388, payload_len: 37} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ONBOARD_COMPUTER_STATUS LITTLE_ENDIAN "Hardware status sent by an onboard computer."
+  <%= render '_cmd_header.txt', locals: {msgid: 390, payload_len: 238} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> COMPONENT_INFORMATION LITTLE_ENDIAN "Component information message, which may be requested using MAV_CMD_REQUEST_MESSAGE."
+  <%= render '_cmd_header.txt', locals: {msgid: 395, payload_len: 212} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> COMPONENT_INFORMATION_BASIC LITTLE_ENDIAN "Basic component information data. Should be requested using MAV_CMD_REQUEST_MESSAGE on startup, or wh"
+  <%= render '_cmd_header.txt', locals: {msgid: 396, payload_len: 160} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> COMPONENT_METADATA LITTLE_ENDIAN "Component metadata message, which may be requested using MAV_CMD_REQUEST_MESSAGE. This contains the M"
+  <%= render '_cmd_header.txt', locals: {msgid: 397, payload_len: 108} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> PLAY_TUNE_V2 LITTLE_ENDIAN "Play vehicle tone/tune (buzzer). Supersedes message PLAY_TUNE."
+  <%= render '_cmd_header.txt', locals: {msgid: 400, payload_len: 254} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> SUPPORTED_TUNES LITTLE_ENDIAN "Tune formats supported by vehicle. This should be emitted as response to MAV_CMD_REQUEST_MESSAGE."
+  <%= render '_cmd_header.txt', locals: {msgid: 401, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> EVENT LITTLE_ENDIAN "Event message. Each new event from a particular component gets a new sequence number. The same messag"
+  <%= render '_cmd_header.txt', locals: {msgid: 410, payload_len: 53} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CURRENT_EVENT_SEQUENCE LITTLE_ENDIAN "Regular broadcast for the current latest event sequence number for a component. This is used to check"
+  <%= render '_cmd_header.txt', locals: {msgid: 411, payload_len: 3} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> REQUEST_EVENT LITTLE_ENDIAN "Request one or more events to be (re-)sent. If first_sequence==last_sequence, only a single event is "
+  <%= render '_cmd_header.txt', locals: {msgid: 412, payload_len: 6} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> RESPONSE_EVENT_ERROR LITTLE_ENDIAN "Response to a REQUEST_EVENT in case of an error (e.g. the event is not available anymore)."
+  <%= render '_cmd_header.txt', locals: {msgid: 413, payload_len: 7} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> AVAILABLE_MODES LITTLE_ENDIAN "Information about a flight mode. The message can be enumerated to get information for all modes, or r"
+  <%= render '_cmd_header.txt', locals: {msgid: 435, payload_len: 46} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> CURRENT_MODE LITTLE_ENDIAN "Get the current mode. This should be emitted on any mode change, and broadcast at low rate (nominally"
+  <%= render '_cmd_header.txt', locals: {msgid: 436, payload_len: 9} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> AVAILABLE_MODES_MONITOR LITTLE_ENDIAN "A change to the sequence number indicates that the set of AVAILABLE_MODES has changed. A receiver mus"
+  <%= render '_cmd_header.txt', locals: {msgid: 437, payload_len: 1} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> ILLUMINATOR_STATUS LITTLE_ENDIAN "Illuminator status"
+  <%= render '_cmd_header.txt', locals: {msgid: 440, payload_len: 35} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> WHEEL_DISTANCE LITTLE_ENDIAN "Cumulative distance traveled for each reported wheel."
+  <%= render '_cmd_header.txt', locals: {msgid: 9000, payload_len: 137} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> WINCH_STATUS LITTLE_ENDIAN "Winch status."
+  <%= render '_cmd_header.txt', locals: {msgid: 9005, payload_len: 34} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_BASIC_ID LITTLE_ENDIAN "Data for filling the OpenDroneID Basic ID message. This and the below messages are primarily meant fo"
+  <%= render '_cmd_header.txt', locals: {msgid: 12900, payload_len: 44} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_LOCATION LITTLE_ENDIAN "Data for filling the OpenDroneID Location message. The float data types are 32-bit IEEE 754. The Loca"
+  <%= render '_cmd_header.txt', locals: {msgid: 12901, payload_len: 59} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_AUTHENTICATION LITTLE_ENDIAN "Data for filling the OpenDroneID Authentication message. The Authentication Message defines a field t"
+  <%= render '_cmd_header.txt', locals: {msgid: 12902, payload_len: 53} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_SELF_ID LITTLE_ENDIAN "Data for filling the OpenDroneID Self ID message. The Self ID Message is an opportunity for the opera"
+  <%= render '_cmd_header.txt', locals: {msgid: 12903, payload_len: 46} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_SYSTEM LITTLE_ENDIAN "Data for filling the OpenDroneID System message. The System Message contains general system informati"
+  <%= render '_cmd_header.txt', locals: {msgid: 12904, payload_len: 54} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_OPERATOR_ID LITTLE_ENDIAN "Data for filling the OpenDroneID Operator ID message, which contains the CAA (Civil Aviation Authorit"
+  <%= render '_cmd_header.txt', locals: {msgid: 12905, payload_len: 43} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_MESSAGE_PACK LITTLE_ENDIAN "An OpenDroneID message pack is a container for multiple encoded OpenDroneID messages (i.e. not in the"
+  <%= render '_cmd_header.txt', locals: {msgid: 12915, payload_len: 249} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_ARM_STATUS LITTLE_ENDIAN "Transmitter (remote ID system) is enabled and ready to start sending location and other required info"
+  <%= render '_cmd_header.txt', locals: {msgid: 12918, payload_len: 51} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> OPEN_DRONE_ID_SYSTEM_UPDATE LITTLE_ENDIAN "Update the data in the OPEN_DRONE_ID_SYSTEM message with new location information. This can be sent t"
+  <%= render '_cmd_header.txt', locals: {msgid: 12919, payload_len: 18} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
+COMMAND <%= target_name %> HYGROMETER_SENSOR LITTLE_ENDIAN "Temperature and humidity from hygrometer."
+  <%= render '_cmd_header.txt', locals: {msgid: 12920, payload_len: 5} %>
+  APPEND_PARAMETER DATA 0 BLOCK "" "Raw Command Data"
+
