@@ -13,7 +13,7 @@
 # Wait for a heartbeat from the vehicle
 def wait_for_heartbeat(timeout: 30)
   puts "--- Waiting for vehicle heartbeat ---"
-  wait_check("DRONE HEARTBEAT SYSTEM_STATUS == 'MAV_STATE_STANDBY'", timeout)
+  wait_check("DRONE HEARTBEAT SYSTEM_STATUS == 'STANDBY'", timeout)
   puts "Heartbeat received. Vehicle is in STANDBY."
 end
 

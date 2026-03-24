@@ -4,8 +4,12 @@
 
 An OpenC3 COSMOS plugin for monitoring and controlling MAVLink-based vehicles (drones, UAVs, rovers, etc.).
 
-## Setting Up / Get Connected
+## Setting Up / Get Connected (PX4 Sim with Gazebo)
+- Launch your Simulator (detailed below)
+- Deploy COSMOS and install the openc3-cosmos-mavlink plugin and specify the "UDP" Protocol
+- Change your Write/Read ports (in the example below write would be 14560 and read would be 14552)
 
+## Setting Up / Get Connected (Real Drone)
 - Connect to your Transmitter (tested with Radiomaster Boxer) via Bluetooth
 - Create a bridge to port the serially transmitted data on via Bluetooth to a TCP/IP Server on your host machine. Fill in the XXXXX with your specific transmitter ID. `openc3cli bridgegem openc3-cosmos-bridge-serial router_port=2950 write_port_name=/dev/cu.Matek-mLRS-XXXXX-BT read_port_name=/dev/cu.Matek-mLRS-XXXXX-BT  baud_rate=115200 parity=ODD`
 - This creates port 2950 that the transmitter data is now serving data to. COSMOS will connect to this port and other services (like QGroundControl) could also connect to `localhost:2950` directly. In this example, we will port data through COSMOS.
@@ -15,7 +19,7 @@ An OpenC3 COSMOS plugin for monitoring and controlling MAVLink-based vehicles (d
     ports:
       - "2977:2977/tcp"
 ```
-- Install the openc3-cosmos-mavlink plugin to COSMOS (more info below)
+- Install the openc3-cosmos-mavlink plugin to COSMOS (more info below) and specify the "TCP/IP" Protocol
 - Connect QGroundControl to `localhost:2977`, which is a TCP/IP Server that COSMOS is hosting, so all QGroundControl telemetry/commands will go through COSMOS.
 
 ## Getting Started
@@ -41,6 +45,17 @@ An OpenC3 COSMOS plugin for monitoring and controlling MAVLink-based vehicles (d
      - Port: MAVLink port (based on what you specify in the bridge)
      - System ID Filter: `0` for all, or specific vehicle system ID
    - Click Install
+
+### Running a simulator
+
+Using the PX4-Autopilot repository, and using Gazebo sim, start the simulation with
+```
+make px4_sitl gz_x500
+```
+Then, the MAVLink messages can be forwarded to COSMOS with
+```
+mavlink start -x -u 14560 -o 14552 -r 9600 -f -t 127.0.0.1
+```
 
 ## MAVLink Dialect Support
 

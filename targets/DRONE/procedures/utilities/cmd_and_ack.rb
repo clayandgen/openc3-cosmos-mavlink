@@ -14,7 +14,7 @@ def cmd_and_ack(cmd_name, timeout: 5, **params)
   wait_check("DRONE COMMAND_ACK RECEIVED_COUNT > #{initial_count}", timeout)
 
   result = tlm("DRONE COMMAND_ACK RESULT")
-  if result != "MAV_RESULT_ACCEPTED"
+  if result != "ACCEPTED"
     raise "Command #{cmd_name} failed with result: #{result}"
   end
 end

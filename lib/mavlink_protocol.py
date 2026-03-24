@@ -12,7 +12,7 @@ The protocol outputs JSON that COSMOS reads using JsonAccessor.
 """
 
 from openc3.interfaces.protocols.protocol import Protocol
-from pymavlink.dialects.v20 import ardupilotmega as mavlink2
+from pymavlink.dialects.v20 import all as mavlink2
 import json
 import logging
 import math
@@ -46,6 +46,7 @@ class MavlinkProtocol(Protocol):
     MAVLINK_STX = 0xFD
     MAVLINK_HEADER_LEN = 10
     MAVLINK_CRC_LEN = 2
+    MAVLINK_SIGNATURE_LEN = 13
 
     def __init__(self, gcs_sysid=255, gcs_compid=0, target_sysid=0, allow_empty_data=None):
         super().__init__(allow_empty_data)
@@ -62,14 +63,15 @@ class MavlinkProtocol(Protocol):
         for msg_id, cls in mavlink2.mavlink_map.items():
             self._msg_classes[cls.msgname] = cls
 
-        # Buffer for incoming data
-        self.buffer = b''
+        # Buffer for incoming data (bytearray for efficient appending
+        # and because pymavlink's decode() requires bytearray)
+        self.buffer = bytearray()
 
     def reset(self):
         """Reset the protocol state"""
         logger.debug("Protocol reset called")
         super().reset()
-        self.buffer = b''
+        self.buffer = bytearray()
         # Only reinitialize mav if attributes are set (handles parent init calling reset)
         if hasattr(self, 'gcs_sysid') and hasattr(self, 'gcs_compid'):
             self.mav = mavlink2.MAVLink(None, srcSystem=self.gcs_sysid, srcComponent=self.gcs_compid)
@@ -104,8 +106,12 @@ class MavlinkProtocol(Protocol):
             # Get payload length from byte 1
             payload_len = self.buffer[1]
 
+            # Check for signed packet (incompat_flags bit 0)
+            incompat_flags = self.buffer[2]
+            signature_len = self.MAVLINK_SIGNATURE_LEN if (incompat_flags & 0x01) else 0
+
             # Calculate total packet length
-            total_len = self.MAVLINK_HEADER_LEN + payload_len + self.MAVLINK_CRC_LEN
+            total_len = self.MAVLINK_HEADER_LEN + payload_len + self.MAVLINK_CRC_LEN + signature_len
 
             # Wait for complete packet
             if len(self.buffer) < total_len:
@@ -115,37 +121,41 @@ class MavlinkProtocol(Protocol):
             packet_data = self.buffer[:total_len]
             self.buffer = self.buffer[total_len:]
 
-            # Parse the packet with pymavlink
+            # Decode the pre-framed packet with pymavlink
+            # Use decode() instead of parse_char() to avoid dual-buffering issues.
+            # parse_char() maintains its own internal buffer/state machine which
+            # conflicts with our manual framing, causing state corruption and
+            # UNKNOWN_X / MSGID -2 errors.
             try:
-                msg = self.mav.parse_char(packet_data)
+                msg = self.mav.decode(packet_data)
 
-                if msg is not None:
-                    # Filter by system ID if specified
-                    if self.target_sysid != 0 and msg.get_srcSystem() != self.target_sysid:
-                        continue
-
-                    # Convert to JSON for COSMOS
-                    msg_dict = msg.to_dict()
-
-                    # Remove internal pymavlink fields
-                    msg_dict.pop('mavpackettype', None)
-
-                    # Add metadata
-                    msg_dict['MSGID'] = msg.get_msgId()
-                    msg_dict['MSGNAME'] = msg.get_type()
-                    msg_dict['SYSTEM_ID'] = msg.get_srcSystem()
-                    msg_dict['COMPONENT_ID'] = msg.get_srcComponent()
-                    msg_dict['SEQ'] = msg.get_seq()
-
-                    # Sanitize NaN/Infinity values to null for valid JSON
-                    msg_dict = sanitize_for_json(msg_dict)
-
-                    # Return as JSON bytes
-                    return json.dumps(msg_dict).encode('utf-8'), extra
-                else:
-                    # Parsing failed - log and continue
-                    logger.warning(f"Failed to parse MAVLink packet (len={len(packet_data)})")
+                # Skip messages not in the dialect (development extensions, etc.)
+                if msg.get_msgId() < 0:
+                    logger.debug(f"Skipping unknown message: {msg.get_type()}")
                     continue
+
+                # Filter by system ID if specified
+                if self.target_sysid != 0 and msg.get_srcSystem() != self.target_sysid:
+                    continue
+
+                # Convert to JSON for COSMOS
+                msg_dict = msg.to_dict()
+
+                # Remove internal pymavlink fields
+                msg_dict.pop('mavpackettype', None)
+
+                # Add metadata
+                msg_dict['MSGID'] = msg.get_msgId()
+                msg_dict['MSGNAME'] = msg.get_type()
+                msg_dict['SYSTEM_ID'] = msg.get_srcSystem()
+                msg_dict['COMPONENT_ID'] = msg.get_srcComponent()
+                msg_dict['SEQ'] = msg.get_seq()
+
+                # Sanitize NaN/Infinity values to null for valid JSON
+                msg_dict = sanitize_for_json(msg_dict)
+
+                # Return as JSON bytes
+                return json.dumps(msg_dict).encode('utf-8'), extra
 
             except Exception as e:
                 logger.warning(f"MAVLink decode error: {e}")

@@ -16,7 +16,7 @@
 # ============================================================================
 TELEMETRY <%= target_name %> HEARTBEAT BIG_ENDIAN "The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html"
   ACCESSOR JsonAccessor
-  TEMPLATE '{"MSGID":0,"MSGNAME":"HEARTBEAT","SYSTEM_ID":0,"COMPONENT_ID":0,"type":0,"autopilot":0,"base_mode":0,"custom_mode":0,"system_status":0,"mavlink_version":0}'
+  TEMPLATE '{"MSGID":0,"MSGNAME":"HEARTBEAT","SYSTEM_ID":0,"COMPONENT_ID":0,"SEQ":0,"type":0,"autopilot":0,"base_mode":0,"custom_mode":0,"system_status":0,"mavlink_version":0}'
   # Processed as JSON - fields extracted by JsonAccessor
 
   APPEND_ID_ITEM MSGID 16 UINT 0 "Message ID"
@@ -30,6 +30,9 @@ TELEMETRY <%= target_name %> HEARTBEAT BIG_ENDIAN "The heartbeat message shows t
 
   APPEND_ITEM COMPONENT_ID 8 UINT "Component ID"
     KEY $.COMPONENT_ID
+
+  APPEND_ITEM SEQ 8 UINT "Packet sequence number"
+    KEY $.SEQ
 
   APPEND_ITEM TYPE 8 UINT "Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type."
     KEY $.type
