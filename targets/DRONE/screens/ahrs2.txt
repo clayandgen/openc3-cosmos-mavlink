@@ -1,0 +1,36 @@
+SCREEN AUTO AUTO 1.0
+
+VERTICAL
+  TITLE "<%= target_name %> AHRS2 - Secondary AHRS Filter"
+
+  HORIZONTAL
+    VERTICALBOX "Euler Angles"
+      LABELSPARKLINE <%= target_name %> AHRS2 ROLL
+      LABELSPARKLINE <%= target_name %> AHRS2 PITCH
+      LABELSPARKLINE <%= target_name %> AHRS2 YAW
+    END
+
+    VERTICALBOX "Position"
+      LABELVALUE <%= target_name %> AHRS2 ALTITUDE
+      LABELVALUE <%= target_name %> AHRS2 LAT
+      LABELVALUE <%= target_name %> AHRS2 LNG
+    END
+
+    VERTICALBOX "Status"
+      LABELVALUE <%= target_name %> AHRS2 MSGID
+      LABELVALUE <%= target_name %> AHRS2 SYSTEM_ID
+      LABELVALUE <%= target_name %> AHRS2 COMPONENT_ID
+    END
+  END
+
+  VERTICAL
+    LINEGRAPH <%= target_name %> AHRS2 ROLL
+      SETTING SIZE 800 250
+      SETTING HISTORY 1m
+      SETTING ITEM <%= target_name %> AHRS2 PITCH
+      SETTING ITEM <%= target_name %> AHRS2 YAW
+    LINEGRAPH <%= target_name %> AHRS2 ALTITUDE
+      SETTING SIZE 800 250
+      SETTING HISTORY 1m
+  END
+END
